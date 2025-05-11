@@ -1,4 +1,4 @@
-package com.campusmov.uniride.presentation.views
+package com.campusmov.uniride.presentation.views.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,15 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 
 @Composable
-@Preview
-fun WelcomeView() {
+fun WelcomeView(navHostController: NavHostController) {
     Scaffold { paddingValue ->
         Column(
             modifier = Modifier
@@ -124,7 +123,9 @@ fun WelcomeView() {
                         contentColor = Color.Black
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        // TODO: redirect to navHostController.navigate(route = AuthScreen.EnterInstitutionalEmail.route)
+                    },
                 ) {
                     Text(
                         text = "Continuar",
