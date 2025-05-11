@@ -13,11 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
+import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 
 @Composable
 fun WelcomeView(navHostController: NavHostController) {
@@ -114,26 +113,15 @@ fun WelcomeView(navHostController: NavHostController) {
                         size = 10.dp
                     )
                 }
-                TextButton(
+                DefaultRoundedTextButton(
                     modifier = Modifier
                         .padding(vertical = 20.dp, horizontal = 13.dp)
                         .fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFC4C4C4),
-                        contentColor = Color.Black
-                    ),
-                    shape = RoundedCornerShape(12.dp),
+                    text = "Continuar",
                     onClick = {
-                        // TODO: redirect to navHostController.navigate(route = AuthScreen.EnterInstitutionalEmail.route)
-                    },
-                ) {
-                    Text(
-                        text = "Continuar",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = (40.sp),
-                    )
-                }
+                        navHostController.navigate(route = AuthScreen.EnterInstitutionalEmail.route)
+                    }
+                )
                 Text(
                     modifier = Modifier
                         .padding(bottom = 50.dp, start = 13.dp, end = 13.dp)
