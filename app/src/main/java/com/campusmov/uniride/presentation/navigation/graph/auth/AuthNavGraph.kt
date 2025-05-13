@@ -6,8 +6,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
-import com.campusmov.uniride.presentation.views.auth.verifyemail.EnterInstitutionalEmailView
 import com.campusmov.uniride.presentation.views.auth.WelcomeView
+import com.campusmov.uniride.presentation.views.auth.verifyemail.EnterInstitutionalEmailView
+import com.campusmov.uniride.presentation.views.routingmatching.menunavigation.MenuNavigationView
 
 fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
     navigation(
@@ -25,6 +26,9 @@ fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
         }
         composable(route = AuthScreen.AcceptTermsAndConditions.route) {
             // TODO: Implement AcceptTermsAndConditionsView
+        }
+        composable(route = Graph.HOME) {
+            MenuNavigationView()
         }
     }
 }

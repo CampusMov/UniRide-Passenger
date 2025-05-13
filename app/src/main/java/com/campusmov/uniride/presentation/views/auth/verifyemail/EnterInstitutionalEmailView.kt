@@ -25,6 +25,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.navigation.Graph
+import com.campusmov.uniride.presentation.navigation.screen.routingmatching.RoutingMatchingScreen
 
 @Composable
 fun EnterInstitutionalEmailView(
@@ -87,7 +89,12 @@ fun EnterInstitutionalEmailView(
 
                 DefaultRoundedTextButton(
                     text = "Enviar codigo",
-                    onClick = { viewModel.sendVerificationEmail() }
+                    onClick = {
+                        //viewModel.sendVerificationEmail()
+                        navHostController.navigate(route = Graph.HOME) {
+                            popUpTo(Graph.AUTH) { inclusive = true }
+                        }
+                    },
                 )
             }
         }
