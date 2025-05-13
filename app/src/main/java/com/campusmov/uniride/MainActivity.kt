@@ -9,7 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.campusmov.uniride.presentation.navigation.graph.root.RootNavGraph
 import com.campusmov.uniride.ui.theme.UniRideTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navHostController: NavHostController
 
