@@ -1,4 +1,4 @@
-package com.campusmov.uniride.domain.auth
+package com.campusmov.uniride.domain.auth.model
 
 data class Role(
     val id: String,
