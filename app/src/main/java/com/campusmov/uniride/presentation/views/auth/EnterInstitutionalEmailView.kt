@@ -25,11 +25,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.common.GlobalVariables.ROLE
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 
 @Composable
-fun EnterInstitutionalEmailView(navHostController: NavHostController){
+fun EnterInstitutionalEmailView(navHostController: NavHostController,
+                                viewModel: EnterInstitutionalEmailViewModel = EnterInstitutionalEmailViewModel()) {
     var email = remember {
         mutableStateOf("")
     }
@@ -88,7 +90,7 @@ fun EnterInstitutionalEmailView(navHostController: NavHostController){
 
                 DefaultRoundedTextButton(
                     text = "Enviar codigo",
-                    onClick = { /*TODO*/ }
+                    onClick = { viewModel.sendVerificationEmail(email.value.trim(), listOf(ROLE)) }
                 )
             }
         }
