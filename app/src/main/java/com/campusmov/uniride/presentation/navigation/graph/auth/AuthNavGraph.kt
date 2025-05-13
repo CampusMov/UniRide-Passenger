@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
-import com.campusmov.uniride.presentation.views.auth.EnterInstitutionalEmailView
+import com.campusmov.uniride.presentation.views.auth.verifyemail.EnterInstitutionalEmailView
 import com.campusmov.uniride.presentation.views.auth.WelcomeView
 
 fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
@@ -18,7 +18,7 @@ fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
             WelcomeView(navHostController)
         }
         composable(route = AuthScreen.EnterInstitutionalEmail.route) {
-            EnterInstitutionalEmailView(navHostController)
+            EnterInstitutionalEmailView(navHostController = navHostController)
         }
         composable(route = AuthScreen.EnterVerificationCode.route) {
             // TODO: Implement EnterVerificationCodeView
