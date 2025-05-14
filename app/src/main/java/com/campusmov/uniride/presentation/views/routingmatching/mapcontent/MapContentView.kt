@@ -35,6 +35,8 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
+import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
+import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +65,12 @@ fun MapCarpoolSearcherView(
         }
     )
 
+    var showSearchModel = remember {
+        mutableStateOf(false)
+    }
+
+    var originSearchQuery = remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
         if (!hasPermission.value) {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -88,7 +96,9 @@ fun MapCarpoolSearcherView(
                             .height(calculateSheetHeight(viewmodel = viewModel))
                             .background(Color.Black)
                     ) {
-
+                        SearchCarpoolView(navHostController = navHostController, onOriginPlaceSelected = {
+                            showSearchModel.value = true
+                        })
                     }
                 }
             },
@@ -104,6 +114,18 @@ fun MapCarpoolSearcherView(
                             viewModel = viewModel,
                             paddingValues = paddingValues
                         )
+                        if (showSearchModel.value) {
+                            SearchPlaceView(
+                                navHostController = navHostController,
+                                onDismissRequest = {
+                                    showSearchModel.value = false
+                                },
+                                onPlaceSelected = { place ->
+                                    originSearchQuery.value = place.address
+                                    showSearchModel.value = false
+                                }
+                            )
+                        }
                     }
                     else {
                         Text(
