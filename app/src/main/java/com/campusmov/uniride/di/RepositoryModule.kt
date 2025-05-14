@@ -18,7 +18,6 @@ object RepositoryModule {
 
     @Provides
     fun provideAuthRepository(authService: AuthService, localDataStore: LocalDataStore): AuthRepository = AuthRepositoryImpl(authService, localDataStore)
-    fun provideAuthRepository(authService: AuthService): AuthRepository = AuthRepositoryImpl(authService)
 
     @Provides
     fun provideLocationRepository(locationDataSource: LocationDataSource): LocationRepository = LocationRepositoryImpl(locationDataSource)
