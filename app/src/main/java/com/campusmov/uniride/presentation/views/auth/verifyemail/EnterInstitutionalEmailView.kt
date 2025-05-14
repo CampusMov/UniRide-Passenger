@@ -26,7 +26,6 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.navigation.Graph
-import com.campusmov.uniride.presentation.navigation.screen.routingmatching.RoutingMatchingScreen
 
 @Composable
 fun EnterInstitutionalEmailView(
