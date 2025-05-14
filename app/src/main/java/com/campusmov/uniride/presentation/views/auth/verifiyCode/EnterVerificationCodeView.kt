@@ -12,10 +12,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +32,10 @@ import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import kotlinx.coroutines.flow.first
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 
 @Composable
 fun EnterVerificationCodeView(
@@ -41,7 +44,21 @@ fun EnterVerificationCodeView(
 ) {
     val state = viewModel
 
-    Scaffold { paddingValues ->
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(viewModel.errorMessage.value) {
+        if (viewModel.errorMessage.value.isNotEmpty()) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(viewModel.errorMessage.value)
+                viewModel.errorMessage.value = ""
+            }
+        }
+    }
+
+    Scaffold (
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ){ paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
