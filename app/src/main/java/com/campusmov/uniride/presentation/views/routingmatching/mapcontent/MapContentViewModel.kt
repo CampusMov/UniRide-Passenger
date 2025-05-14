@@ -1,5 +1,6 @@
-package com.campusmov.uniride.presentation.views.routingmatching.mapcarpoolsearcher
+package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
@@ -11,11 +12,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MapCarpoolSearcherViewModel @Inject constructor(
+class MapContentViewModel @Inject constructor(
     private val locationUsesCases: LocationUsesCases
 ): ViewModel() {
     private val _location = MutableStateFlow<LatLng?>(null)
     val location: StateFlow<LatLng?> get() = _location
+
+    var isInteractiveWithMap = mutableStateOf(false)
 
     fun startLocationUpdates() = viewModelScope.launch {
         locationUsesCases.getLocationUpdates { position ->
