@@ -23,11 +23,11 @@ class EnterInstitutionalEmailViewModel @Inject constructor(
     var errorMessage = mutableStateOf("")
         private set
 
-    var verifyEmailResponse = mutableStateOf<Resource<AuthEmailVerificationResponse>?>(null)
+    var verifyEmailResponse = mutableStateOf<Resource<Unit>?>(null)
         private set
 
     fun onEmailInput(email: String) {
-        state.value = state.value.copy(email = email)
+        state.value = state.value.copy(email = email.trim())
     }
 
     fun isEmailValid(): Boolean {
@@ -39,9 +39,14 @@ class EnterInstitutionalEmailViewModel @Inject constructor(
     fun sendVerificationEmail() = viewModelScope.launch {
         if (isEmailValid()) {
             val result = authUseCase.verifyEmail(state.value.email)
+            if (result is Resource.Success) {
+                //verifyEmailResponse = mutableStateOf(result)
+                verifyEmailResponse.value = result
+            }
         } else {
             Log.d("TAG", "Invalid email format ${state.value.email}")
-            // Handle invalid email case
         }
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.auth.verifyemail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -23,8 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 
 @Composable
 fun EnterInstitutionalEmailView(
@@ -32,6 +36,14 @@ fun EnterInstitutionalEmailView(
     navHostController: NavHostController
 ) {
     val state = viewModel
+
+    LaunchedEffect(viewModel.verifyEmailResponse.value) {
+        when (viewModel.verifyEmailResponse.value) {
+            is Resource.Success -> navHostController.navigate(AuthScreen.EnterVerificationCode.route)
+            is Resource.Failure -> { Log.d("TAG", "Error:") }
+            else -> {}
+        }
+    }
 
     Scaffold { paddingValues ->
         Column(
@@ -87,7 +99,9 @@ fun EnterInstitutionalEmailView(
 
                 DefaultRoundedTextButton(
                     text = "Enviar codigo",
-                    onClick = { viewModel.sendVerificationEmail() }
+                    onClick = {
+                        viewModel.sendVerificationEmail()
+                    }
                 )
             }
         }

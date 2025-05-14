@@ -8,6 +8,7 @@ import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 import com.campusmov.uniride.presentation.views.auth.verifyemail.EnterInstitutionalEmailView
 import com.campusmov.uniride.presentation.views.auth.WelcomeView
+import com.campusmov.uniride.presentation.views.auth.verifiyCode.EnterVerificationCodeView
 
 fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
     navigation(
@@ -21,7 +22,7 @@ fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
             EnterInstitutionalEmailView(navHostController = navHostController)
         }
         composable(route = AuthScreen.EnterVerificationCode.route) {
-            // TODO: Implement EnterVerificationCodeView
+            EnterVerificationCodeView(navHostController = navHostController)
         }
         composable(route = AuthScreen.AcceptTermsAndConditions.route) {
             // TODO: Implement AcceptTermsAndConditionsView
