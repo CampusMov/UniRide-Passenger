@@ -93,7 +93,7 @@ fun EnterInstitutionalEmailView(
                 DefaultRoundedInputField(
                     value = state.state.value.email,
                     onValueChange = { state.onEmailInput(it) },
-                    placeholder = "example@universityt.upc.edu",
+                    placeholder = "example@university.upc.edu",
                     keyboardType = KeyboardType.Email
                 )
 
@@ -101,7 +101,7 @@ fun EnterInstitutionalEmailView(
                     text = "Enviar codigo",
                     onClick = {
                         viewModel.sendVerificationEmail()
-                    }
+                    },
                 )
             }
         }

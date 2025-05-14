@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
+import com.campusmov.uniride.presentation.views.profile.info.ProfileInfoView
 
 fun NavGraphBuilder.ProfileNavGraph(navHostController: NavHostController) {
     navigation(
@@ -26,6 +27,9 @@ fun NavGraphBuilder.ProfileNavGraph(navHostController: NavHostController) {
         }
         composable(route = ProfileScreen.RegisterProfileAcademicInfo.route) {
             // TODO: Implement the RegisterProfileAcademicInfoView
+        }
+        composable(route = ProfileScreen.ProfileInfo.route) {
+            ProfileInfoView(navHostController = navHostController)
         }
     }
 }

@@ -6,4 +6,5 @@ sealed class ProfileScreen(val route: String) {
     object RegisterProfilePersonalInfo: ProfileScreen("profile/register/personal_info")
     object RegisterProfileContactInfo: ProfileScreen("profile/register/contact_info")
     object RegisterProfileAcademicInfo: ProfileScreen("profile/register/academic_info")
+    object ProfileInfo: ProfileScreen("profile/info")
 }
