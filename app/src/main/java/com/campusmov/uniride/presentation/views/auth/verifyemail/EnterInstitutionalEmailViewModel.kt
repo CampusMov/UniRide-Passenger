@@ -38,12 +38,14 @@ class EnterInstitutionalEmailViewModel @Inject constructor(
 
     fun sendVerificationEmail() = viewModelScope.launch {
         if (isEmailValid()) {
+            errorMessage.value = ""
             val result = authUseCase.verifyEmail(state.value.email)
             if (result is Resource.Success) {
                 //verifyEmailResponse = mutableStateOf(result)
                 verifyEmailResponse.value = result
             }
         } else {
+            errorMessage.value = "Formato de correo inválido"
             Log.d("TAG", "Invalid email format ${state.value.email}")
         }
     }
