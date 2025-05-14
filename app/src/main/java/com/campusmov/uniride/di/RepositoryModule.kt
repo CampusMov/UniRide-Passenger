@@ -1,5 +1,6 @@
 package com.campusmov.uniride.di
 
+import com.campusmov.uniride.data.datasource.local.datastore.LocalDataStore
 import com.campusmov.uniride.data.datasource.location.LocationDataSource
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
@@ -16,6 +17,7 @@ import dagger.hilt.components.SingletonComponent
 object RepositoryModule {
 
     @Provides
+    fun provideAuthRepository(authService: AuthService, localDataStore: LocalDataStore): AuthRepository = AuthRepositoryImpl(authService, localDataStore)
     fun provideAuthRepository(authService: AuthService): AuthRepository = AuthRepositoryImpl(authService)
 
     @Provides

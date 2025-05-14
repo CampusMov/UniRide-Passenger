@@ -1,6 +1,5 @@
-package com.campusmov.uniride.presentation.views.auth.verifyemail
+package com.campusmov.uniride.presentation.views.auth.verifiyCode
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -25,32 +26,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.campusmov.uniride.domain.shared.util.Resource
+import com.campusmov.uniride.data.datasource.local.datastore.LocalDataStore
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
-import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
+import kotlinx.coroutines.flow.first
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 
 @Composable
-fun EnterInstitutionalEmailView(
-    viewModel: EnterInstitutionalEmailViewModel = hiltViewModel(),
-    navHostController: NavHostController
+fun EnterVerificationCodeView(
+    viewModel: EnterVerificationCodeViewModel = hiltViewModel(),
+    navHostController: NavHostController,
 ) {
     val state = viewModel
-
-    LaunchedEffect(viewModel.verifyEmailResponse.value) {
-        when (viewModel.verifyEmailResponse.value) {
-            is Resource.Success -> navHostController.navigate(AuthScreen.EnterVerificationCode.route)
-            is Resource.Failure -> { Log.d("TAG", "Error:") }
-            else -> {}
-        }
-    }
 
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             IconButton(
                 modifier = Modifier
@@ -67,8 +63,8 @@ fun EnterInstitutionalEmailView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 15.dp, horizontal = 16.dp),
-                textAlign = TextAlign.Start,
-                text = "Introduce tu correo institucional",
+                textAlign = TextAlign.Center,
+                text = "Ingresa el código",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.White
@@ -77,8 +73,8 @@ fun EnterInstitutionalEmailView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 15.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
-                textAlign = TextAlign.Start,
-                text = "Te enviaremos un codigo para verificar tu correo.",
+                textAlign = TextAlign.Center,
+                text = "Te enviaremos un codigo para verificacion al ${viewModel.email.value}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White
@@ -91,17 +87,17 @@ fun EnterInstitutionalEmailView(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 DefaultRoundedInputField(
-                    value = state.state.value.email,
-                    onValueChange = { state.onEmailInput(it) },
-                    placeholder = "example@university.upc.edu",
-                    keyboardType = KeyboardType.Email
+                    value = state.state.value.code,
+                    onValueChange = { state.onCodeInput(it) },
+                    placeholder = "123456",
+                    keyboardType = KeyboardType.Number
                 )
 
                 DefaultRoundedTextButton(
                     text = "Enviar codigo",
                     onClick = {
-                        viewModel.sendVerificationEmail()
-                    },
+                        viewModel.sendVerificationCode()
+                    }
                 )
             }
         }
