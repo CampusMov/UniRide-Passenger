@@ -58,6 +58,7 @@ fun MenuNavigationView(navHostController: NavHostController = rememberNavControl
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
