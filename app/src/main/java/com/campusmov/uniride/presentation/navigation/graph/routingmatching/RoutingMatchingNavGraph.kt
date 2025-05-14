@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.routingmatching.RoutingMatchingScreen
-import com.campusmov.uniride.presentation.views.routingmatching.mapcarpoolsearcher.MapCarpoolSearcherView
+import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.MapCarpoolSearcherView
 
 @Composable
 fun RoutingMatchingNavGraph(navHostController: NavHostController) {
