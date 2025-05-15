@@ -8,13 +8,13 @@ import retrofit2.http.POST
 
 interface AuthService {
     @FormUrlEncoded
-    @POST("api/v1/registration/sign-up")
+    @POST("auth/institutional-email-verification")
     suspend fun sendVerificationEmail(
         @Field("email") email: String,
     ): Response<Unit>
 
     @FormUrlEncoded
-    @POST("api/v1/login/verify-account")
+    @POST("auth/code-verification")
     suspend fun sendVerificationCode(
         @Field("email") email: String,
         @Field("verificationCode") verificationCode: String,
