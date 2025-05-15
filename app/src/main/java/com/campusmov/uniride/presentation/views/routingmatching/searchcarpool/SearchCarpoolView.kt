@@ -1,13 +1,17 @@
 package com.campusmov.uniride.presentation.views.routingmatching.searchcarpool
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material3.Icon
@@ -19,7 +23,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,19 +45,61 @@ fun SearchCarpoolView(
     val originPlace = viewModelSearchPlace.selectedPlace.collectAsState()
     var destinationSearchQuery = remember { mutableStateOf("") }
 
-    DefaultRoundedInputField(
-        enable = false,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clickable {
-                onOriginPlaceSelected()
-            },
-        value = originPlace.value?.address ?: "",
-        onValueChange = {},
-        placeholder = "Seleccionar punto de recogida",
-        enableLeadingIcon = true
-    )
+    if (originPlace.value == null){
+        DefaultRoundedInputField(
+            enable = false,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable {
+                    onOriginPlaceSelected()
+                },
+            value = originPlace.value?.address ?: "",
+            onValueChange = {},
+            placeholder = "Seleccionar punto de recogida",
+            enableLeadingIcon = true
+        )
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable {
+                    onOriginPlaceSelected()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                modifier = Modifier.padding(end = 12.dp),
+                imageVector = Icons.Outlined.LocationOn,
+                contentDescription = "PickUpLocation",
+                tint = Color.White
+            )
+            Text(
+                text = originPlace.value?.address ?: "",
+                softWrap = true,
+                fontSize = 18.sp,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                color = Color.White,
+                modifier = Modifier.weight(1f)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .background(Color(0xFF3F4042), RoundedCornerShape(5.dp))
+            ){
+                Text(
+                    modifier = Modifier
+                        .padding(4.dp),
+                    text = "Recogida",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                )
+            }
+        }
+    }
 
     Spacer(
         modifier = Modifier
