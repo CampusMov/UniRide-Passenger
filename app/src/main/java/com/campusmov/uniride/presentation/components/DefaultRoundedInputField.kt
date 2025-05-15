@@ -32,7 +32,7 @@ fun DefaultRoundedInputField(
     singleLine: Boolean = true,
     enable: Boolean = true,
     enableLeadingIcon: Boolean = false,
-    leadingIcon: ImageVector = Icons.Default.Search,
+    leadingIcon: ImageVector? = null,
 ) {
     Box(
         modifier = modifier
@@ -62,29 +62,30 @@ fun DefaultRoundedInputField(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color(0xFF3F4042),
+                disabledTextColor = Color.White
             ),
-            trailingIcon = {
-                if (value.isNotEmpty()) {
-                    IconButton(onClick = { onValueChange("") }) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Limpiar",
-                            tint = Color(0xFFB3B3B3)
-                        )
+            leadingIcon = if (enableLeadingIcon) {
+                {
+                    Icon(
+                        imageVector = leadingIcon ?: Icons.Default.Search,
+                        contentDescription = "Icono de búsqueda",
+                        tint = Color(0xFFB3B3B3)
+                    )
+                }
+            } else null,
+            trailingIcon = if (enable) {
+                {
+                    if (value.isNotEmpty()) {
+                        IconButton(onClick = { onValueChange("") }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Limpiar",
+                                tint = Color(0xFFB3B3B3)
+                            )
+                        }
                     }
                 }
-            },
-            leadingIcon = {
-                if (enableLeadingIcon) {
-                    Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = "Search",
-                        tint = Color.White
-                    )
-                } else {
-                    null
-                }
-            }
+            } else null
         )
     }
 }
