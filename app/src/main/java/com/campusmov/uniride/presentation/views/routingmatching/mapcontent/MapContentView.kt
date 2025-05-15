@@ -69,8 +69,6 @@ fun MapCarpoolSearcherView(
         mutableStateOf(false)
     }
 
-    var originSearchQuery = remember { mutableStateOf("") }
-
     LaunchedEffect(Unit) {
         if (!hasPermission.value) {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -120,8 +118,7 @@ fun MapCarpoolSearcherView(
                                 onDismissRequest = {
                                     showSearchModel.value = false
                                 },
-                                onPlaceSelected = { place ->
-                                    originSearchQuery.value = place.address
+                                onPlaceSelected = { ->
                                     showSearchModel.value = false
                                 }
                             )

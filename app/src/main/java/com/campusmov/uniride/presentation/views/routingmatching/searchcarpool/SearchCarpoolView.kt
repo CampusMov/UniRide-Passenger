@@ -8,16 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.AddCircleOutline
-import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,17 +26,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
 @Composable
 fun SearchCarpoolView(
     viewModel: SearchCarpoolViewModel = hiltViewModel(),
+    viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
     onOriginPlaceSelected: () -> Unit,
     navHostController: NavHostController
 ) {
-
-    var originSearchQuery = remember { mutableStateOf("") }
+    val originPlace = viewModelSearchPlace.selectedPlace.collectAsState()
     var destinationSearchQuery = remember { mutableStateOf("") }
-    var amountSeatsRequested = remember { mutableIntStateOf(1) }
 
     DefaultRoundedInputField(
         enable = false,
@@ -49,10 +46,8 @@ fun SearchCarpoolView(
             .clickable {
                 onOriginPlaceSelected()
             },
-        value = originSearchQuery.value,
-        onValueChange = {
-            originSearchQuery.value = it
-        },
+        value = originPlace.value?.address ?: "",
+        onValueChange = {},
         placeholder = "Seleccionar punto de recogida",
         enableLeadingIcon = true
     )
@@ -76,6 +71,23 @@ fun SearchCarpoolView(
         enableLeadingIcon = true
     )
 
+    SetAmountOfSeats(viewModel = viewModel)
+
+    DefaultRoundedTextButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
+        text = "Buscar carpools",
+        onClick = {
+
+        },
+    )
+}
+
+@Composable
+fun SetAmountOfSeats(viewModel: SearchCarpoolViewModel){
+    val amountSeatsRequested = viewModel.amountSeatsRequested.collectAsState()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,7 +105,7 @@ fun SearchCarpoolView(
         ) {
             IconButton(
                 onClick = {
-                    if (amountSeatsRequested.intValue > 1) amountSeatsRequested.intValue--
+                    viewModel.decreaseAmountSeatsRequested()
                 }
             ) {
                 Icon(
@@ -104,13 +116,13 @@ fun SearchCarpoolView(
                 )
             }
             Text(
-                text = amountSeatsRequested.intValue.toString(),
+                text = amountSeatsRequested.value.toString(),
                 color = Color.White,
                 fontSize = 20.sp,
             )
             IconButton(
                 onClick = {
-                    amountSeatsRequested.intValue++
+                    viewModel.increaseAmountSeatsRequested()
                 }
             ) {
                 Icon(
@@ -122,14 +134,4 @@ fun SearchCarpoolView(
             }
         }
     }
-
-    DefaultRoundedTextButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
-        text = "Buscar carpools",
-        onClick = {
-
-        },
-    )
 }
