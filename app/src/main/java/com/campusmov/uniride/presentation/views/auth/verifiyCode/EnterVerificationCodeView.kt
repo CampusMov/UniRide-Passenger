@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.auth.verifiyCode
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.campusmov.uniride.domain.shared.util.Resource
+import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
+import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
+import com.campusmov.uniride.presentation.navigation.screen.routingmatching.RoutingMatchingScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,6 +51,15 @@ fun EnterVerificationCodeView(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+//    LaunchedEffect(viewModel.verifyCodeSentResponse.value) {
+//        when (viewModel.verifyCodeSentResponse.value) {
+//            is Resource.Success -> navHostController.navigate(ProfileScreen.RegisterProfileTerms.route)
+//            is Resource.Failure -> { Log.d("TAG", "Error:") }
+//            else -> {}
+//        }
+//    }
+
 
     LaunchedEffect(viewModel.errorMessage.value) {
         if (viewModel.errorMessage.value.isNotEmpty()) {
@@ -114,6 +128,7 @@ fun EnterVerificationCodeView(
                     text = "Enviar codigo",
                     onClick = {
                         viewModel.sendVerificationCode()
+                        navHostController.navigate(RoutingMatchingScreen.Home.route)
                     }
                 )
             }
