@@ -46,6 +46,19 @@ object NetworkModule {
             .build()
     }
 
+    @Provides
+    @Singleton
+    @Named("Profile")
+    fun provideRetrofitProfile(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit
+            .Builder()
+            .baseUrl(Config.BASE_URL_PROFILE)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
 
     @Provides
     @Singleton
