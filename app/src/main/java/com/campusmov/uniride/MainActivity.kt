@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.campusmov.uniride.presentation.navigation.graph.root.RootNavGraph
 import com.campusmov.uniride.ui.theme.UniRideTheme
+import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,6 +18,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!Places.isInitialized()){
+            Places.initialize(this, getString(R.string.google_maps_key))
+        }
         installSplashScreen()
         setContent {
             UniRideTheme {
