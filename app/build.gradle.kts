@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -49,6 +51,35 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.logging.interceptor)
+    implementation(libs.androidx.room.runtime.android)
+
+    // RETROFIT
+    implementation(libs.google.gson)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // DAGGER HILT
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
+    ksp(libs.hilt.android.compiler)
+
+    // DATASTORE
+    implementation (libs.androidx.datastore.preferences)
+
+    // GOOGLE MAPS
+    implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.maps.compose.widgets)
+    implementation(libs.play.services.location)
+    implementation(libs.places)
+
+    implementation (libs.material)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
