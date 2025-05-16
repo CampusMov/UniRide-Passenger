@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -114,6 +115,7 @@ fun EnterVerificationCodeView(
                     text = "Enviar codigo",
                     onClick = {
                         viewModel.sendVerificationCode()
+                        navHostController.navigate(ProfileScreen.RegisterProfileTerms.route)
                     }
                 )
             }
