@@ -30,6 +30,10 @@ class EnterVerificationCodeViewModel @Inject constructor(
     var errorMessage = mutableStateOf("")
         private set
 
+//    var verifyCodeSentResponse = mutableStateOf<Resource<AuthVerificationCodeResponse>?>(null)
+//        private set
+
+
     init {
         viewModelScope.launch {
             email.value = localDataStore.getEmail().first() ?: ""
@@ -65,6 +69,7 @@ class EnterVerificationCodeViewModel @Inject constructor(
     fun sendVerificationCode() = viewModelScope.launch {
         val result = authUseCase.verifyCode(state.value.code, ROLE)
         if (result is Resource.Success) {
+            //verifyCodeSentResponse.value = result
             saveSession(result.data)
         } else {
             errorMessage.value = "Código inválido"

@@ -120,6 +120,7 @@ fun EnterInstitutionalEmailView(
                     text = "Enviar codigo",
                     onClick = {
                         viewModel.sendVerificationEmail()
+                        navHostController.navigate(route = AuthScreen.EnterVerificationCode.route)
                     },
                 )
             }
