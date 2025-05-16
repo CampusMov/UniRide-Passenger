@@ -13,9 +13,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +33,7 @@ import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun EnterInstitutionalEmailView(
@@ -36,6 +41,18 @@ fun EnterInstitutionalEmailView(
     navHostController: NavHostController
 ) {
     val state = viewModel
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(viewModel.errorMessage.value) {
+        if (viewModel.errorMessage.value.isNotEmpty()) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(viewModel.errorMessage.value)
+                viewModel.errorMessage.value = ""
+            }
+        }
+    }
 
     LaunchedEffect(viewModel.verifyEmailResponse.value) {
         when (viewModel.verifyEmailResponse.value) {
@@ -45,7 +62,9 @@ fun EnterInstitutionalEmailView(
         }
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
