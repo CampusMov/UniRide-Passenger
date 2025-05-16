@@ -2,6 +2,7 @@ package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
+import com.campusmov.uniride.data.remote.profile.ProfileApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,11 +59,16 @@ object NetworkModule {
             .build()
     }
 
-
-
     @Provides
     @Singleton
     fun provideAuthService(@Named("Auth") retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideProfileApiService(@Named("profileRetrofit") retrofit: Retrofit): ProfileApiService {
+        return retrofit.create(ProfileApiService::class.java)
     }
 }
