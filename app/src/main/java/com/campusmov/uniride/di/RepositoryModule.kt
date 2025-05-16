@@ -3,11 +3,13 @@ package com.campusmov.uniride.di
 import com.campusmov.uniride.data.datasource.local.datastore.LocalDataStore
 import com.campusmov.uniride.data.datasource.location.LocationDataSource
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
+import com.campusmov.uniride.data.remote.profile.ProfileApiService
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
-import com.campusmov.uniride.data.repository.location.LocationRepositoryImpl
+import com.campusmov.uniride.data.repository.profile.ProfileRepositoryImpl
+import com.campusmov.uniride.data.repository.routingmatching.LocationRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
-import com.campusmov.uniride.domain.location.repository.LocationRepository
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.campusmov.uniride.domain.profile.repository.ProfileRepository
+import com.campusmov.uniride.domain.routingmatching.repository.LocationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +23,8 @@ object RepositoryModule {
     fun provideAuthRepository(authService: AuthService, localDataStore: LocalDataStore): AuthRepository = AuthRepositoryImpl(authService, localDataStore)
 
     @Provides
-    fun provideLocationRepository(locationDataSource: LocationDataSource, placesClient: PlacesClient): LocationRepository = LocationRepositoryImpl(locationDataSource, placesClient)
+    fun provideLocationRepository(locationDataSource: LocationDataSource): LocationRepository = LocationRepositoryImpl(locationDataSource)
+
+    @Provides
+    fun provideProfileRepository(profileApiService: ProfileApiService): ProfileRepository = ProfileRepositoryImpl(profileApiService)
 }
