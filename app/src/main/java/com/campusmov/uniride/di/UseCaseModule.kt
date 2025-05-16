@@ -11,6 +11,9 @@ import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.location.usecases.GetPlaceDetailsUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
+import com.campusmov.uniride.domain.profile.repository.ProfileRepository
+import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
+import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,5 +35,10 @@ object UseCaseModule {
         getLocationUpdates = GetLocationsUpdatesUseCase(locationRepository),
         getPlacePredictions = GetPlacePredictionsUseCase(locationRepository),
         getPlaceDetails = GetPlaceDetailsUseCase(locationRepository)
+    )
+
+    @Provides
+    fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
+        saveProfile = SaveProfileUseCase(profileRepository)
     )
 }

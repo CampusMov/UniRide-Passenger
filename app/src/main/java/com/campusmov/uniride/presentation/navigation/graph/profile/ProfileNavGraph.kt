@@ -3,33 +3,74 @@ package com.campusmov.uniride.presentation.navigation.graph.profile
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
+import androidx.navigation.compose.navigation
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
-import com.campusmov.uniride.presentation.views.profile.info.ProfileInfoView
+import com.campusmov.uniride.presentation.profile.view.*
 
 fun NavGraphBuilder.ProfileNavGraph(navHostController: NavHostController) {
     navigation(
         route = Graph.PROFILE,
         startDestination = ProfileScreen.RegisterProfileFullName.route
     ) {
-        composable(route = ProfileScreen.RegisterProfileFullName.route) {
-            // TODO: Implement the RegisterProfileNameView
+        // FullName
+        composable(ProfileScreen.RegisterProfileFullName.route) {
+            NameView(
+                onBack = {navHostController.popBackStack()},
+                onNext = { navHostController.navigate(ProfileScreen.RegisterProfileTerms.route) }
+            )
         }
-        composable(route = ProfileScreen.RegisterProfileListItems.route) {
-            // TODO: Implement the RegisterProfileListItemsView
+
+        // Terms
+        composable(ProfileScreen.RegisterProfileTerms.route) {
+            TermsView(
+                onBack = { navHostController.popBackStack() },
+                onNext = { navHostController.navigate(ProfileScreen.RegisterProfileListItems.route) }
+            )
         }
-        composable(route = ProfileScreen.RegisterProfilePersonalInfo.route) {
-            // TODO: Implement the RegisterProfilePersonalInfoView
+
+        // ProfileList
+        composable(ProfileScreen.RegisterProfileListItems.route) {
+            ProfileListView(
+                onNavigate = { dest -> navHostController.navigate(dest) },
+                onFinish = {//TODO MANDAR A LA HOME VIEW
+                    }
+            )
         }
-        composable(route = ProfileScreen.RegisterProfileContactInfo.route) {
-            // TODO: Implement the RegisterProfileContactInfoView
+
+        // Personal Info
+        composable(ProfileScreen.RegisterProfilePersonalInfo.route) {
+            PersonalInfoView(
+                onBack = { navHostController.navigate(ProfileScreen.RegisterProfileListItems.route) },
+                onNext = { navHostController.navigate(ProfileScreen.RegisterProfileContactInfo.route) }
+            )
         }
-        composable(route = ProfileScreen.RegisterProfileAcademicInfo.route) {
-            // TODO: Implement the RegisterProfileAcademicInfoView
+
+        // Contact info
+        composable(ProfileScreen.RegisterProfileContactInfo.route) {
+            ContactInfoView(
+                onBack = { navHostController.navigate(ProfileScreen.RegisterProfileListItems.route) },
+                onNext = { navHostController.navigate(ProfileScreen.RegisterProfileAcademicInfo.route) }
+            )
         }
-        composable(route = ProfileScreen.ProfileInfo.route) {
-            ProfileInfoView(navHostController = navHostController)
+
+        // Academic information
+        composable(ProfileScreen.RegisterProfileAcademicInfo.route) {
+            AcademicInfoView(
+                onBack = { navHostController.navigate(ProfileScreen.RegisterProfileListItems.route) },
+                onNext = {navHostController.navigate(ProfileScreen.RegisterProfileListItems)}
+            )
         }
+
+        // ProfileInfo
+        //TODO Profile Info View
+        /*
+        composable(ProfileScreen.ProfileInfo.route) {
+            ProfileInfoView(
+                onBack = { navHostController.popBackStack() },
+                onNext = { /* navega a donde corresponda */ }
+            )
+        }
+         */
     }
 }

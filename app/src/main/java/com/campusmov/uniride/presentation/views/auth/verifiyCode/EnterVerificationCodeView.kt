@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
@@ -129,9 +130,7 @@ fun EnterVerificationCodeView(
                     text = "Enviar codigo",
                     onClick = {
                         viewModel.sendVerificationCode()
-                        navHostController.navigate(route = Graph.HOME) {
-                            popUpTo(Graph.AUTH) { inclusive = true }
-                        }
+                        navHostController.navigate(ProfileScreen.RegisterProfileTerms.route)
                     }
                 )
             }
