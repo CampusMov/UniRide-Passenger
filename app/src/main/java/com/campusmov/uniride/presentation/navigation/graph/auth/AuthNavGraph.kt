@@ -28,8 +28,6 @@ fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
         composable(route = AuthScreen.AcceptTermsAndConditions.route) {
             // TODO: Implement AcceptTermsAndConditionsView
         }
-        composable(route = Graph.HOME) {
-            MenuNavigationView()
-        }
+
     }
 }
