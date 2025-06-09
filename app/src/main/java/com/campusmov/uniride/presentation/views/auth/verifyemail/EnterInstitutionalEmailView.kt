@@ -75,7 +75,9 @@ fun EnterInstitutionalEmailView(
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .background(Color.Transparent),
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navHostController.popBackStack()
+                },
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
@@ -118,9 +120,7 @@ fun EnterInstitutionalEmailView(
 
                 DefaultRoundedTextButton(
                     text = "Enviar codigo",
-                    onClick = {
-                        viewModel.sendVerificationEmail()
-                    },
+                    onClick = { viewModel.sendVerificationEmail() },
                 )
             }
         }

@@ -5,8 +5,9 @@ import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.campusmov.uniride.domain.auth.model.AuthEmailVerificationResponse
+import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
+import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.shared.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EnterInstitutionalEmailViewModel @Inject constructor(
-    private val authUseCase: AuthUseCase
+    private val authUseCase: AuthUseCase,
+    private val userUseCase: UserUseCase
 ):ViewModel() {
 
     var state = mutableStateOf(InstitutionalEmailValidationState())
@@ -39,10 +41,13 @@ class EnterInstitutionalEmailViewModel @Inject constructor(
     fun sendVerificationEmail() = viewModelScope.launch {
         if (isEmailValid()) {
             errorMessage.value = ""
+            deleteAllUsersLocally()
             val result = authUseCase.verifyEmail(state.value.email)
             if (result is Resource.Success) {
-                //verifyEmailResponse = mutableStateOf(result)
+                Log.d("TAG", "Email verification successful: ${state.value.email}")
                 verifyEmailResponse.value = result
+                val user = User(email = state.value.email)
+                userUseCase.saveUserLocallyUseCase(user)
             }
         } else {
             errorMessage.value = "Formato de correo inválido"
@@ -50,5 +55,10 @@ class EnterInstitutionalEmailViewModel @Inject constructor(
         }
     }
 
-
+    fun deleteAllUsersLocally() {
+        viewModelScope.launch {
+            userUseCase.deleteAllUsersLocallyUseCase()
+            Log.d("TAG", "All users deleted locally")
+        }
+    }
 }
