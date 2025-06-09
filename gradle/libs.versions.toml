@@ -19,6 +19,7 @@ mapsComposeWidgets = "4.4.1"
 navigationCompose = "2.9.0"
 playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
+roomRuntime = "2.7.1"
 roomRuntimeAndroid = "2.7.1"
 kspVersion = "2.0.21-1.0.27"
 
@@ -28,6 +29,8 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltZ" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 google-gson = { module = "com.google.code.gson:gson", version.ref = "retrofit" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

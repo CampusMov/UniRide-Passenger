@@ -69,6 +69,12 @@ dependencies {
     // DATASTORE
     implementation (libs.androidx.datastore.preferences)
 
+    // ROOM
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+
+
     // GOOGLE MAPS
     implementation(libs.maps.compose)
     implementation(libs.maps.compose.utils)
