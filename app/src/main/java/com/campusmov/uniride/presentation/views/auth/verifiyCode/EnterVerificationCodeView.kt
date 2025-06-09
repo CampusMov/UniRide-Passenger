@@ -17,7 +17,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -27,14 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.campusmov.uniride.data.datasource.local.datastore.LocalDataStore
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
-import kotlinx.coroutines.flow.first
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import kotlinx.coroutines.launch
 
 @Composable
@@ -43,6 +39,8 @@ fun EnterVerificationCodeView(
     navHostController: NavHostController,
 ) {
     val state = viewModel
+
+    val user = viewModel.user.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -69,7 +67,9 @@ fun EnterVerificationCodeView(
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .background(Color.Transparent),
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navHostController.popBackStack()
+                },
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
@@ -91,7 +91,7 @@ fun EnterVerificationCodeView(
                     .fillMaxWidth()
                     .padding(top = 15.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
                 textAlign = TextAlign.Center,
-                text = "Te enviaremos un codigo para verificacion al ${viewModel.email.value}",
+                text = "Te enviaremos un codigo para verificacion al ${user.value?.email}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White
