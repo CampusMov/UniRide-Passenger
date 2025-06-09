@@ -1,4 +1,4 @@
-package com.campusmov.uniride.presentation.views.auth.verifiyCode
+package com.campusmov.uniride.presentation.views.auth.verifiycode
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf

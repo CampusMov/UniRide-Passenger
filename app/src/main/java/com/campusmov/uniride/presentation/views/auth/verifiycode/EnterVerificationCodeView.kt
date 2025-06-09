@@ -1,4 +1,4 @@
-package com.campusmov.uniride.presentation.views.auth.verifiyCode
+package com.campusmov.uniride.presentation.views.auth.verifiycode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

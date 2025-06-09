@@ -1,4 +1,4 @@
-package com.campusmov.uniride.presentation.views.auth.verifiyCode
+package com.campusmov.uniride.presentation.views.auth.verifiycode
 
 data class VerificationCodeValidationState (
     val code: String = "",
