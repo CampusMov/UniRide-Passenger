@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +37,7 @@ import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
+
 @Composable
 fun SearchCarpoolView(
     viewModel: SearchCarpoolViewModel = hiltViewModel(),
@@ -45,92 +48,96 @@ fun SearchCarpoolView(
     val originPlace = viewModelSearchPlace.selectedPlace.collectAsState()
     var destinationSearchQuery = remember { mutableStateOf("") }
 
-    if (originPlace.value == null){
+    Column(modifier = Modifier
+        .fillMaxSize()) {
+        if (originPlace.value == null){
+            DefaultRoundedInputField(
+                enable = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .clickable {
+                        onOriginPlaceSelected()
+                    },
+                value = originPlace.value?.address ?: "",
+                onValueChange = {},
+                placeholder = "Seleccionar punto de recogida",
+                enableLeadingIcon = true
+            )
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .clickable {
+                        onOriginPlaceSelected()
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    modifier = Modifier.padding(end = 12.dp),
+                    imageVector = Icons.Outlined.LocationOn,
+                    contentDescription = "PickUpLocation",
+                    tint = Color.White
+                )
+                Text(
+                    text = originPlace.value?.address ?: "",
+                    softWrap = true,
+                    fontSize = 18.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .background(Color(0xFF3F4042), RoundedCornerShape(5.dp))
+                ){
+                    Text(
+                        modifier = Modifier
+                            .padding(4.dp),
+                        text = "Recogida",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                    )
+                }
+            }
+        }
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+
         DefaultRoundedInputField(
             enable = false,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clickable {
-                    onOriginPlaceSelected()
-                },
-            value = originPlace.value?.address ?: "",
-            onValueChange = {},
-            placeholder = "Seleccionar punto de recogida",
+                .padding(horizontal = 16.dp),
+            value = destinationSearchQuery.value,
+            onValueChange = {
+                destinationSearchQuery.value = it
+            },
+            placeholder = "Seleccionar horario de clases",
             enableLeadingIcon = true
         )
-    } else {
-        Row(
+
+        SetAmountOfSeats(viewModel = viewModel)
+
+        DefaultRoundedTextButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clickable {
-                    onOriginPlaceSelected()
-                },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Icon(
-                modifier = Modifier.padding(end = 12.dp),
-                imageVector = Icons.Outlined.LocationOn,
-                contentDescription = "PickUpLocation",
-                tint = Color.White
-            )
-            Text(
-                text = originPlace.value?.address ?: "",
-                softWrap = true,
-                fontSize = 18.sp,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.White,
-                modifier = Modifier.weight(1f)
-            )
-            Box(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .background(Color(0xFF3F4042), RoundedCornerShape(5.dp))
-            ){
-                Text(
-                    modifier = Modifier
-                        .padding(4.dp),
-                    text = "Recogida",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                )
-            }
-        }
+                .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
+            text = "Buscar carpools",
+            onClick = {
+
+            },
+        )
     }
 
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    )
-
-    DefaultRoundedInputField(
-        enable = false,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        value = destinationSearchQuery.value,
-        onValueChange = {
-            destinationSearchQuery.value = it
-        },
-        placeholder = "Seleccionar horario de clases",
-        enableLeadingIcon = true
-    )
-
-    SetAmountOfSeats(viewModel = viewModel)
-
-    DefaultRoundedTextButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
-        text = "Buscar carpools",
-        onClick = {
-
-        },
-    )
 }
 
 @Composable
