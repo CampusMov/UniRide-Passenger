@@ -40,7 +40,7 @@ object NetworkModule {
     fun provideRetrofitAuth(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit
             .Builder()
-            .baseUrl(Config.BASE_URL_AUTH)
+            .baseUrl(Config.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
