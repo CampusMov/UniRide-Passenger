@@ -64,6 +64,7 @@ dependencies {
     // DAGGER HILT
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
     ksp(libs.hilt.android.compiler)
 
     // DATASTORE
@@ -80,6 +81,9 @@ dependencies {
     implementation(libs.maps.compose.utils)
     implementation(libs.maps.compose.widgets)
     implementation(libs.play.services.location)
+    implementation(libs.places)
+
+    implementation (libs.material)
 
 
     testImplementation(libs.junit)

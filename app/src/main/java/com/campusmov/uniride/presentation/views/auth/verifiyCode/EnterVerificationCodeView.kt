@@ -160,7 +160,6 @@ fun EnterVerificationCodeView(
                        )
                    }
                }
-
                 if (isButtonAvailable.value && !isLoading.value) {
                     DefaultRoundedTextButton(
                         text = "Reenviar código",
