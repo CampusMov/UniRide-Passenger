@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.graph.auth.AuthNavGraph
+import com.campusmov.uniride.presentation.navigation.graph.home.HomeNavGraph
 import com.campusmov.uniride.presentation.navigation.graph.profile.ProfileNavGraph
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -19,5 +20,6 @@ fun RootNavGraph(navHostController: NavHostController) {
     ) {
         AuthNavGraph(navHostController)
         ProfileNavGraph(navHostController)
+        HomeNavGraph(navHostController)
     }
 }
