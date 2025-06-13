@@ -34,7 +34,7 @@ fun RegisterProfileAcademicInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state
+    val state = viewModel.state.value
     val isValid = viewModel.isAcademicInformationRegisterValid
 
     Scaffold(
@@ -97,7 +97,7 @@ fun RegisterProfileAcademicInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tu universidad",
-                    value = state.value.university,
+                    value = state.university,
                     onValueChange = { viewModel.onUniversityInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -110,7 +110,7 @@ fun RegisterProfileAcademicInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tu facultad",
-                    value = state.value.faculty,
+                    value = state.faculty,
                     onValueChange = { viewModel.onFacultyInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -123,7 +123,7 @@ fun RegisterProfileAcademicInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tu carrera",
-                    value = state.value.academicProgram,
+                    value = state.academicProgram,
                     onValueChange = { viewModel.onAcademicProgramInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -136,7 +136,7 @@ fun RegisterProfileAcademicInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa el ciclo que comenzaste (2025-01)",
-                    value = state.value.semester,
+                    value = state.semester,
                     onValueChange = { viewModel.onSemesterInput(it) },
                 )
             }

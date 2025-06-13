@@ -31,7 +31,7 @@ fun RegisterProfileFullNameView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val formState = viewModel.state
+    val state = viewModel.state.value
     val isValid = viewModel.isFullNameRegisterValid
 
     Scaffold(
@@ -74,7 +74,7 @@ fun RegisterProfileFullNameView(
             ) {
                 Column {
                     DefaultRoundedInputField(
-                        value = formState.value.firstName,
+                        value = state.firstName,
                         onValueChange = {
                             viewModel.onFirstNameInput(it)
                         },
@@ -87,7 +87,7 @@ fun RegisterProfileFullNameView(
                         thickness = 1.dp
                     )
                     DefaultRoundedInputField(
-                        value = formState.value.lastName,
+                        value = state.lastName,
                         onValueChange = {
                             viewModel.onLastNameInput(it)
                         },

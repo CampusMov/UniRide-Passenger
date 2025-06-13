@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +14,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 import com.campusmov.uniride.presentation.util.NavigationItem
 import com.campusmov.uniride.presentation.views.profile.registerprofile.RegisterProfileViewModel
@@ -38,8 +44,21 @@ fun RegisterProfileListSectionsView(
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-
+    val isLoading = viewModel.isLoading.collectAsState()
+    val isRegisterValid = viewModel.isRegisterProfileValid.value
     val nextRecommendedStep = viewModel.nextRecommendedStep.intValue
+
+    LaunchedEffect(viewModel.registerProfileResponse.value) {
+        when (viewModel.registerProfileResponse.value) {
+            is Resource.Success -> {
+                navHostController.navigate(route = Graph.HOME)
+            }
+            is Resource.Failure -> {
+                Log.d("TAG", "Error to navigate to RegisterProfileFullName")
+            }
+            else -> {}
+        }
+    }
 
     val items = listOf(
         NavigationItem(
@@ -120,16 +139,32 @@ fun RegisterProfileListSectionsView(
                     }
                 }
             }
-
-            DefaultRoundedTextButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                text = "¡Comenzar!",
-                onClick = {
-                    viewModel.saveProfile()
-                },
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if(isLoading.value) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(top = 20.dp),
+                        color = Color.White,
+                        trackColor = Color.Transparent
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp)
+                )
+                if (isRegisterValid && !isLoading.value) {
+                    DefaultRoundedTextButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        text = "¡Comenzar!",
+                        onClick = { viewModel.saveProfile() },
+                    )
+                }
+            }
         }
     }
 }
@@ -140,7 +175,7 @@ fun RegisterProfileItemSection(item: NavigationItem, navHostController: NavHostC
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 60.dp)
-            .clickable() {
+            .clickable {
                 navHostController.navigate(item.route)
             },
         verticalAlignment = Alignment.CenterVertically,

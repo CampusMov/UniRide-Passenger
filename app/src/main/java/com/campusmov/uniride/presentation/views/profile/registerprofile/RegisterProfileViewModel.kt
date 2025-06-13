@@ -1,24 +1,40 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.campusmov.uniride.domain.auth.model.User
+import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.profile.model.EGender
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
+import com.campusmov.uniride.domain.shared.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterProfileViewModel @Inject constructor (
-    private val profileUseCases: ProfileUseCases
+    private val profileUseCases: ProfileUseCases,
+    private val userUseCase: UserUseCase
 ): ViewModel(){
 
     var state = mutableStateOf(RegisterProfileState())
+        private set
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> get() = _user
+
+    private val _isLoading  = MutableStateFlow(false)
+    val isLoading: MutableStateFlow<Boolean> get() = _isLoading
+
+    var registerProfileResponse = mutableStateOf<Resource<Unit>?>(null)
         private set
 
     var nextRecommendedStep = mutableIntStateOf(0)
@@ -54,6 +70,40 @@ class RegisterProfileViewModel @Inject constructor (
                 state.value.faculty.isNotBlank() &&
                 state.value.academicProgram.isNotBlank() &&
                 isValidSemester()
+    }
+
+    val isRegisterProfileValid = derivedStateOf {
+        isFullNameRegisterValid.value &&
+                isTermsAcceptedValid.value &&
+                isPersonalInformationRegisterValid.value &&
+                isContactInformationRegisterValid.value &&
+                isAcademicInformationRegisterValid.value
+    }
+
+    init {
+        getUserLocally()
+    }
+
+    private fun getUserLocally() {
+        viewModelScope.launch {
+            val result = userUseCase.getUserLocallyUseCase()
+            when (result) {
+                is Resource.Success -> {
+                    _user.value = result.data
+                    setUserIdAndUserInstitutionalEmailAddress()
+                    Log.d("TAG", "getUser: ${result.data}")
+                }
+                is Resource.Failure -> {}
+                Resource.Loading -> {}
+            }
+        }
+    }
+
+    private fun setUserIdAndUserInstitutionalEmailAddress() {
+        state.value = state.value.copy(
+            userId = _user.value?.id.orEmpty(),
+            institutionalEmailAddress = _user.value?.email.orEmpty()
+        )
     }
 
     fun isValidPersonaEmailAddress(): Boolean {
@@ -130,8 +180,22 @@ class RegisterProfileViewModel @Inject constructor (
 
     fun saveProfile(){
         viewModelScope.launch {
-            val profile = state.value.toDomain()
-            profileUseCases.saveProfile(profile)
+            _isLoading.value = true
+            val profileToRegistered = state.value.toDomain()
+            val result = profileUseCases.saveProfile(profileToRegistered)
+            when(result) {
+                is Resource.Success -> {
+                    Log.d("TAG", "saveProfile: Profile saved successfully")
+                    registerProfileResponse.value = Resource.Success(Unit)
+                    _isLoading.value = false
+                }
+                is Resource.Failure -> {
+                    Log.e("TAG", "saveProfile: Error saving profile")
+                    registerProfileResponse.value = Resource.Failure("Error saving profile")
+                    _isLoading.value = false
+                }
+                is Resource.Loading -> {}
+            }
         }
     }
 }

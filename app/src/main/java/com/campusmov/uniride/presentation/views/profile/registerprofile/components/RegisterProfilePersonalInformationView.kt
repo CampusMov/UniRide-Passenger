@@ -52,10 +52,10 @@ fun RegisterProfilePersonalInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state
+    val state = viewModel.state.value
     val isValid = viewModel.isPersonalInformationRegisterValid
 
-    var dateMillis = remember { mutableStateOf<Long?>(state.value.birthDate?.toEpochMillis()) }
+    var dateMillis = remember { mutableStateOf<Long?>(state.birthDate?.toEpochMillis()) }
 
     LaunchedEffect(dateMillis.value) {
         dateMillis.value?.let {
@@ -158,7 +158,7 @@ fun RegisterProfilePersonalInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tus nombres",
-                    value = state.value.firstName,
+                    value = state.firstName,
                     onValueChange = { viewModel.onFirstNameInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -171,7 +171,7 @@ fun RegisterProfilePersonalInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tus apellidos",
-                    value = state.value.lastName,
+                    value = state.lastName,
                     onValueChange = { viewModel.onLastNameInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -195,7 +195,7 @@ fun RegisterProfilePersonalInformationView(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedDropdownField(
-                    selectedOption = state.value.gender,
+                    selectedOption = state.gender,
                     options = listOf(EGender.MALE.toString(), EGender.FEMALE.toString()),
                     onOptionSelected = {
                         viewModel.onGenderInput(

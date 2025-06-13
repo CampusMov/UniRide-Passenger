@@ -35,7 +35,7 @@ fun RegisterProfileContactInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state
+    val state = viewModel.state.value
     val isValid = viewModel.isContactInformationRegisterValid
 
     Scaffold(
@@ -99,7 +99,7 @@ fun RegisterProfileContactInformationView(
                 DefaultRoundedInputField(
                     placeholder = "Ingresa tu correo institucional",
                     enable = false,
-                    value = state.value.institutionalEmailAddress,
+                    value = state.institutionalEmailAddress,
                     onValueChange = {},
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -112,7 +112,7 @@ fun RegisterProfileContactInformationView(
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultRoundedInputField(
                     placeholder = "example@gmail.com",
-                    value = state.value.personalEmailAddress,
+                    value = state.personalEmailAddress,
                     onValueChange = { viewModel.onPersonalEmailAddressInput(it) },
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -125,7 +125,7 @@ fun RegisterProfileContactInformationView(
                 DefaultRoundedInputField(
                     placeholder = "999999999",
                     keyboardType = KeyboardType.Number,
-                    value = state.value.phoneNumber,
+                    value = state.phoneNumber,
                     onValueChange = { viewModel.onPhoneNumberInput(it) },
                 )
             }
