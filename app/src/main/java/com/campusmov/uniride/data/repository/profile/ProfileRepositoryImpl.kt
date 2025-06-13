@@ -20,15 +20,15 @@ class ProfileRepositoryImpl(
         return@withContext try {
             val response = profileService.saveProfile(profile.toRequestBody())
             if (response.isSuccessful) {
-                Log.d("ProfileRepositoryImpl", "Profile saved successfully")
+                Log.d("TAG", "Profile saved successfully")
                 Resource.Success(Unit)
             } else {
                 val errorMsg = response.errorBody()?.string() ?: "Unknown error"
-                Log.e("ProfileRepositoryImpl", "Error saving profile: $errorMsg")
+                Log.e("TAG", "Error saving profile: $errorMsg")
                 Resource.Failure("Error saving profile: $errorMsg")
             }
         } catch (e: Exception) {
-            Log.e("ProfileRepositoryImpl", "Exception saving profile: ${e.message}", e)
+            Log.e("TAG", "Exception saving profile: ${e.message}", e)
             Resource.Failure(e.message ?: "Unknown error")
         }
     }
