@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.components.OtpTextField
+import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 
@@ -51,10 +52,7 @@ fun EnterVerificationCodeView(
         when (viewModel.verifyCodeResponse.value) {
             is Resource.Success -> {
                 navHostController.navigate(ProfileScreen.RegisterProfileFullName.route) {
-                    popUpTo(AuthScreen.EnterVerificationCode.route) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
+                    popUpTo(Graph.AUTH) { inclusive = true }
                 }
             }
             is Resource.Failure -> {
@@ -99,7 +97,7 @@ fun EnterVerificationCodeView(
                     .fillMaxWidth()
                     .padding(top = 15.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
                 textAlign = TextAlign.Center,
-                text = "Te enviaremos un codigo para verificacion al ${user.value?.email}",
+                text = "Te enviamos un codigo para verificacion al ${user.value?.email}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White

@@ -2,6 +2,7 @@ package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
+import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,16 +41,33 @@ object NetworkModule {
     fun provideRetrofitAuth(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit
             .Builder()
-            .baseUrl(Config.BASE_URL)
+            .baseUrl(Config.SERVICES_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
+    @Provides
+    @Singleton
+    @Named("Profile")
+    fun provideRetrofitProfile(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit
+            .Builder()
+            .baseUrl(Config.SERVICES_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     @Provides
     @Singleton
     fun provideAuthService(@Named("Auth") retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileService(@Named("Profile") retrofit: Retrofit): ProfileService {
+        return retrofit.create(ProfileService::class.java)
     }
 }

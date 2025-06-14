@@ -12,7 +12,7 @@ import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.MapCa
 fun RoutingMatchingNavGraph(navHostController: NavHostController) {
     NavHost(
         navController = navHostController,
-        route = Graph.HOME,
+        route = Graph.MATCHING,
         startDestination = RoutingMatchingScreen.SearchCarpool.route
     ) {
         composable(route = RoutingMatchingScreen.SearchCarpool.route) {
