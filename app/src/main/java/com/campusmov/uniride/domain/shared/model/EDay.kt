@@ -1,4 +1,4 @@
-package com.campusmov.uniride.domain.profile.model
+package com.campusmov.uniride.domain.shared.model
 
 enum class EDay {
     MONDAY,

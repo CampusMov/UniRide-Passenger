@@ -2,6 +2,7 @@ package com.campusmov.uniride.domain.profile.model
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.campusmov.uniride.domain.shared.model.EDay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

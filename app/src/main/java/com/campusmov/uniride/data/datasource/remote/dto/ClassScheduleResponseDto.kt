@@ -3,7 +3,7 @@ package com.campusmov.uniride.data.datasource.remote.dto
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.profile.model.ClassSchedule
-import com.campusmov.uniride.domain.profile.model.EDay
+import com.campusmov.uniride.domain.shared.model.EDay
 import retrofit2.http.Field
 import java.time.LocalDateTime
 
