@@ -2,6 +2,7 @@ package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
+import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import dagger.Module
 import dagger.Provides
@@ -12,8 +13,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -22,7 +27,6 @@ object NetworkModule {
     val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-
 
     @Provides
     @Singleton
@@ -37,8 +41,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("Auth")
-    fun provideRetrofitAuth(okHttpClient: OkHttpClient): Retrofit {
+    @DefaultRetrofit
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit
             .Builder()
             .baseUrl(Config.SERVICES_BASE_URL)
@@ -49,25 +53,19 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("Profile")
-    fun provideRetrofitProfile(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit
-            .Builder()
-            .baseUrl(Config.SERVICES_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthService(@Named("Auth") retrofit: Retrofit): AuthService {
+    fun provideAuthService(@DefaultRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideProfileService(@Named("Profile") retrofit: Retrofit): ProfileService {
+    fun provideProfileService(@DefaultRetrofit retrofit: Retrofit): ProfileService {
         return retrofit.create(ProfileService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileClassScheduleService(@DefaultRetrofit retrofit: Retrofit): ProfileClassScheduleService {
+        return retrofit.create(ProfileClassScheduleService::class.java)
     }
 }
