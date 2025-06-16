@@ -2,8 +2,10 @@ package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -36,8 +38,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
+import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceView
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapCarpoolSearcherView(
@@ -65,7 +69,11 @@ fun MapCarpoolSearcherView(
         }
     )
 
-    var showSearchModel = remember {
+    var showSearchPickUpPoint = remember {
+        mutableStateOf(false)
+    }
+
+    var showSearchClassSchedule = remember {
         mutableStateOf(false)
     }
 
@@ -94,9 +102,15 @@ fun MapCarpoolSearcherView(
                             .height(calculateSheetHeight(viewmodel = viewModel))
                             .background(Color.Black)
                     ) {
-                        SearchCarpoolView(navHostController = navHostController, onOriginPlaceSelected = {
-                            showSearchModel.value = true
-                        })
+                        SearchCarpoolView(
+                            navHostController = navHostController,
+                            onOriginPlaceSelected = {
+                                showSearchPickUpPoint.value = true
+                            },
+                            onOriginClassScheduleSelected = {
+                                showSearchClassSchedule.value = true
+                            }
+                        )
                     }
                 }
             },
@@ -112,15 +126,26 @@ fun MapCarpoolSearcherView(
                             viewModel = viewModel,
                             paddingValues = paddingValues
                         )
-                        if (showSearchModel.value) {
+                        if (showSearchPickUpPoint.value) {
                             SearchPlaceView(
                                 navHostController = navHostController,
                                 onDismissRequest = {
-                                    showSearchModel.value = false
+                                    showSearchPickUpPoint.value = false
                                 },
                                 onPlaceSelected = { ->
-                                    showSearchModel.value = false
+                                    showSearchPickUpPoint.value = false
                                 }
+                            )
+                        }
+                        if (showSearchClassSchedule.value) {
+                            SearchClassScheduleView(
+                                navHostController = navHostController,
+                                onDismissRequest = {
+                                    showSearchClassSchedule.value = false
+                                },
+                                onClassScheduleSelected = {
+                                    showSearchClassSchedule.value = false
+                                },
                             )
                         }
                     }
@@ -140,11 +165,11 @@ fun MapCarpoolSearcherView(
 private fun calculateSheetHeight(
     viewmodel: MapContentViewModel
 ) : Dp {
-    val height_enlarged_percentaje = 0.4f
-    val minimize_height = 60.dp
-    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * height_enlarged_percentaje
+    val heightEnlargedPercentage = 0.4f
+    val minimizeHeight = 60.dp
+    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
     return animateDpAsState(
-        if (viewmodel.isInteractiveWithMap.value ) minimize_height else normalHeight,
+        if (viewmodel.isInteractiveWithMap.value ) minimizeHeight else normalHeight,
         animationSpec = spring(stiffness = 300f)
     ).value
 }
