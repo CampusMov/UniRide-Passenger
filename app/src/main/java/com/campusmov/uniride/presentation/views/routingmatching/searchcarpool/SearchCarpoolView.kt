@@ -43,20 +43,20 @@ fun SearchCarpoolView(
     viewModel: SearchCarpoolViewModel = hiltViewModel(),
     viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
     viewModelSearchClassSchedule: SearchClassScheduleViewModel = hiltViewModel(),
-    onOriginPlaceSelected: () -> Unit,
-    onOriginClassScheduleSelected: () -> Unit,
+    onPickUpPointSelected: () -> Unit,
+    onClassScheduleSelected: () -> Unit,
     navHostController: NavHostController
 ) {
-    val originPlace = viewModelSearchPlace.selectedPlace.collectAsState()
+    val selectedPickUpPoint = viewModelSearchPlace.selectedPlace.collectAsState()
     val selectedClassSchedule = viewModelSearchClassSchedule.selectedClassSchedule.collectAsState()
 
-    if (originPlace.value == null) {
+    if (selectedPickUpPoint.value == null) {
         DefaultRoundedInputField(
             enable = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable { onOriginPlaceSelected() },
+                .clickable { onPickUpPointSelected() },
             value = "",
             onValueChange = {},
             placeholder = "Seleccionar punto de recogida",
@@ -69,7 +69,7 @@ fun SearchCarpoolView(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .clickable {
-                    onOriginPlaceSelected()
+                    onPickUpPointSelected()
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -82,7 +82,7 @@ fun SearchCarpoolView(
                 contentDescription = "Icon of pickUpLocation",
             )
             Text(
-                text = originPlace.value?.address ?: "",
+                text = selectedPickUpPoint.value?.displayName ?: "",
                 softWrap = true,
                 fontSize = 18.sp,
                 maxLines = 3,
@@ -118,7 +118,7 @@ fun SearchCarpoolView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable { onOriginClassScheduleSelected() },
+                .clickable { onClassScheduleSelected() },
             value = "",
             onValueChange = {},
             placeholder = "Seleccionar horario de clases",
@@ -131,7 +131,7 @@ fun SearchCarpoolView(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .clickable {
-                    onOriginClassScheduleSelected()
+                    onClassScheduleSelected()
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween

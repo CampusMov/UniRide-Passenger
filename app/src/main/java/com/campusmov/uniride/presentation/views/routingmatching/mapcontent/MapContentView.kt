@@ -104,10 +104,10 @@ fun MapCarpoolSearcherView(
                     ) {
                         SearchCarpoolView(
                             navHostController = navHostController,
-                            onOriginPlaceSelected = {
+                            onPickUpPointSelected = {
                                 showSearchPickUpPoint.value = true
                             },
-                            onOriginClassScheduleSelected = {
+                            onClassScheduleSelected = {
                                 showSearchClassSchedule.value = true
                             }
                         )
