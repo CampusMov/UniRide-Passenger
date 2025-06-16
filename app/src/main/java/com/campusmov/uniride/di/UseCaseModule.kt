@@ -12,17 +12,20 @@ import com.campusmov.uniride.domain.auth.usecases.UpdateUserLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationCodeUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationEmailUseCase
-import com.campusmov.uniride.domain.location.usecases.GetLocationsUpdatesUseCase
-import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.location.repository.LocationRepository
+import com.campusmov.uniride.domain.location.usecases.GetLocationsUpdatesUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlaceDetailsUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
+import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
+import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
+import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.SearchCarpoolsAvailableUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,5 +65,10 @@ object UseCaseModule {
     @Provides
     fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
         getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
+    )
+    
+    @Provides
+    fun provideCarpoolUseCases(carpoolRepository: CarpoolRepository) = CarpoolUseCases(
+        searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository)
     )
 }

@@ -2,6 +2,7 @@ package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
+import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import dagger.Module
@@ -67,5 +68,11 @@ object NetworkModule {
     @Singleton
     fun provideProfileClassScheduleService(@DefaultRetrofit retrofit: Retrofit): ProfileClassScheduleService {
         return retrofit.create(ProfileClassScheduleService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
+        return retrofit.create(CarpoolService::class.java)
     }
 }
