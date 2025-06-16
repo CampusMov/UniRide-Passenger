@@ -17,7 +17,10 @@ import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.location.usecases.GetPlaceDetailsUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
+import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
+import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
+import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import dagger.Module
@@ -54,5 +57,10 @@ object UseCaseModule {
     @Provides
     fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
         saveProfile = SaveProfileUseCase(profileRepository)
+    )
+
+    @Provides
+    fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
+        getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
     )
 }

@@ -1,5 +1,7 @@
-package com.campusmov.uniride.presentation.views.routingmatching.searchplace
+package com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,21 +13,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,21 +39,20 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.domain.profile.model.ClassSchedule
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
-import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SearchPlaceView(
-    viewModel: SearchPlaceViewModel = hiltViewModel(),
+fun SearchClassScheduleView(
     navHostController: NavHostController,
+    viewModel: SearchClassScheduleViewModel = hiltViewModel(),
     onDismissRequest: () -> Unit,
-    onPlaceSelected: () -> Unit,
-){
-    val query = remember {
-        mutableStateOf("")
-    }
-
-    val placePredictions = viewModel.placePredictions.collectAsState()
+    onClassScheduleSelected: () -> Unit
+) {
+    val searchQuery = viewModel.searchQuery.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
+    val filteredClassSchedules = viewModel.filteredClassSchedules.collectAsState()
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -81,7 +81,7 @@ fun SearchPlaceView(
 
                 )
                 Text(
-                    text = "Ingresa tu punto de recogida",
+                    text = "Tus horario de clases",
                     fontSize = 30.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color.White,
@@ -98,7 +98,7 @@ fun SearchPlaceView(
                         .background(Color(0xFF3F4042)),
                     onClick = {
                         onDismissRequest()
-                        viewModel.resetPlacePredictions()
+                        viewModel.resetClassSchedules()
                     }
                 ) {
                     Icon(
@@ -115,59 +115,86 @@ fun SearchPlaceView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                value = query.value,
+                value = searchQuery.value,
                 onValueChange = {
-                    query.value = it
+                    viewModel.onSearchQueryChanged(it)
                 },
-                placeholder = "Seleccionar punto de recogida",
+                placeholder = "Seleccionar tu horario de clases",
                 enableLeadingIcon = true
             )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = 16.dp)
-            ) {
-                itemsIndexed(placePredictions.value) { index, prediction ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 15.dp, horizontal = 23.dp)
-                            .height(50.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = prediction.fullText,
-                            fontSize = 17.sp,
-                            color = Color.White,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.getPlaceDetails(prediction.id) { ->
-                                        onPlaceSelected()
-                                        viewModel.resetPlacePredictions()
-                                    }
-                                }
+            if (isLoading.value) {
+                Text(
+                    text = "Cargando horarios...",
+                    color = Color.White,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(top = 16.dp)
+                ) {
+                    itemsIndexed(filteredClassSchedules.value) { index, prediction ->
+                        ClassScheduleItem(
+                            classSchedule = prediction,
+                            onClassScheduleSelected = {
+                                viewModel.selectClassSchedule(it)
+                                onClassScheduleSelected()
+                            }
                         )
-                    }
-                    if (index < placePredictions.value.lastIndex) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = Color.White,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 23.dp)
-                        )
+                        if (index < filteredClassSchedules.value.lastIndex) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 23.dp)
+                            )
+                        }
                     }
                 }
             }
         }
     }
+}
 
-    LaunchedEffect(query.value) {
-        if (query.value.isNotEmpty()) {
-            delay(500)
-            viewModel.getPlacePredictions(query.value)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ClassScheduleItem(
+    classSchedule: ClassSchedule,
+    onClassScheduleSelected: (classSchedule: ClassSchedule) -> Unit
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 15.dp, horizontal = 23.dp)
+            .height(50.dp)
+            .clickable { onClassScheduleSelected(classSchedule) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF3F4042))
+                .padding(8.dp),
+            imageVector = Icons.Rounded.Schedule,
+            contentDescription = "Class Schedule Icon",
+            tint = Color.White
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = classSchedule.courseName,
+                fontSize = 18.sp,
+                color = Color.White
+            )
+            Text(
+                text = classSchedule.scheduleTime(),
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
         }
     }
 }

@@ -5,6 +5,7 @@ import com.campusmov.uniride.domain.profile.model.ClassSchedule
 
 fun ClassSchedule.toRequestBody(): ClassScheduleRequestDto =
     ClassScheduleRequestDto(
+        id,
         courseName,
         locationName,
         latitude,
@@ -12,5 +13,5 @@ fun ClassSchedule.toRequestBody(): ClassScheduleRequestDto =
         address,
         startedAt,
         endedAt,
-        selectedDay
+        selectedDay.name
     )

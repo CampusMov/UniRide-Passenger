@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.routingmatching.searchplace
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.location.model.PlacePrediction
@@ -27,6 +28,7 @@ class SearchPlaceViewModel @Inject constructor(
 
     fun getPlaceDetails(placeId: String, onPlaceSelected: () -> Unit) = viewModelScope.launch {
         val place = locationUsesCases.getPlaceDetails(placeId)
+        Log.d("TAG", "Selected place: $place")
         _selectedPlace.value = place
         onPlaceSelected()
     }

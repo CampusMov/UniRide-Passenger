@@ -1,9 +1,13 @@
 package com.campusmov.uniride.presentation.views.routingmatching.searchcarpool
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material3.Icon
@@ -19,65 +22,67 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.R
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SearchCarpoolView(
     viewModel: SearchCarpoolViewModel = hiltViewModel(),
     viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
-    onOriginPlaceSelected: () -> Unit,
+    viewModelSearchClassSchedule: SearchClassScheduleViewModel = hiltViewModel(),
+    onPickUpPointSelected: () -> Unit,
+    onClassScheduleSelected: () -> Unit,
     navHostController: NavHostController
 ) {
-    val originPlace = viewModelSearchPlace.selectedPlace.collectAsState()
-    var destinationSearchQuery = remember { mutableStateOf("") }
+    val selectedPickUpPoint = viewModelSearchPlace.selectedPlace.collectAsState()
+    val selectedClassSchedule = viewModelSearchClassSchedule.selectedClassSchedule.collectAsState()
 
-    if (originPlace.value == null){
+    if (selectedPickUpPoint.value == null) {
         DefaultRoundedInputField(
             enable = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable {
-                    onOriginPlaceSelected()
-                },
-            value = originPlace.value?.address ?: "",
+                .clickable { onPickUpPointSelected() },
+            value = "",
             onValueChange = {},
             placeholder = "Seleccionar punto de recogida",
             enableLeadingIcon = true
         )
-    } else {
+    }
+    else {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .clickable {
-                    onOriginPlaceSelected()
+                    onPickUpPointSelected()
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                modifier = Modifier.padding(end = 12.dp),
-                imageVector = Icons.Outlined.LocationOn,
-                contentDescription = "PickUpLocation",
-                tint = Color.White
+            Image(
+                modifier = Modifier
+                    .size(35.dp)
+                    .padding(end = 12.dp),
+                painter = painterResource(id = R.drawable.ellipse_icon),
+                contentDescription = "Icon of pickUpLocation",
             )
             Text(
-                text = originPlace.value?.address ?: "",
+                text = selectedPickUpPoint.value?.displayName ?: "",
                 softWrap = true,
                 fontSize = 18.sp,
                 maxLines = 3,
@@ -107,18 +112,74 @@ fun SearchCarpoolView(
             .padding(16.dp)
     )
 
-    DefaultRoundedInputField(
-        enable = false,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        value = destinationSearchQuery.value,
-        onValueChange = {
-            destinationSearchQuery.value = it
-        },
-        placeholder = "Seleccionar horario de clases",
-        enableLeadingIcon = true
-    )
+    if (selectedClassSchedule.value == null) {
+        DefaultRoundedInputField(
+            enable = false,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable { onClassScheduleSelected() },
+            value = "",
+            onValueChange = {},
+            placeholder = "Seleccionar horario de clases",
+            enableLeadingIcon = true
+        )
+    }
+    else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable {
+                    onClassScheduleSelected()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(35.dp)
+                    .padding(end = 12.dp),
+                painter = painterResource(id = R.drawable.ellipse_icon),
+                contentDescription = "Icon of pickUpLocation",
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = selectedClassSchedule.value?.courseName ?: "",
+                    softWrap = true,
+                    fontSize = 18.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.White,
+                )
+                Text(
+                    text = selectedClassSchedule.value?.timeRange() ?: "",
+                    softWrap = true,
+                    fontSize = 18.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.White,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .background(Color(0xFF3F4042), RoundedCornerShape(5.dp))
+            ){
+                Text(
+                    modifier = Modifier
+                        .padding(4.dp),
+                    text = "Llegada",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                )
+            }
+        }
+    }
 
     SetAmountOfSeats(viewModel = viewModel)
 
