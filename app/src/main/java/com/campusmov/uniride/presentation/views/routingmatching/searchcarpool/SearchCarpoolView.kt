@@ -49,6 +49,7 @@ fun SearchCarpoolView(
 ) {
     val selectedPickUpPoint = viewModelSearchPlace.selectedPlace.collectAsState()
     val selectedClassSchedule = viewModelSearchClassSchedule.selectedClassSchedule.collectAsState()
+    val amountSeatsRequested = viewModel.amountSeatsRequested.collectAsState()
 
     if (selectedPickUpPoint.value == null) {
         DefaultRoundedInputField(
@@ -189,7 +190,11 @@ fun SearchCarpoolView(
             .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
         text = "Buscar carpools",
         onClick = {
-
+            viewModel.searchAvailableCarpools(
+                place = selectedPickUpPoint.value,
+                classSchedule = selectedClassSchedule.value,
+                requestedSeats = amountSeatsRequested.value
+            )
         },
     )
 }
