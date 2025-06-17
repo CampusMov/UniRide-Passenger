@@ -26,6 +26,9 @@ import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileI
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
+import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
+import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
+import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,4 +74,10 @@ object UseCaseModule {
     fun provideAnalyticsUseCase(analyticsRepository: AnalyticsRepository) =  AnalyticsUseCase(
         getStudentRatingMetrics = StudentRatingUseCase(analyticsRepository)
     )
+
+    @Provides
+    fun provideReputationIncentivesUseCase(reputationIncentivesRepository: ReputationIncentivesRepository) = ReputationIncentivesUseCase(
+        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository)
+    )
+
 }
