@@ -1,5 +1,8 @@
 package com.campusmov.uniride.di
 
+import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
+import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
+import com.campusmov.uniride.domain.analytics.usecases.StudentRatingUseCase
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
@@ -62,5 +65,10 @@ object UseCaseModule {
     @Provides
     fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
         getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
+    )
+
+    @Provides
+    fun provideAnalyticsUseCase(analyticsRepository: AnalyticsRepository) =  AnalyticsUseCase(
+        getStudentRatingMetrics = StudentRatingUseCase(analyticsRepository)
     )
 }
