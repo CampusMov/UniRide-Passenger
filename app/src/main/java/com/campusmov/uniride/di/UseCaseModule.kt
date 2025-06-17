@@ -1,5 +1,6 @@
 package com.campusmov.uniride.di
 
+import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
@@ -12,6 +13,9 @@ import com.campusmov.uniride.domain.auth.usecases.UpdateUserLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationCodeUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationEmailUseCase
+import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
+import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
+import com.campusmov.uniride.domain.filemanagement.usecases.*
 import com.campusmov.uniride.domain.location.usecases.GetLocationsUpdatesUseCase
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.location.repository.LocationRepository
@@ -62,5 +66,13 @@ object UseCaseModule {
     @Provides
     fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
         getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
+    )
+
+    @Provides
+    fun provideFileManagementUseCases(fileManagementRepository: FileManagementRepository) = FileManagementUseCases (
+        uploadFileUseCase = UploadFileUseCase(fileManagementRepository),
+        downloadFileUseCase = DownloadFileUseCase(fileManagementRepository),
+        deleteFileUseCase = DeleteFileUseCase(fileManagementRepository),
+        getFileUrlUseCase = GetFileUrlUseCase(fileManagementRepository)
     )
 }
