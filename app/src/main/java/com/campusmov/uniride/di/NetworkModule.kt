@@ -3,6 +3,7 @@ package com.campusmov.uniride.di
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import com.google.firebase.Firebase
@@ -83,5 +84,11 @@ object NetworkModule {
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage {
         return Firebase.storage
+    }
+
+    @Provides
+    @Singleton
+    fun providePassengerRequestService(@DefaultRetrofit retrofit: Retrofit): PassengerRequestService {
+        return retrofit.create(PassengerRequestService::class.java)
     }
 }
