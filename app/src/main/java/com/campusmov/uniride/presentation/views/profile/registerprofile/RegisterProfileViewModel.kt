@@ -13,9 +13,9 @@ import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
 import com.campusmov.uniride.domain.location.model.PlacePrediction
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
-import com.campusmov.uniride.domain.profile.model.EDay
 import com.campusmov.uniride.domain.profile.model.EGender
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
+import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.domain.shared.model.Location
 import com.campusmov.uniride.domain.shared.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel

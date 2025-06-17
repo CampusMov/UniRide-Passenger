@@ -1,7 +1,7 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile
 
 import com.campusmov.uniride.domain.profile.model.ClassSchedule
-import com.campusmov.uniride.domain.profile.model.EDay
+import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.domain.shared.model.Location
 import java.time.LocalDateTime
 import java.util.UUID
