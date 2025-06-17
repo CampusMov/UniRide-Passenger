@@ -8,13 +8,13 @@ data class StudentRatingMetricResponseDto (
     val totalRatings: Int?,
     val totalReviewsCount: Double?,
     val averageRating: Double?
-)
-fun StudentRatingMetricResponseDto.toDomain(): StudentRatingMetric {
-    return StudentRatingMetric(
-        userId = userId ?: "",
-        totalRatings = totalRatings ?: 0,
-        totalReviewsCount = totalReviewsCount ?: 0.0,
-        averageRating = averageRating ?: 0.0
-    )
+){
+    fun toDomain(): StudentRatingMetric {
+        return StudentRatingMetric(
+            userId = userId ?: "",
+            totalRatings = totalRatings ?: 0,
+            totalReviewsCount = totalReviewsCount ?: 0.0,
+            averageRating = averageRating ?: 0.0
+        )
+    }
 }
-

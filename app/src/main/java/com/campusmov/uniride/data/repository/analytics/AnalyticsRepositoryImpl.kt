@@ -1,6 +1,5 @@
 package com.campusmov.uniride.data.repository.analytics
 
-import com.campusmov.uniride.data.datasource.remote.dto.toDomain
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.domain.analytics.model.StudentRatingMetric
 import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
