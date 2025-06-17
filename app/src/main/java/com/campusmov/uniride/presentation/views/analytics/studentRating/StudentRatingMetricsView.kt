@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.domain.reputation.model.Valoration
 
 @Composable
 fun StudentRatingMetricsView(
@@ -38,6 +41,7 @@ fun StudentRatingMetricsView(
     navHostController: NavHostController
 ) {
     val rating = viewModel.rating.collectAsState()
+    val valorationList = viewModel.valorationList.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -100,13 +104,50 @@ fun StudentRatingMetricsView(
                     )
                 }
             }
-            //TODO: mensajes de valoracion
+            Spacer(modifier = Modifier.height(30.dp))
 
+            LazyColumn {
+                items(valorationList.value) { valoration ->
+                    ValorationComment(valoration = valoration)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
 
 
         }
     }
 }
+
+@Composable
+fun ValorationComment(valoration: Valoration) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.DarkGray, shape = RoundedCornerShape(12.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Puntaje: ${valoration.reputationScore}" ?: "No hay puntaje",
+            color = Color.Gray,
+            fontSize = 14.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Fecha: ${valoration.formatDate(valoration.timestamp)}" ?: "No hay fecha",
+            color = Color.Gray,
+            fontSize = 14.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = valoration.message ?: "No hay mensaje",
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+
 
 @Composable
 fun RatingStars(
