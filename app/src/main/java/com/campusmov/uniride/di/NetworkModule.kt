@@ -5,6 +5,7 @@ import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
+import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentivesService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,6 +75,12 @@ object NetworkModule {
     @Singleton
     fun provideAnalyticsService(@DefaultRetrofit retrofit: Retrofit): AnalyticsService {
         return retrofit.create(AnalyticsService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReputationIncentivesService(@DefaultRetrofit retrofit: Retrofit): ReputationIncentivesService {
+        return retrofit.create(ReputationIncentivesService::class.java)
     }
 
 }
