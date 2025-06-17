@@ -1,6 +1,7 @@
 package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
+import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
@@ -68,4 +69,11 @@ object NetworkModule {
     fun provideProfileClassScheduleService(@DefaultRetrofit retrofit: Retrofit): ProfileClassScheduleService {
         return retrofit.create(ProfileClassScheduleService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsService(@DefaultRetrofit retrofit: Retrofit): AnalyticsService {
+        return retrofit.create(AnalyticsService::class.java)
+    }
+
 }
