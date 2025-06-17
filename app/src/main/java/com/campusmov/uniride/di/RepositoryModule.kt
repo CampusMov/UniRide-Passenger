@@ -12,10 +12,13 @@ import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.data.repository.location.LocationRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileClassScheduleRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileRepositoryImpl
+import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
+import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,4 +41,7 @@ object RepositoryModule {
 
     @Provides
     fun provideProfileClassScheduleRepository(profileClassScheduleService: ProfileClassScheduleService): ProfileClassScheduleRepository = ProfileClassScheduleRepositoryImpl(profileClassScheduleService)
+
+    @Provides
+    fun provideFileManagementRepository(storage: FirebaseStorage): FileManagementRepository = FileManagementRepositoryImpl(storage)
 }
