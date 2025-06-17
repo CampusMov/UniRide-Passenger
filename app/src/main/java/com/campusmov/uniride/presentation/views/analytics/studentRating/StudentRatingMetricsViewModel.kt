@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
 import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
+import com.campusmov.uniride.domain.reputation.model.Valoration
+import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.shared.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StudentRatingMetricsViewModel @Inject constructor(
     private val analyticsUseCase: AnalyticsUseCase,
+    private val reputationUseCase: ReputationIncentivesUseCase,
     private val userUseCase: UserUseCase
 ): ViewModel(){
 
@@ -24,6 +27,9 @@ class StudentRatingMetricsViewModel @Inject constructor(
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
+
+    private val _valorationList = MutableStateFlow<List<Valoration>>(emptyList())
+    val valorationList: StateFlow<List<Valoration>> get() = _valorationList
 
 
     init {
@@ -38,6 +44,7 @@ class StudentRatingMetricsViewModel @Inject constructor(
                     _user.value = result.data
                     Log.d("TAG", "getUser: ${result.data}")
                     getStudentAverageRating()
+                    getUserValorationList()
                 }
                 is Resource.Failure -> {}
                 Resource.Loading -> {}
@@ -68,6 +75,31 @@ class StudentRatingMetricsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("StudentRatingMetricsVM", "Error obteniendo rating: ${e.message}")
+            }
+        }
+    }
+
+    fun getUserValorationList(){
+        viewModelScope.launch {
+            try {
+                val userId = _user.value?.id
+                userId?.let {
+                    val result =reputationUseCase.getValorationsOfUser(it)
+                    when(result){
+                        is Resource.Success -> {
+                            _valorationList.value = result.data ?: emptyList()
+                            Log.d("TAG", "Valoraciones obtenidas: ${_valorationList.value}")
+                        }
+                        is Resource.Failure -> {
+                            Log.e("StudentRatingMetricsVM", "Error obteniendo valoraciones: ${result.message}")
+                        }
+                        Resource.Loading -> {
+                            Log.d("StudentRatingMetricsVM", "Cargando valoraciones...")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("StudentRatingMetricsVM", "Error obteniendo valoraciones: ${e.message}")
             }
         }
     }
