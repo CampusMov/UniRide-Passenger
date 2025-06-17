@@ -4,6 +4,7 @@ import com.campusmov.uniride.data.datasource.local.dao.UserDao
 import com.campusmov.uniride.data.datasource.location.LocationDataSource
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
@@ -12,12 +13,14 @@ import com.campusmov.uniride.data.repository.location.LocationRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileClassScheduleRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryImpl
+import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
+import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.Module
 import dagger.Provides
@@ -44,4 +47,7 @@ object RepositoryModule {
 
     @Provides
     fun provideCarpoolRepository(carpoolService: CarpoolService): CarpoolRepository = CarpoolRepositoryImpl(carpoolService)
+
+    @Provides
+    fun providePassengerRequestRepository(passengerRequestService: PassengerRequestService): PassengerRequestRepository = PassengerRequestRepositoryImpl(passengerRequestService)
 }
