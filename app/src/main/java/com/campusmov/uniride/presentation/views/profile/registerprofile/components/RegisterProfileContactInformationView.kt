@@ -35,7 +35,7 @@ fun RegisterProfileContactInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.profileState.value
     val isValid = viewModel.isContactInformationRegisterValid
 
     Scaffold(
