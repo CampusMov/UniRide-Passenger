@@ -1,6 +1,9 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile.components
 
+import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.profile.model.EGender
 import com.campusmov.uniride.presentation.components.DefaultRoundedDateInputField
@@ -52,9 +56,14 @@ fun RegisterProfilePersonalInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.profileState.value
     val isValid = viewModel.isPersonalInformationRegisterValid
 
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.uploadProfileImage(it) }
+    }
     var dateMillis = remember { mutableStateOf<Long?>(state.birthDate?.toEpochMillis()) }
 
     LaunchedEffect(dateMillis.value) {
@@ -115,28 +124,36 @@ fun RegisterProfilePersonalInformationView(
                     fontWeight = FontWeight.Medium,
                     color = Color.White
                 )
+
                 Box(
                     modifier = Modifier
                         .size(110.dp)
-                        .background(Color.White, shape = CircleShape),
+                        .clip(CircleShape)
+                        .background(Color.White),
                     contentAlignment = Alignment.BottomEnd
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Transparent)
-                            .padding(8.dp),
-                        painter = painterResource(id = R.drawable.user_profile_icon),
-                        contentDescription = "Icon of profile",
-                    )
+                    if (state.profilePictureUrl.isNotBlank()) {
+                        AsyncImage(
+                            model = state.profilePictureUrl,
+                            contentDescription = "Profile picture",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.user_profile_icon),
+                            contentDescription = "Default profile icon",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                     IconButton(
                         modifier = Modifier
                             .clip(CircleShape)
                             .background(Color(0xFF292929))
                             .size(40.dp),
-                        onClick = {
-                            //TODO: edit image
-                        }
+                        onClick = { imagePicker.launch("image/*") }
+
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.edit_icon),
