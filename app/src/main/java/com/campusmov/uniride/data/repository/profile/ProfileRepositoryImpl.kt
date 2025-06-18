@@ -32,4 +32,24 @@ class ProfileRepositoryImpl(
             Resource.Failure(e.message ?: "Unknown error")
         }
     }
+
+    override suspend fun getProfileById(profileId: String): Resource<Profile> {
+        try {
+            val response = profileService.getProfileById(profileId)
+            if (response.isSuccessful){
+                val profileResponse = response.body()
+                return if (profileResponse != null) {
+                    Resource.Success(profileResponse.toDomain())
+                } else {
+                    Resource.Failure("Profile not found for ID: $profileId")
+                }
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Unknown error"
+                return Resource.Failure("Error fetching profile: $errorMsg")
+            }
+        } catch (e: Exception) {
+            Log.e("TAG", "Exception fetching profile: ${e.message}", e)
+            return Resource.Failure(e.message ?: "Unknown error")
+        }
+    }
 }

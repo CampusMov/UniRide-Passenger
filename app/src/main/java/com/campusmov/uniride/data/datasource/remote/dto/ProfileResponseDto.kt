@@ -23,7 +23,7 @@ data class ProfileResponseDto(
     @Field("lastName")
     val lastName: String?,
     @Field("birthDate")
-    val birthDate: LocalDate?,
+    val birthDate: String?,
     @Field("gender")
     val gender: String?,
     @Field("profilePictureUrl")

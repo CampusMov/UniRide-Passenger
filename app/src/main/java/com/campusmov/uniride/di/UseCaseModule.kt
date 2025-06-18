@@ -1,5 +1,8 @@
 package com.campusmov.uniride.di
 
+import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
+import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
+import com.campusmov.uniride.domain.analytics.usecases.StudentRatingUseCase
 import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
@@ -24,9 +27,13 @@ import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
+import com.campusmov.uniride.domain.profile.usecases.GetProfileByIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
+import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
+import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
+import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
@@ -66,12 +73,23 @@ object UseCaseModule {
 
     @Provides
     fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
-        saveProfile = SaveProfileUseCase(profileRepository)
+        saveProfile = SaveProfileUseCase(profileRepository),
+        getProfileById = GetProfileByIdUseCase(profileRepository)
     )
 
     @Provides
     fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
         getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
+    )
+
+    @Provides
+    fun provideAnalyticsUseCase(analyticsRepository: AnalyticsRepository) =  AnalyticsUseCase(
+        getStudentRatingMetrics = StudentRatingUseCase(analyticsRepository)
+    )
+
+    @Provides
+    fun provideReputationIncentivesUseCase(reputationIncentivesRepository: ReputationIncentivesRepository) = ReputationIncentivesUseCase(
+        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository)
     )
     
     @Provides

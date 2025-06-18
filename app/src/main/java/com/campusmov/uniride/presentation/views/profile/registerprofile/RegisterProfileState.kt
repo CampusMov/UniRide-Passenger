@@ -29,7 +29,7 @@ data class RegisterProfileState(
             firstName = firstName,
             lastName = lastName,
             profilePictureUrl = profilePictureUrl,
-            birthDate = birthDate,
+            birthDate = birthDate.toString(),
             gender = gender,
             institutionalEmailAddress = institutionalEmailAddress,
             personalEmailAddress = personalEmailAddress,
