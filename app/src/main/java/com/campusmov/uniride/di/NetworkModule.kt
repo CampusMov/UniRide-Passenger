@@ -5,9 +5,6 @@ import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
-import com.google.firebase.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,11 +74,5 @@ object NetworkModule {
     @Singleton
     fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
         return retrofit.create(CarpoolService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideFirebaseStorage(): FirebaseStorage {
-        return Firebase.storage
     }
 }

@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.components
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,9 +58,9 @@ fun DefaultRoundedInputField(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color(0xFFB3B3B3),
                 focusedIndicatorColor = Color.White,
-                unfocusedIndicatorColor = Color(0xFF3F4042),
-                focusedContainerColor = Color(0xFF3F4042),
-                unfocusedContainerColor = Color(0xFF3F4042),
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color(0xFF3F4042),
                 disabledTextColor = Color.White
             ),

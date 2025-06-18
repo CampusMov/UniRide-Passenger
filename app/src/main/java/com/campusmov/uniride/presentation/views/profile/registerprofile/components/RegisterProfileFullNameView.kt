@@ -31,7 +31,7 @@ fun RegisterProfileFullNameView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.profileState.value
+    val state = viewModel.state.value
     val isValid = viewModel.isFullNameRegisterValid
 
     Scaffold(

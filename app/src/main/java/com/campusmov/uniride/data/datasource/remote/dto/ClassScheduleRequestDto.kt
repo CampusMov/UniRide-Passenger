@@ -1,10 +1,8 @@
 package com.campusmov.uniride.data.datasource.remote.dto
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.profile.model.ClassSchedule
-import com.campusmov.uniride.utils.toIsoString
 import retrofit2.http.Field
+import java.time.LocalDateTime
 
 data class ClassScheduleRequestDto(
     @Field("id")
@@ -20,14 +18,13 @@ data class ClassScheduleRequestDto(
     @Field("address")
     val address: String,
     @Field("startedAt")
-    val startedAt: String,
+    val startedAt: LocalDateTime,
     @Field("endedAt")
-    val endedAt: String,
+    val endedAt: LocalDateTime,
     @Field("selectedDay")
     val selectedDay: String
 ) {
     companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
         fun fromDomain(classSchedule: ClassSchedule): ClassScheduleRequestDto {
             return ClassScheduleRequestDto(
                 id = classSchedule.id,
@@ -36,8 +33,8 @@ data class ClassScheduleRequestDto(
                 latitude = classSchedule.latitude,
                 longitude = classSchedule.longitude,
                 address = classSchedule.address,
-                startedAt = classSchedule.startedAt.toIsoString(),
-                endedAt = classSchedule.endedAt.toIsoString(),
+                startedAt = classSchedule.startedAt,
+                endedAt = classSchedule.endedAt,
                 selectedDay = classSchedule.selectedDay.name
             )
         }

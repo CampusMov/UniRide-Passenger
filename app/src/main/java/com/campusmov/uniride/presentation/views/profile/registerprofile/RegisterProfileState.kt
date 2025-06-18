@@ -1,16 +1,14 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile
 
-import com.campusmov.uniride.domain.profile.model.ClassSchedule
 import com.campusmov.uniride.domain.profile.model.EGender
 import com.campusmov.uniride.domain.profile.model.Profile
 import java.time.LocalDate
-
 
 data class RegisterProfileState(
     val userId: String = "1",
     val firstName: String = "",
     val lastName: String = "",
-    val profilePictureUrl: String = "",
+    val profilePictureUrl : String = "https://img.freepik.com/vector-gratis/circulo-azul-usuario-blanco_78370-4707.jpg?semt=ais_items_boosted&w=740",
     val birthDate: LocalDate? = null,
     val gender: EGender = EGender.MALE,
     val institutionalEmailAddress: String = "",
@@ -20,8 +18,7 @@ data class RegisterProfileState(
     val university: String = "",
     val faculty: String = "",
     val academicProgram: String = "",
-    val semester: String = "",
-    val classSchedules: List<ClassSchedule> = emptyList(),
+    val semester: String = ""
 ) {
     fun toDomain(): Profile {
         return Profile(
@@ -39,7 +36,7 @@ data class RegisterProfileState(
             faculty = faculty,
             academicProgram = academicProgram,
             semester = semester,
-            classSchedules = classSchedules
+            classSchedules = emptyList()
         )
     }
 }

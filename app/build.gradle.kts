@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     id("com.google.dagger.hilt.android")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -57,12 +56,6 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.room.runtime.android)
 
-    //FIREBASE BOM
-    implementation(platform(libs.firebase.bom))
-
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.storage)
-
     // RETROFIT
     implementation(libs.google.gson)
     implementation(libs.retrofit)
@@ -82,9 +75,6 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
-    // COIL
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
     // GOOGLE MAPS
     implementation(libs.maps.compose)
