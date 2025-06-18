@@ -1,8 +1,10 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.util.Patterns
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,7 +35,10 @@ class RegisterProfileViewModel @Inject constructor(
     private val locationUseCases: LocationUsesCases,
     private val fileManagementUseCases: FileManagementUseCases
 ) : ViewModel() {
-    var state = mutableStateOf(RegisterProfileState())
+    var profileState = mutableStateOf(RegisterProfileState())
+        private set
+
+    var currentClassScheduleState = mutableStateOf(CurrentClassScheduleState())
         private set
 
     private val _user = MutableStateFlow<User?>(null)
@@ -58,27 +63,37 @@ class RegisterProfileViewModel @Inject constructor(
     val locationPredictions: StateFlow<List<PlacePrediction>> = _locationPredictions
 
     val isFullNameRegisterValid = derivedStateOf {
-        state.value.firstName.isNotBlank() && state.value.lastName.isNotBlank()
+        profileState.value.firstName.isNotBlank() && profileState.value.lastName.isNotBlank()
     }
 
     val isTermsAcceptedValid = derivedStateOf { isTermsAccepted.value }
 
     val isPersonalInformationRegisterValid = derivedStateOf {
-        state.value.firstName.isNotBlank() &&
-                state.value.lastName.isNotBlank() &&
-                state.value.birthDate != null
+        profileState.value.firstName.isNotBlank() &&
+                profileState.value.lastName.isNotBlank() &&
+                profileState.value.birthDate != null
     }
 
     val isContactInformationRegisterValid = derivedStateOf {
                 isValidPersonaEmailAddress() &&
-                state.value.countryCode.isNotBlank() &&
+                profileState.value.countryCode.isNotBlank() &&
                 isValidPhoneNumber()
     }
 
     val isAcademicInformationRegisterValid = derivedStateOf {
-        state.value.university.isNotBlank() &&
-                state.value.faculty.isNotBlank() &&
-                state.value.academicProgram.isNotBlank()
+        profileState.value.university.isNotBlank() &&
+                profileState.value.faculty.isNotBlank() &&
+                profileState.value.academicProgram.isNotBlank()
+                isValidSemester()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    val isCurrentClassScheduleValid = derivedStateOf {
+        currentClassScheduleState.value.courseName.isNotBlank() &&
+                currentClassScheduleState.value.startedAt != null &&
+                currentClassScheduleState.value.endedAt != null &&
+                currentClassScheduleState.value.selectedDay != null &&
+                currentClassScheduleState.value.selectedLocation != null
     }
 
     val isRegisterProfileValid = derivedStateOf {
@@ -98,7 +113,7 @@ class RegisterProfileViewModel @Inject constructor(
             when (val result = userUseCase.getUserLocallyUseCase()) {
                 is Resource.Success -> {
                     _user.value = result.data
-                    state.value = state.value.copy(
+                    profileState.value = profileState.value.copy(
                         userId = result.data.id,
                         institutionalEmailAddress = result.data.email
                     )
@@ -111,19 +126,19 @@ class RegisterProfileViewModel @Inject constructor(
     }
 
     fun isValidPersonaEmailAddress(): Boolean {
-        val email = state.value.personalEmailAddress
+        val email = profileState.value.personalEmailAddress
         return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     fun isValidPhoneNumber(): Boolean {
-        val phone = state.value.phoneNumber
+        val phone = profileState.value.phoneNumber
         return phone.isNotBlank() &&
                 Patterns.PHONE.matcher(phone).matches() &&
                 phone.length == 9
     }
 
     fun isValidSemester(): Boolean {
-        val sem = state.value.semester
+        val sem = profileState.value.semester
         return sem.isNotBlank() && sem.matches(Regex("^[0-9]{4}-[0-9]{2}$"))
     }
 
@@ -136,52 +151,52 @@ class RegisterProfileViewModel @Inject constructor(
     }
 
     fun onFirstNameInput(firstName: String) {
-        state.value = state.value.copy(firstName = firstName)
+        profileState.value = profileState.value.copy(firstName = firstName)
     }
 
     fun onLastNameInput(lastName: String) {
-        state.value = state.value.copy(lastName = lastName)
-    }
-
-    fun onProfilePictureUrlInput(url: String) {
-        state.value = state.value.copy(profilePictureUrl = url)
+        profileState.value = profileState.value.copy(lastName = lastName)
     }
 
     fun onBirthDateInput(birthDate: LocalDate) {
-        state.value = state.value.copy(birthDate = birthDate)
+        profileState.value = profileState.value.copy(birthDate = birthDate)
     }
 
     fun onGenderInput(gender: EGender) {
-        state.value = state.value.copy(gender = gender)
+        profileState.value = profileState.value.copy(gender = gender)
     }
 
     fun onPersonalEmailAddressInput(email: String) {
-        state.value = state.value.copy(personalEmailAddress = email)
+        profileState.value = profileState.value.copy(personalEmailAddress = email)
     }
 
     fun onPhoneNumberInput(number: String) {
-        state.value = state.value.copy(phoneNumber = number)
+        profileState.value = profileState.value.copy(phoneNumber = number)
     }
 
     fun onUniversityInput(university: String) {
-        state.value = state.value.copy(university = university)
+        profileState.value = profileState.value.copy(university = university)
     }
 
     fun onFacultyInput(faculty: String) {
-        state.value = state.value.copy(faculty = faculty)
+        profileState.value = profileState.value.copy(faculty = faculty)
     }
 
     fun onAcademicProgramInput(program: String) {
-        state.value = state.value.copy(academicProgram = program)
+        profileState.value = profileState.value.copy(academicProgram = program)
+    }
+
+    fun onSemesterInput(semester: String) {
+        profileState.value = profileState.value.copy(semester = semester)
     }
 
     fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val fileName = user.value?.id ?: (state.value.firstName + "_" + state.value.lastName)
+                val fileName = user.value?.id ?: (profileState.value.firstName + "_" + profileState.value.lastName)
                 val url = fileManagementUseCases.uploadFileUseCase(uri, "images", fileName)
-                state.value = state.value.copy(profilePictureUrl = url)
+                profileState.value = profileState.value.copy(profilePictureUrl = url)
             } catch (e: Exception) {
                 Log.e("RegisterProfileVM", "Error uploading profile image", e)
             }
@@ -189,64 +204,64 @@ class RegisterProfileViewModel @Inject constructor(
         }
     }
 
-    // Schedule dialog handlers
-    fun onAddScheduleDialog() {
-        state.value = state.value.copy(
-            scheduleDialogState = ClassScheduleDialogState(isEditing = false)
+    fun onOpenDialogToAddNewSchedule() {
+        currentClassScheduleState.value = CurrentClassScheduleState()
+        isScheduleDialogOpen.value = true
+    }
+
+    fun onOpenDialogToEditSchedule(index: String) {
+        val selectedClassSchedule = profileState.value.classSchedules.find { it.id == index }
+        if (selectedClassSchedule == null) {
+            Log.e("RegisterProfileVM", "Invalid schedule index: $index")
+            return
+        }
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(
+            isEditing = true,
+            editingIndex = index,
+            courseName = selectedClassSchedule.courseName,
+            selectedLocation = Location(
+                name = selectedClassSchedule.locationName,
+                latitude = selectedClassSchedule.latitude,
+                longitude = selectedClassSchedule.longitude,
+                address = selectedClassSchedule.address
+            ),
+            startedAt = selectedClassSchedule.startedAt,
+            endedAt = selectedClassSchedule.endedAt,
+            selectedDay = selectedClassSchedule.selectedDay
         )
         isScheduleDialogOpen.value = true
     }
 
-    fun onEditScheduleDialog(index: Int) {
-        val sched = state.value.classSchedules[index]
-        state.value = state.value.copy(
-            scheduleDialogState = ClassScheduleDialogState(
-                isEditing = true,
-                editingIndex = index,
-                courseName = sched.courseName,
-                selectedLocation = Location(
-                    name = sched.locationName,
-                    latitude = sched.latitude,
-                    longitude = sched.longitude,
-                    address = sched.address
-                ),
-                startedAt = sched.startedAt,
-                endedAt = sched.endedAt,
-                selectedDay = sched.selectedDay
-            )
-        )
-        isScheduleDialogOpen.value = true
-    }
-
-    fun onCancelScheduleDialog() {
-        state.value = state.value.copy(
-            scheduleDialogState = ClassScheduleDialogState()
-        )
+    fun onCloseScheduleDialog() {
+        currentClassScheduleState.value = CurrentClassScheduleState()
         isScheduleDialogOpen.value = false
+        onScheduleLocationCleared()
     }
 
     fun onScheduleCourseNameInput(value: String) {
-        state.value = state.value.copy(
-            scheduleDialogState = state.value.scheduleDialogState.copy(courseName = value)
-        )
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(courseName = value)
     }
 
-    fun onScheduleStartTimeInput(value: LocalDateTime) {
-        state.value = state.value.copy(
-            scheduleDialogState = state.value.scheduleDialogState.copy(startedAt = value)
-        )
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onScheduleStartTimeInput(value: LocalTime) {
+        if (currentClassScheduleState.value.endedAt != null && value.isAfter(currentClassScheduleState.value.endedAt)) {
+            Log.w("TAG", "Start time cannot be after end time")
+            return
+        }
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(startedAt = value)
     }
 
-    fun onScheduleEndTimeInput(value: LocalDateTime) {
-        state.value = state.value.copy(
-            scheduleDialogState = state.value.scheduleDialogState.copy(endedAt = value)
-        )
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onScheduleEndTimeInput(value: LocalTime) {
+        if (currentClassScheduleState.value.startedAt != null && value.isBefore(currentClassScheduleState.value.startedAt)) {
+            Log.w("TAG", "End time cannot be before start time")
+            return
+        }
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(endedAt = value)
     }
 
     fun onScheduleDaySelected(day: EDay) {
-        state.value = state.value.copy(
-            scheduleDialogState = state.value.scheduleDialogState.copy(selectedDay = day)
-        )
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(selectedDay = day)
     }
 
     fun onScheduleLocationQueryChange(query: String) {
@@ -255,52 +270,72 @@ class RegisterProfileViewModel @Inject constructor(
         }
     }
 
-    fun onScheduleLocationSelected(pred: PlacePrediction) {
+    fun onScheduleLocationSelected(placePrediction: PlacePrediction) {
         viewModelScope.launch {
-            val place = locationUseCases.getPlaceDetails(pred.id)
-            val loc = Location.fromPlace(place)
-            state.value = state.value.copy(
-                scheduleDialogState = state.value.scheduleDialogState.copy(selectedLocation = loc)
-            )
+            val place = locationUseCases.getPlaceDetails(placePrediction.id)
+            val location = Location.fromPlace(place)
+            currentClassScheduleState.value = currentClassScheduleState.value.copy(selectedLocation = location)
         }
     }
 
-    fun addOrUpdateSchedule() {
-        val dlg = state.value.scheduleDialogState
-        val newSched = dlg.toDomain()
-        val list = state.value.classSchedules.toMutableList().apply {
-            if (dlg.isEditing && dlg.editingIndex != null) set(dlg.editingIndex, newSched)
-            else add(newSched)
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun addClasScheduleToProfile() {
+        if (!isCurrentClassScheduleValid.value) {
+            Log.w("TAG", "Current class schedule is not valid")
+            return
         }
-        state.value = state.value.copy(
-            classSchedules = list,
-            scheduleDialogState = ClassScheduleDialogState()
+        val newClassSchedule = currentClassScheduleState.value.toDomain()
+        profileState.value = profileState.value.copy(classSchedules = profileState.value.classSchedules + newClassSchedule)
+        onScheduleLocationCleared()
+        onCloseScheduleDialog()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun editExistingClassSchedule() {
+        if (currentClassScheduleState.value.editingIndex == null) {
+            Log.e("TAG", "Editing index is null")
+            return
+        }
+        if (!isCurrentClassScheduleValid.value) {
+            Log.w("TAG", "Current class schedule is not valid")
+            return
+        }
+        val updatedClassSchedule = currentClassScheduleState.value.toDomain()
+        profileState.value = profileState.value.copy(
+            classSchedules = profileState.value.classSchedules.map {
+                if (it.id == currentClassScheduleState.value.editingIndex) {
+                    updatedClassSchedule
+                } else {
+                    it
+                }
+            }
         )
-        onCancelScheduleDialog()
+        onScheduleLocationCleared()
+        onCloseScheduleDialog()
     }
 
     fun onScheduleLocationCleared() {
-        state.value = state.value.copy(
-            scheduleDialogState = state.value.scheduleDialogState.copy(selectedLocation = null)
-        )
+        currentClassScheduleState.value = currentClassScheduleState.value.copy(selectedLocation = null)
+        _locationPredictions.value = emptyList()
     }
 
-    fun deleteSchedule() {
-        val idx = state.value.scheduleDialogState.editingIndex
-        if (idx != null) {
-            val list = state.value.classSchedules.filterIndexed { i, _ -> i != idx }
-            state.value = state.value.copy(
-                classSchedules = list,
-                scheduleDialogState = ClassScheduleDialogState()
-            )
+    fun onDeleteSchedule() {
+        if (currentClassScheduleState.value.editingIndex == null) {
+            Log.e("RegisterProfileVM", "Editing index is null")
+            return
         }
-        onCancelScheduleDialog()
+        profileState.value = profileState.value.copy(
+            classSchedules = profileState.value.classSchedules.filterNot {
+                it.id == currentClassScheduleState.value.editingIndex
+            }
+        )
+        onCloseScheduleDialog()
     }
 
     fun saveProfile() {
         viewModelScope.launch {
             _isLoading.value = true
-            when (val result = profileUseCases.saveProfile(state.value.toDomain())) {
+            when (val result = profileUseCases.saveProfile(profileState.value.toDomain())) {
                 is Resource.Success -> {
                     Log.d("RegisterProfileVM", "Profile saved")
                     registerProfileResponse.value = Resource.Success(Unit)
@@ -308,7 +343,7 @@ class RegisterProfileViewModel @Inject constructor(
 
                 is Resource.Failure -> {
                     Log.e("RegisterProfileVM", "Error saving: ${result.message}")
-                    registerProfileResponse.value = Resource.Failure(result.message ?: "Error")
+                    registerProfileResponse.value = Resource.Failure(result.message)
                 }
 
                 Resource.Loading -> {}

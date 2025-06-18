@@ -1,6 +1,9 @@
 package com.campusmov.uniride.presentation.views.profile.registerprofile.components
 
+import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,9 +49,6 @@ import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScree
 import com.campusmov.uniride.presentation.util.toEpochMillis
 import com.campusmov.uniride.presentation.util.toLocalDate
 import com.campusmov.uniride.presentation.views.profile.registerprofile.RegisterProfileViewModel
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -56,7 +56,7 @@ fun RegisterProfilePersonalInformationView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.profileState.value
     val isValid = viewModel.isPersonalInformationRegisterValid
 
     val imagePicker = rememberLauncherForActivityResult(

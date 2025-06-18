@@ -1,106 +1,129 @@
 package com.campusmov.uniride.presentation.components
 
+import android.app.TimePickerDialog
 import android.os.Build
+import android.view.ContextThemeWrapper
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import com.campusmov.uniride.R
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerInputField(
-    label: String,
+    modifier: Modifier = Modifier,
     time: LocalTime?,
-    onTimeSelected: (LocalTime) -> Unit,
-    modifier: Modifier = Modifier
+    onTimeChange: (LocalTime) -> Unit,
+    placeholder: String = "Selecciona hora",
+    enabled: Boolean = true
 ) {
-    val formatter = DateTimeFormatter.ofPattern("h:mm a")
-    var showPicker by remember { mutableStateOf(false) }
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    LaunchedEffect(interactionSource) {
-        interactionSource.interactions.collectLatest { interaction ->
-            if (interaction is PressInteraction.Release) {
-                showPicker = true
-            }
+    val context = LocalContext.current
+    val formatted = time?.format(DateTimeFormatter.ofPattern("hh:mm a")) ?: ""
+    var showPicker = remember { mutableStateOf(false) }
+    val openTimePicker = {
+        if (enabled) {
+            showPicker.value = true
         }
+    }
+
+    if (showPicker.value) {
+        val hour = time?.hour ?: LocalTime.now().hour
+        val minute = time?.minute ?: LocalTime.now().minute
+
+        val themedContext = ContextThemeWrapper(context, R.style.CustomTimePickerTheme)
+
+        val timePickerDialog = TimePickerDialog(
+            themedContext,
+            { _, h, m ->
+                onTimeChange(LocalTime.of(h, m))
+                showPicker.value = false
+            },
+            hour,
+            minute,
+            true
+        )
+
+        timePickerDialog.setOnCancelListener {
+            showPicker.value = false
+        }
+
+        timePickerDialog.setOnDismissListener {
+            showPicker.value = false
+        }
+
+        timePickerDialog.show()
     }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {}
+            .background(
+                color = Color(0xFF3F4042),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(3.dp)
     ) {
         OutlinedTextField(
-            value = time?.format(formatter).orEmpty(),
+            value = formatted,
             onValueChange = {},
+            modifier = Modifier
+                .fillMaxWidth(),
+            enabled = false,
             readOnly = true,
-            label = { Text(label, color = Color.White) },
-            trailingIcon = {
-                Icon(Icons.Rounded.Schedule, contentDescription = null, tint = Color.White)
+            shape = RoundedCornerShape(12.dp),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFB3B3B3)
+                )
             },
-            modifier = Modifier.fillMaxSize(),
-            textStyle = TextStyle(color = Color.White),
-            interactionSource = interactionSource
-        )
-    }
-
-    if (showPicker) {
-        Dialog(
-            onDismissRequest = { showPicker = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color.Black,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    val pickerState = rememberTimePickerState(
-                        initialHour = time?.hour ?: 9,
-                        initialMinute = time?.minute ?: 0,
-                        is24Hour = false
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color(0xFFB3B3B3),
+                focusedIndicatorColor = Color.White,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color(0xFF3F4042),
+                unfocusedContainerColor = Color(0xFF3F4042),
+                disabledContainerColor = Color(0xFF3F4042),
+                disabledTextColor = Color(0xFFB3B3B3)
+            ),
+            leadingIcon = null,
+            trailingIcon = {
+                IconButton(
+                    onClick = openTimePicker,
+                    enabled = enabled
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.AccessTime,
+                        contentDescription = "Seleccionar hora",
+                        tint = Color.White
                     )
-                    TimePicker(state = pickerState)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        TextButton(onClick = { showPicker = false }) {
-                            Text("Cancelar", color = Color.White)
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        TextButton(onClick = {
-                            onTimeSelected(LocalTime.of(pickerState.hour, pickerState.minute))
-                            showPicker = false
-                        }) {
-                            Text("Confirmar", color = Color.White)
-                        }
-                    }
                 }
             }
-        }
+        )
     }
 }

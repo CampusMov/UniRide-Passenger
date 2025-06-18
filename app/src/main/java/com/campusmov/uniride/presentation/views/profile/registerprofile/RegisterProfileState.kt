@@ -10,7 +10,7 @@ data class RegisterProfileState(
     val userId: String = "1",
     val firstName: String = "",
     val lastName: String = "",
-    val profilePictureUrl: String = "https://img.freepik.com/vector-gratis/circulo-azul-usuario-blanco_78370-4707.jpg?semt=ais_items_boosted&w=740",
+    val profilePictureUrl: String = "",
     val birthDate: LocalDate? = null,
     val gender: EGender = EGender.MALE,
     val institutionalEmailAddress: String = "",
@@ -22,7 +22,6 @@ data class RegisterProfileState(
     val academicProgram: String = "",
     val semester: String = "",
     val classSchedules: List<ClassSchedule> = emptyList(),
-    val scheduleDialogState: ClassScheduleDialogState = ClassScheduleDialogState()
 ) {
     fun toDomain(): Profile {
         return Profile(
