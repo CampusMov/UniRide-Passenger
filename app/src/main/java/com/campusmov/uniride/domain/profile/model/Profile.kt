@@ -7,7 +7,7 @@ data class Profile(
     val firstName: String,
     val lastName: String,
     val profilePictureUrl: String,
-    val birthDate: LocalDate?,
+    val birthDate: String?,
     val gender: EGender = EGender.MALE,
     val institutionalEmailAddress: String = "u202500000@upc.edu.pe",
     val personalEmailAddress: String,
