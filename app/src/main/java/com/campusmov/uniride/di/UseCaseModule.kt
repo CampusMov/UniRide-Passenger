@@ -23,6 +23,7 @@ import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
+import com.campusmov.uniride.domain.profile.usecases.GetProfileByIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
@@ -62,7 +63,8 @@ object UseCaseModule {
 
     @Provides
     fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
-        saveProfile = SaveProfileUseCase(profileRepository)
+        saveProfile = SaveProfileUseCase(profileRepository),
+        getProfileById = GetProfileByIdUseCase(profileRepository)
     )
 
     @Provides
