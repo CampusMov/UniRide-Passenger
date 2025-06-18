@@ -28,7 +28,10 @@ import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
+import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.SavePassengerRequestUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.SearchCarpoolsAvailableUseCase
 import dagger.Module
 import dagger.Provides
@@ -82,5 +85,10 @@ object UseCaseModule {
         downloadFileUseCase = DownloadFileUseCase(fileManagementRepository),
         deleteFileUseCase = DeleteFileUseCase(fileManagementRepository),
         getFileUrlUseCase = GetFileUrlUseCase(fileManagementRepository)
+    )
+
+    @Provides
+    fun providePassengerRequestUseCases(passengerRequestRepository: PassengerRequestRepository) = PassengerRequestUseCases(
+        savePassengerRequest = SavePassengerRequestUseCase(passengerRequestRepository),
     )
 }
