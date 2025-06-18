@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -23,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +45,19 @@ fun CarpoolInfoCard(
     carpool: Carpool,
     onCarpoolRequest: (Carpool) -> Unit,
 ) {
+
+    // Llama cuando cambia el id del conductor
+    LaunchedEffect(carpool.driverId) {
+        viewModel.getProfileById(carpool.driverId)
+        viewModel.getStudentAverageRating(carpool.driverId)
+    }
+
+    val profiles = viewModel.profiles.collectAsState()
+    val ratings = viewModel.ratings.collectAsState()
+    val profile = profiles.value[carpool.driverId]
+    val rating = ratings.value[carpool.driverId]
+
+
     Row(
         modifier = Modifier
             .padding(16.dp)
@@ -67,12 +83,26 @@ fun CarpoolInfoCard(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Column {
-                Text(
-                    text = carpool.driverId,
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Rating star",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                    Text(
+                        text = "${rating}   ${profile?.firstName}  ${profile?.lastName}",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+
                 Text(
                     text = "${carpool.origin.name} - aun no sale",
                     color = Color.Gray,
