@@ -3,9 +3,9 @@ package com.campusmov.uniride.data.datasource.remote.dto
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.profile.model.ClassSchedule
-import com.campusmov.uniride.domain.profile.model.EDay
+import com.campusmov.uniride.domain.shared.model.EDay
 import retrofit2.http.Field
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class ClassScheduleResponseDto(
     @Field("id")
@@ -36,8 +36,8 @@ data class ClassScheduleResponseDto(
             latitude = latitude ?: 0.0,
             longitude = longitude ?: 0.0,
             address = address ?: "",
-            startedAt = LocalDateTime.parse(startedAt),
-            endedAt = LocalDateTime.parse(endedAt),
+            startedAt = LocalTime.parse(startedAt),
+            endedAt = LocalTime.parse(endedAt),
             selectedDay = EDay.fromString(selectedDay)
         )
     }

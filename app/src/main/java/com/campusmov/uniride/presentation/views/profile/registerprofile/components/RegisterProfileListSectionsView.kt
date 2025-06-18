@@ -43,7 +43,7 @@ fun RegisterProfileListSectionsView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.profileState.value
     val isLoading = viewModel.isLoading.collectAsState()
     val isRegisterValid = viewModel.isRegisterProfileValid.value
     val nextRecommendedStep = viewModel.nextRecommendedStep.intValue
