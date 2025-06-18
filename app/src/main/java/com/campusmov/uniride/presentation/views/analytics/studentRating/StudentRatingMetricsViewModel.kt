@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
 import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
+import com.campusmov.uniride.domain.profile.model.Profile
+import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.reputation.model.Valoration
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.shared.util.Resource
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class StudentRatingMetricsViewModel @Inject constructor(
     private val analyticsUseCase: AnalyticsUseCase,
     private val reputationUseCase: ReputationIncentivesUseCase,
+    private val profileUseCase: ProfileUseCases,
     private val userUseCase: UserUseCase
 ): ViewModel(){
 
@@ -31,6 +34,8 @@ class StudentRatingMetricsViewModel @Inject constructor(
     private val _valorationList = MutableStateFlow<List<Valoration>>(emptyList())
     val valorationList: StateFlow<List<Valoration>> get() = _valorationList
 
+    private val _profile = MutableStateFlow<Profile?>(null)
+    val profile: StateFlow<Profile?> get() = _profile
 
     init {
         getUserLocally()
@@ -101,6 +106,30 @@ class StudentRatingMetricsViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("StudentRatingMetricsVM", "Error obteniendo valoraciones: ${e.message}")
             }
+        }
+    }
+
+
+
+    suspend fun getProfileById(profileId: String): Profile? {
+        return try {
+            val result = profileUseCase.getProfileById(profileId)
+            when(result){
+                is Resource.Success -> {
+                    result.data
+                }
+                is Resource.Failure -> {
+                    Log.e("StudentRatingMetricsVM", "Error obteniendo perfil: ${result.message}")
+                    null
+                }
+                Resource.Loading -> {
+                    Log.d("StudentRatingMetricsVM", "Cargando perfil...")
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("StudentRatingMetricsVM", "Error obteniendo perfil: ${e.message}")
+            null
         }
     }
 
