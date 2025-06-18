@@ -25,8 +25,8 @@ class SearchCarpoolViewModel @Inject constructor (
     private val _availableCarpools = MutableStateFlow<List<Carpool>>(emptyList())
     val availableCarpools: StateFlow<List<Carpool>> get() = _availableCarpools
 
-    private val _isLoading  = MutableStateFlow(false)
-    val isLoading: MutableStateFlow<Boolean> get() = _isLoading
+    private val _isLoadingSearchAvailableCarpool  = MutableStateFlow(false)
+    val isLoadingSearchAvailableCarpool: MutableStateFlow<Boolean> get() = _isLoadingSearchAvailableCarpool
 
     fun increaseAmountSeatsRequested() {
         if (_amountSeatsRequested.value < 4) {
@@ -40,23 +40,24 @@ class SearchCarpoolViewModel @Inject constructor (
         }
     }
 
-    fun searchAvailableCarpools(place: Place?, classSchedule: ClassSchedule?, requestedSeats: Int?) {
+    fun searchAvailableCarpools(place: Place?, classSchedule: ClassSchedule?, requestedSeats: Int?, openCarpoolSearchResultsView: () -> Unit) {
         if (!isValidSearch(place, classSchedule, requestedSeats)) {
             Log.e("TAG", "Invalid search parameters")
             return
         }
         viewModelScope.launch {
-            _isLoading.value = true
+            _isLoadingSearchAvailableCarpool.value = true
             val result = carpoolUseCases.searchCarpoolsAvailable(Location.fromPlace(place!!), classSchedule!!, requestedSeats!!)
             when (result) {
                 is Resource.Success -> {
                     Log.d("TAG", "successfully searched available carpools: ${result.data}")
                     _availableCarpools.value = result.data
-                    _isLoading.value = false
+                    _isLoadingSearchAvailableCarpool.value = false
+                    openCarpoolSearchResultsView()
                 }
                 is Resource.Failure -> {
                     Log.e("TAG", "failed to search available carpools: ${result.message}")
-                    _isLoading.value = false
+                    _isLoadingSearchAvailableCarpool.value = false
                 }
                 Resource.Loading -> {}
             }
