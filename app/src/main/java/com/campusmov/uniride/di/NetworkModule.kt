@@ -3,8 +3,11 @@ package com.campusmov.uniride.di
 import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.InTripCommunicationService
+import com.campusmov.uniride.data.datasource.remote.service.InTripSocketService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,6 +17,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -75,4 +79,30 @@ object NetworkModule {
     fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
         return retrofit.create(CarpoolService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
+        return retrofit.create(InTripCommunicationService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson = Gson()
+
+    @Provides
+    @Singleton
+    @Named("socketUrl")
+    fun provideSocketUrl(): String =
+        Config.SOCKET_BASE_URL.trimEnd('/')
+
+    @Provides
+    @Singleton
+    fun provideInTripSocketService(
+        @Named("socketUrl") baseUrl: String,
+        gson: Gson
+    ): InTripSocketService {
+        return InTripSocketService(baseUrl, gson)
+    }
+
 }
