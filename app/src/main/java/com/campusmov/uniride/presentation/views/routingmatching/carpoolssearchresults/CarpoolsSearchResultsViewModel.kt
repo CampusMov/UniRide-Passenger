@@ -38,6 +38,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
 
+    private val _passengerRequests = MutableStateFlow<List<PassengerRequest>>(emptyList())
+    val passengerRequests: StateFlow<List<PassengerRequest>> = _passengerRequests
+
     init {
         getUserLocally()
     }
@@ -47,6 +50,7 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
             when (val result = userUseCase.getUserLocallyUseCase()) {
                 is Resource.Success -> {
                     _user.value = result.data
+                    getPassengerRequestsByPassengerId()
                 }
                 is Resource.Failure -> {}
                 Resource.Loading -> {}
@@ -121,9 +125,29 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
             when (val result = passengerRequestUseCases.savePassengerRequest(passengerRequestToSave)) {
                 is Resource.Success -> {
                     Log.d("RegisterProfileVM", "Profile saved")
+                    getPassengerRequestsByPassengerId()
                 }
                 is Resource.Failure -> {
                     Log.e("RegisterProfileVM", "Error saving: ${result.message}")
+                }
+                Resource.Loading -> {}
+            }
+        }
+    }
+
+    fun getPassengerRequestsByPassengerId() {
+        if(_user.value == null || _user.value!!.id.isEmpty()) {
+            Log.d("TAG", "User not available to fetch passenger requests")
+            return
+        }
+        viewModelScope.launch {
+            when (val result = passengerRequestUseCases.getAllPassengerRequestsByPassengerId(_user.value!!.id)) {
+                is Resource.Success -> {
+                    Log.d("TAG", "Passenger requests obtained successfully")
+                    _passengerRequests.value = result.data
+                }
+                is Resource.Failure -> {
+                    Log.e("TAG", "Error obtaining passenger requests: ${result.message}")
                 }
                 Resource.Loading -> {}
             }
