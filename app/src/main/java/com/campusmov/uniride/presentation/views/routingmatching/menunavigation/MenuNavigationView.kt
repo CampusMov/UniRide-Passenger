@@ -31,15 +31,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.campusmov.uniride.presentation.navigation.graph.routingmatching.RoutingMatchingNavGraph
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 import com.campusmov.uniride.presentation.util.NavigationItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuNavigationView(navHostController: NavHostController = rememberNavController()){
+fun MenuNavigationView(navHostController: NavHostController, content: @Composable () -> Unit){
     val items = listOf(
         NavigationItem(
             title = "Profile information",
@@ -86,7 +84,7 @@ fun MenuNavigationView(navHostController: NavHostController = rememberNavControl
         }
     ) {
         Box() {
-            RoutingMatchingNavGraph(navHostController)
+            content()
             IconButton(
                 modifier = Modifier
                     .align(Alignment.TopStart)
