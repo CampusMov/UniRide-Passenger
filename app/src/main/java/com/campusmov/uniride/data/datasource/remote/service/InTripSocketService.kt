@@ -54,7 +54,7 @@ class InTripSocketService @Inject constructor(
         currentChatId = chatId
         val okHttpClient = OkHttpClient.Builder().build()
 
-        val stompEndpointUrl = "${baseUrl.trimEnd('/')}/ws/stomp"
+        val stompEndpointUrl = "${baseUrl.trimEnd('/')}/in-trip-communication-service/ws/stomp"
         Log.d(TAG, "Connecting to STOMP URL: $stompEndpointUrl")
 
         stompClient = Stomp.over(
@@ -100,7 +100,7 @@ class InTripSocketService @Inject constructor(
             Log.w(TAG, "Cannot subscribe to topic, STOMP client not connected.")
             return
         }
-        val topicPath = "/topic/chats/$chatId"
+        val topicPath = "/in-trip-communication-service/topic/chats/$chatId"
         Log.d(TAG, "Subscribing to topic: $topicPath")
         stompClient?.topic(topicPath)
             ?.subscribeOn(Schedulers.io())
