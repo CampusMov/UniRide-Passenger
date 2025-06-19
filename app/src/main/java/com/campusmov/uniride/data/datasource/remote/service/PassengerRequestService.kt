@@ -8,7 +8,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface PassengerRequestService {
-    @POST("/passenger-requests")
+    @POST("/matching-routing-service/passenger-requests")
     suspend fun savePassengerRequest(
         @Body passengerRequestRequestDto: PassengerRequestRequestDto
     )

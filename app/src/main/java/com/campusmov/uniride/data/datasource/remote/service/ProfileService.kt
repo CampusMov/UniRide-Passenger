@@ -9,12 +9,12 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ProfileService {
-    @POST("profiles")
+    @POST("profile-service/profiles")
     suspend fun saveProfile(
         @Body profileRequest: ProfileRequestDto
     ): Response<Unit>
 
-    @GET("profiles/{id}")
+    @GET("profile-service/profiles/{id}")
     suspend fun  getProfileById(@Path ("id") profileId: String): Response<ProfileResponseDto>
 
 }

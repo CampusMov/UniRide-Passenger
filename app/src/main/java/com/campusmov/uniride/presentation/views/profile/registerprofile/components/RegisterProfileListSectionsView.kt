@@ -51,7 +51,7 @@ fun RegisterProfileListSectionsView(
     LaunchedEffect(viewModel.registerProfileResponse.value) {
         when (viewModel.registerProfileResponse.value) {
             is Resource.Success -> {
-                navHostController.navigate(route = Graph.HOME)
+                navHostController.navigate(route = Graph.MATCHING)
             }
             is Resource.Failure -> {
                 Log.d("TAG", "Error to navigate to RegisterProfileFullName")

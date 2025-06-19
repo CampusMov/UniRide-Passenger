@@ -6,6 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ReputationIncentivesService {
-    @GET("reputation-incentives/valorations/{userId}")
+    @GET("reputation-incentives-service/reputation-incentives/valorations/{userId}")
     suspend fun getAllValorationsByUserId(@Path ("userId") userId: String): Response<List<ValorationResponseDto>>
 }
