@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,15 +34,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.components.CarpoolInfoCard
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolViewModel
+import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
 @Composable
 fun CarpoolsSearchResultsView(
     navHostController: NavHostController,
     viewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
     viewModelSearchCarpoolViewModel: SearchCarpoolViewModel = hiltViewModel(),
+    viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
     onGoBack: () -> Unit,
 ) {
     val availableCarpools = viewModelSearchCarpoolViewModel.availableCarpools.collectAsState()
+    val amountSeatsRequested = viewModelSearchCarpoolViewModel.amountSeatsRequested.collectAsState()
+    val selectedPlace = viewModelSearchPlace.selectedPlace.collectAsState()
 
     Dialog(
         onDismissRequest = onGoBack,
@@ -124,12 +127,13 @@ fun CarpoolsSearchResultsView(
                     textAlign = TextAlign.Start
                 )
                 LazyColumn {
-                    itemsIndexed(availableCarpools.value) { index, carpool ->
+                    itemsIndexed(availableCarpools.value) { _, carpool ->
                         CarpoolInfoCard(
                             navHostController = navHostController,
                             viewModel = viewModel,
                             carpool = carpool,
                             onCarpoolRequest = {
+                                viewModel.savePassengerRequest(carpool, selectedPlace.value, amountSeatsRequested.value )
                             }
                         )
                     }

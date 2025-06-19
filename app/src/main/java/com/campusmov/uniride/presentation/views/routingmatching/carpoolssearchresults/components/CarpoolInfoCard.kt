@@ -14,11 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.rounded.Send
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -43,10 +39,8 @@ fun CarpoolInfoCard(
     navHostController: NavHostController,
     viewModel: CarpoolsSearchResultsViewModel,
     carpool: Carpool,
-    onCarpoolRequest: (Carpool) -> Unit,
+    onCarpoolRequest: () -> Unit,
 ) {
-
-    // Llama cuando cambia el id del conductor
     LaunchedEffect(carpool.driverId) {
         viewModel.getProfileById(carpool.driverId)
         viewModel.getStudentAverageRating(carpool.driverId)
@@ -56,7 +50,6 @@ fun CarpoolInfoCard(
     val ratings = viewModel.ratings.collectAsState()
     val profile = profiles.value[carpool.driverId]
     val rating = ratings.value[carpool.driverId]
-
 
     Row(
         modifier = Modifier
@@ -131,7 +124,7 @@ fun CarpoolInfoCard(
                 .height(40.dp),
             contentPadding = PaddingValues(horizontal = 8.dp),
             onClick = {
-                onCarpoolRequest(carpool)
+                onCarpoolRequest()
             },
         ) {
             Image(
