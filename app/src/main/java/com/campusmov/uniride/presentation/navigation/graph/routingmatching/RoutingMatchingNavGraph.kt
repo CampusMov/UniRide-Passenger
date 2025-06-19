@@ -20,7 +20,7 @@ fun NavGraphBuilder.RoutingMatchingNavGraph(navHostController: NavHostController
         startDestination = RoutingMatchingScreen.SearchCarpool.route
     ) {
         composable(route = RoutingMatchingScreen.SearchCarpool.route) {
-            MenuNavigationView(navHostController) {
+            MenuNavigationView(navHostController = navHostController) {
                 MapCarpoolSearcherView(navHostController = navHostController)
             }
         }
