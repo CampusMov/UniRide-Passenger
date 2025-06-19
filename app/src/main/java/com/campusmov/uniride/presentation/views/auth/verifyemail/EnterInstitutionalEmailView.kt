@@ -4,22 +4,22 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -33,38 +33,26 @@ import com.campusmov.uniride.domain.shared.util.Resource
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
-import kotlinx.coroutines.launch
 
 @Composable
 fun EnterInstitutionalEmailView(
     viewModel: EnterInstitutionalEmailViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
-    val state = viewModel
+    val emailState = viewModel.state.value
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(viewModel.errorMessage.value) {
-        if (viewModel.errorMessage.value.isNotEmpty()) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(viewModel.errorMessage.value)
-                viewModel.errorMessage.value = ""
-            }
-        }
-    }
+    val isLoading = viewModel.isLoading.collectAsState()
+    val isButtonAvailable = viewModel.isButtonAvailable.collectAsState()
 
     LaunchedEffect(viewModel.verifyEmailResponse.value) {
         when (viewModel.verifyEmailResponse.value) {
             is Resource.Success -> navHostController.navigate(AuthScreen.EnterVerificationCode.route)
-            is Resource.Failure -> { Log.d("TAG", "Error:") }
+            is Resource.Failure -> { Log.d("TAG", "Error navigating to EnterVerificationCode") }
             else -> {}
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,7 +63,9 @@ fun EnterInstitutionalEmailView(
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .background(Color.Transparent),
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navHostController.popBackStack()
+                },
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
@@ -110,19 +100,34 @@ fun EnterInstitutionalEmailView(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 DefaultRoundedInputField(
-                    value = state.state.value.email,
-                    onValueChange = { state.onEmailInput(it) },
+                    value = emailState.email,
+                    onValueChange = { viewModel.onEmailInput(it) },
                     placeholder = "example@university.upc.edu",
                     keyboardType = KeyboardType.Email
                 )
-
-                DefaultRoundedTextButton(
-                    text = "Enviar codigo",
-                    onClick = {
-                        viewModel.sendVerificationEmail()
-                        navHostController.navigate(route = AuthScreen.EnterVerificationCode.route)
-                    },
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if(isLoading.value) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(top = 20.dp),
+                            color = Color.White,
+                            trackColor = Color.Transparent
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp)
+                    )
+                    if (isButtonAvailable.value && !isLoading.value) {
+                        DefaultRoundedTextButton(
+                            text = "Enviar codigo",
+                            onClick = { viewModel.sendVerificationEmail() },
+                        )
+                    }
+                }
             }
         }
     }

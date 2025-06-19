@@ -15,3 +15,12 @@ data class AuthVerificationCodeResponse (
     }
 
 }
+
+fun AuthVerificationCodeResponse.toDomain(): User {
+    return User(
+        id = id ?: "",
+        email = email ?: "",
+        status = status ?: UserStatus.NOT_VERIFIED,
+        roles = roles?.map { Role.fromString(it) } ?: listOf(Role.PASSENGER)
+    )
+}

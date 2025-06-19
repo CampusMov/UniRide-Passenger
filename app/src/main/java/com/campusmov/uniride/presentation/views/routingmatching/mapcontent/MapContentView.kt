@@ -2,22 +2,31 @@ package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -25,19 +34,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.campusmov.uniride.R
+import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
+import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceView
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapCarpoolSearcherView(
@@ -65,7 +81,15 @@ fun MapCarpoolSearcherView(
         }
     )
 
-    var showSearchModel = remember {
+    var showSearchPickUpPoint = remember {
+        mutableStateOf(false)
+    }
+
+    var showSearchClassSchedule = remember {
+        mutableStateOf(false)
+    }
+
+    var showCarpoolsSearchResults = remember {
         mutableStateOf(false)
     }
 
@@ -94,9 +118,18 @@ fun MapCarpoolSearcherView(
                             .height(calculateSheetHeight(viewmodel = viewModel))
                             .background(Color.Black)
                     ) {
-                        SearchCarpoolView(navHostController = navHostController, onOriginPlaceSelected = {
-                            showSearchModel.value = true
-                        })
+                        SearchCarpoolView(
+                            navHostController = navHostController,
+                            onPickUpPointSelected = {
+                                showSearchPickUpPoint.value = true
+                            },
+                            onClassScheduleSelected = {
+                                showSearchClassSchedule.value = true
+                            },
+                            onOpenCarpoolsSearchResultsView = {
+                                showCarpoolsSearchResults.value = true
+                            },
+                        )
                     }
                 }
             },
@@ -112,14 +145,67 @@ fun MapCarpoolSearcherView(
                             viewModel = viewModel,
                             paddingValues = paddingValues
                         )
-                        if (showSearchModel.value) {
+                        if (!viewModel.isInteractiveWithMap.value){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(paddingValues)
+                                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    .offset(y = calculateSearchCarpoolHeight()),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        showCarpoolsSearchResults.value = true
+                                    },
+                                    modifier = Modifier
+                                        .size(55.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .background(Color(0xFF262626))
+                                    ) {
+                                        Image(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(10.dp)
+                                                .align(Alignment.Center),
+                                            painter = painterResource(id = R.drawable.front_car),
+                                            contentDescription = "Icon of results carpools",
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        if (showSearchPickUpPoint.value) {
                             SearchPlaceView(
                                 navHostController = navHostController,
                                 onDismissRequest = {
-                                    showSearchModel.value = false
+                                    showSearchPickUpPoint.value = false
                                 },
                                 onPlaceSelected = { ->
-                                    showSearchModel.value = false
+                                    showSearchPickUpPoint.value = false
+                                }
+                            )
+                        }
+                        if (showSearchClassSchedule.value) {
+                            SearchClassScheduleView(
+                                navHostController = navHostController,
+                                onDismissRequest = {
+                                    showSearchClassSchedule.value = false
+                                },
+                                onClassScheduleSelected = {
+                                    showSearchClassSchedule.value = false
+                                },
+                            )
+                        }
+                        if (showCarpoolsSearchResults.value) {
+                            CarpoolsSearchResultsView(
+                                navHostController = navHostController,
+                                onGoBack = {
+                                    showCarpoolsSearchResults.value = false
                                 }
                             )
                         }
@@ -140,11 +226,17 @@ fun MapCarpoolSearcherView(
 private fun calculateSheetHeight(
     viewmodel: MapContentViewModel
 ) : Dp {
-    val height_enlarged_percentaje = 0.4f
-    val minimize_height = 60.dp
-    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * height_enlarged_percentaje
+    val heightEnlargedPercentage = 0.4f
+    val minimizeHeight = 60.dp
+    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
     return animateDpAsState(
-        if (viewmodel.isInteractiveWithMap.value ) minimize_height else normalHeight,
+        if (viewmodel.isInteractiveWithMap.value ) minimizeHeight else normalHeight,
         animationSpec = spring(stiffness = 300f)
     ).value
+}
+
+@Composable
+private fun calculateSearchCarpoolHeight(): Dp {
+    val heightEnlargedPercentage = 0.52f
+    return LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
 }
