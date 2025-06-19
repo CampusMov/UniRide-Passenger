@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ProfileClassScheduleService {
-    @GET("profiles/{id}/class-schedules")
+    @GET("profile-service/profiles/{id}/class-schedules")
     suspend fun getClassSchedulesByProfileId(@Path("id") profileId: String): List<ClassScheduleResponseDto>
 }

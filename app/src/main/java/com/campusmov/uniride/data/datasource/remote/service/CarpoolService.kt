@@ -6,7 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface CarpoolService {
-    @POST("carpools/available")
+    @POST("matching-routing-service/carpools/available")
     suspend fun searchAvailableCarpools(
         @Body searchAvailableCarpoolsRequestDto: SearchAvailableCarpoolsRequestDto
     ): List<CarpoolResponseDto>
