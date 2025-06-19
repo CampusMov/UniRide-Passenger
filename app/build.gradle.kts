@@ -75,6 +75,13 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
+    //STOMP
+    implementation(libs.jackson.kotlin)
+    implementation(libs.okhttp)
+    implementation(libs.stomp.android)
+    implementation(libs.rxjava2)
+    implementation(libs.rxandroid2)
+    implementation(libs.rxkotlin2)
 
     // GOOGLE MAPS
     implementation(libs.maps.compose)

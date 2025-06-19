@@ -25,7 +25,12 @@ roomRuntime = "2.7.1"
 roomRuntimeAndroid = "2.7.1"
 kspVersion = "2.0.21-1.0.27"
 materialIconsExtended = "1.7.8"
-
+jackson-kotlin = "2.14.2"
+okhttp = "4.10.0"
+stomp-android = "1.6.6"
+rxjava2 = "2.2.21"
+rxandroid2 = "2.1.1"
+rxkotlin2 = "2.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,7 +67,12 @@ play-services-location = { module = "com.google.android.gms:play-services-locati
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
-
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+stomp-android = { module = "com.github.NaikSoftware:StompProtocolAndroid", version.ref = "stomp-android" }
+rxjava2 = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava2" }
+rxandroid2 = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroid2" }
+rxkotlin2 = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxkotlin2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
