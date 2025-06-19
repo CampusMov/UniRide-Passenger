@@ -13,12 +13,26 @@ import java.io.IOException
 class PassengerRequestRepositoryImpl(
     private val passengerRequestService: PassengerRequestService
 ): PassengerRequestRepository {
-    override suspend fun savePassengerRequest(passengerRequest: PassengerRequest): Resource<Unit>  = withContext(Dispatchers.IO) {
+    override suspend fun savePassengerRequest(passengerRequest: PassengerRequest): Resource<Unit> = withContext(Dispatchers.IO) {
         try {
             val passengerRequestRequest = passengerRequest.toRequestBody()
             passengerRequestService.savePassengerRequest(passengerRequestRequest)
             Log.d("TAG", "Passenger request created successfully")
             Resource.Success(Unit)
+        } catch (e: IOException) {
+            Log.e("TAG", "Network error while saving passenger request", e)
+            Resource.Failure("Network error: ${e.localizedMessage}")
+        } catch (e: Exception) {
+            Log.e("TAG", "Unexpected error while saving passenger request", e)
+            Resource.Failure("An unexpected error occurred: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun getAllPassengerRequestsByPassengerId(passengerId: String): Resource<List<PassengerRequest>> = withContext(Dispatchers.IO) {
+        try {
+            val passengerRequestRequestList = passengerRequestService.getAllPassengerRequestsByPassengerId(passengerId)
+            Log.d("TAG", "Passenger requests fetched successfully for passenger ID: $passengerId")
+            Resource.Success(passengerRequestRequestList.map { it.toDomain() })
         } catch (e: IOException) {
             Log.e("TAG", "Network error while saving passenger request", e)
             Resource.Failure("Network error: ${e.localizedMessage}")

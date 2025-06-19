@@ -80,6 +80,7 @@ object NetworkModule {
     @Singleton
     fun provideAnalyticsService(@DefaultRetrofit retrofit: Retrofit): AnalyticsService {
         return retrofit.create(AnalyticsService::class.java)
+    }
 
     @Provides
     @Singleton    

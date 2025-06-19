@@ -3,7 +3,6 @@ package com.campusmov.uniride.di
 import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
 import com.campusmov.uniride.domain.analytics.usecases.StudentRatingUseCase
-import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
@@ -37,6 +36,7 @@ import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.GetAllPassengerRequestsByPassengerIdUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.SavePassengerRequestUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.SearchCarpoolsAvailableUseCase
@@ -108,5 +108,6 @@ object UseCaseModule {
     @Provides
     fun providePassengerRequestUseCases(passengerRequestRepository: PassengerRequestRepository) = PassengerRequestUseCases(
         savePassengerRequest = SavePassengerRequestUseCase(passengerRequestRepository),
+        getAllPassengerRequestsByPassengerId = GetAllPassengerRequestsByPassengerIdUseCase(passengerRequestRepository),
     )
 }

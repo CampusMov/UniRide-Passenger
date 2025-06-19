@@ -20,8 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,26 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
-import com.campusmov.uniride.domain.routingmatching.model.Carpool
+import com.campusmov.uniride.domain.routingmatching.model.PassengerRequest
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
 
 @Composable
-fun CarpoolInfoCard(
+fun PassengerRequestInfoCard(
     navHostController: NavHostController,
     viewModel: CarpoolsSearchResultsViewModel,
-    carpool: Carpool,
-    onCarpoolRequest: () -> Unit,
+    passengerRequest: PassengerRequest,
+    onPassengerRequestCancel: () -> Unit,
 ) {
-    LaunchedEffect(carpool.driverId) {
-        viewModel.getProfileById(carpool.driverId)
-        viewModel.getStudentAverageRating(carpool.driverId)
-    }
-
-    val profiles = viewModel.profiles.collectAsState()
-    val ratings = viewModel.ratings.collectAsState()
-    val profile = profiles.value[carpool.driverId]
-    val rating = ratings.value[carpool.driverId]
-
     Row(
         modifier = Modifier
             .padding(16.dp)
@@ -88,7 +76,7 @@ fun CarpoolInfoCard(
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "${rating}   ${profile?.firstName}  ${profile?.lastName}",
+                        text = passengerRequest.passengerId,
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -97,7 +85,7 @@ fun CarpoolInfoCard(
 
 
                 Text(
-                    text = "${carpool.origin.name} - aun no sale",
+                    text = "${passengerRequest.carpoolId} - aun no sale",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
@@ -120,25 +108,25 @@ fun CarpoolInfoCard(
         )
         TextButton(
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
+                .background(Color(0xFF292929), shape = RoundedCornerShape(12.dp))
                 .height(40.dp),
             contentPadding = PaddingValues(horizontal = 8.dp),
             onClick = {
-                onCarpoolRequest()
+                onPassengerRequestCancel
             },
         ) {
             Image(
                 modifier = Modifier
                     .size(19.dp),
-                painter = painterResource(id = R.drawable.send_icon),
+                painter = painterResource(id = R.drawable.close_icon),
                 contentDescription = "Send Icon",
             )
             Spacer(
                 modifier = Modifier.padding(horizontal = 3.dp)
             )
             Text(
-                text = "Solicitar",
-                color = Color.Black,
+                text = "Cancelar",
+                color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )

@@ -1,5 +1,7 @@
 package com.campusmov.uniride.presentation.views.routingmatching.menunavigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +39,7 @@ import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScree
 import com.campusmov.uniride.presentation.util.NavigationItem
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuNavigationView(navHostController: NavHostController = rememberNavController()){
