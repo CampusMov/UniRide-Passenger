@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -34,16 +33,25 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.components.CarpoolInfoCard
+import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.components.PassengerRequestInfoCard
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolViewModel
+import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
 @Composable
 fun CarpoolsSearchResultsView(
     navHostController: NavHostController,
     viewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
     viewModelSearchCarpoolViewModel: SearchCarpoolViewModel = hiltViewModel(),
+    viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
     onGoBack: () -> Unit,
 ) {
     val availableCarpools = viewModelSearchCarpoolViewModel.availableCarpools.collectAsState()
+    val amountSeatsRequested = viewModelSearchCarpoolViewModel.amountSeatsRequested.collectAsState()
+    val selectedPlace = viewModelSearchPlace.selectedPlace.collectAsState()
+    val passengerRequests = viewModel.passengerRequests.collectAsState()
+    val filteredAvailableCarpool = availableCarpools.value.filter { carpool ->
+        passengerRequests.value.none { request -> request.carpoolId == carpool.id && request.passengerId == viewModel.user.value?.id }
+    }
 
     Dialog(
         onDismissRequest = onGoBack,
@@ -102,8 +110,31 @@ fun CarpoolsSearchResultsView(
                     )
                 }
             }
+            if (passengerRequests.value.isNotEmpty()) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 14.dp, bottom = 5.dp, start = 16.dp, end = 16.dp),
+                    text = "Carpool solicitados:",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Start
+                )
+                LazyColumn {
+                    itemsIndexed(passengerRequests.value) { _, passengerRequest ->
+                        PassengerRequestInfoCard(
+                            navHostController = navHostController,
+                            viewModel = viewModel,
+                            passengerRequest = passengerRequest,
+                            onPassengerRequestCancel = {
 
-            if (availableCarpools.value.isEmpty()) {
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (filteredAvailableCarpool.isEmpty()) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,12 +155,13 @@ fun CarpoolsSearchResultsView(
                     textAlign = TextAlign.Start
                 )
                 LazyColumn {
-                    itemsIndexed(availableCarpools.value) { index, carpool ->
+                    itemsIndexed(filteredAvailableCarpool) { _, carpool ->
                         CarpoolInfoCard(
                             navHostController = navHostController,
                             viewModel = viewModel,
                             carpool = carpool,
                             onCarpoolRequest = {
+                                viewModel.savePassengerRequest(carpool, selectedPlace.value, amountSeatsRequested.value )
                             }
                         )
                     }

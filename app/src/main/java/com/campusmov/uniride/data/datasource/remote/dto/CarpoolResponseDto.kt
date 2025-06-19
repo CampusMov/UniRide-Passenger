@@ -7,7 +7,7 @@ import com.campusmov.uniride.domain.routingmatching.model.ECarpoolStatus
 import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.domain.shared.model.Location
 import retrofit2.http.Field
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class CarpoolResponseDto (
     @Field("id")
@@ -74,8 +74,8 @@ data class CarpoolResponseDto (
                 longitude = destinationLongitude ?: 0.0,
                 latitude = destinationLatitude ?: 0.0
             ),
-            startedClassTime = LocalDateTime.parse(startedClassTime),
-            endedClassTime = LocalDateTime.parse(endedClassTime),
+            startedClassTime = LocalTime.parse(startedClassTime),
+            endedClassTime = LocalTime.parse(endedClassTime),
             classDay = EDay.fromString(classDay),
             isVisible = isVisible == true
         )

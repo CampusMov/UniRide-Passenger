@@ -125,7 +125,10 @@ fun MapCarpoolSearcherView(
                             },
                             onClassScheduleSelected = {
                                 showSearchClassSchedule.value = true
-                            }
+                            },
+                            onOpenCarpoolsSearchResultsView = {
+                                showCarpoolsSearchResults.value = true
+                            },
                         )
                     }
                 }

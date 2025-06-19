@@ -5,4 +5,5 @@ import com.campusmov.uniride.domain.shared.util.Resource
 
 interface PassengerRequestRepository {
     suspend fun savePassengerRequest(passengerRequest: PassengerRequest): Resource<Unit>
+    suspend fun getAllPassengerRequestsByPassengerId(passengerId: String): Resource<List<PassengerRequest>>
 }
