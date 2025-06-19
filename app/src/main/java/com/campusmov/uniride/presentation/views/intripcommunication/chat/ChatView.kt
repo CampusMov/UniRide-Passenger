@@ -2,11 +2,12 @@ package com.campusmov.uniride.presentation.views.intripcommunication.chat
 
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items // Importa 'items' para LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,12 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.campusmov.uniride.domain.intripcommunication.model.Message
-import com.campusmov.uniride.presentation.views.intripcommunication.chat.ChatViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -60,10 +62,11 @@ fun ChatDialog(
 
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
-    LaunchedEffect(chat) {
-        if (chat != null) {
-            viewModel.startSessionWhenReady()
+    LaunchedEffect(Unit) {
+        viewModel.error.collectLatest { errorMessage ->
+            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -77,7 +80,7 @@ fun ChatDialog(
 
     DisposableEffect(Unit) {
         onDispose {
-            viewModel.closeSession()
+            viewModel.closeChatSession()
         }
     }
 
@@ -210,7 +213,7 @@ fun ChatDialog(
                             Spacer(Modifier.width(8.dp))
                             IconButton(
                                 onClick = {
-                                    if (chat != null) { // Asegurarse que chat no sea null
+                                    if (chat != null) {
                                         viewModel.sendMessage()
                                     }
                                 },
