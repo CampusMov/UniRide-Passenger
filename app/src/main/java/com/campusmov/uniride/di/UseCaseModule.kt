@@ -33,6 +33,9 @@ import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
+import com.campusmov.uniride.domain.route.repository.RouteRepository
+import com.campusmov.uniride.domain.route.usecases.GetRouteUseCase
+import com.campusmov.uniride.domain.route.usecases.RouteUseCases
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
@@ -109,5 +112,10 @@ object UseCaseModule {
     fun providePassengerRequestUseCases(passengerRequestRepository: PassengerRequestRepository) = PassengerRequestUseCases(
         savePassengerRequest = SavePassengerRequestUseCase(passengerRequestRepository),
         getAllPassengerRequestsByPassengerId = GetAllPassengerRequestsByPassengerIdUseCase(passengerRequestRepository),
+    )
+
+    @Provides
+    fun provideRoutesUseCases(routeRepository: RouteRepository) = RouteUseCases(
+        getRoute = GetRouteUseCase(routeRepository)
     )
 }
