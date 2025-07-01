@@ -1,6 +1,7 @@
 package com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
@@ -9,12 +10,15 @@ import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.profile.model.Profile
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.routingmatching.model.Carpool
+import com.campusmov.uniride.domain.routingmatching.model.EPassengerRequestStatus
 import com.campusmov.uniride.domain.routingmatching.model.PassengerRequest
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestWsUseCases
 import com.campusmov.uniride.domain.shared.model.Location
 import com.campusmov.uniride.domain.shared.util.Resource
 import com.google.android.libraries.places.api.model.Place
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -26,7 +30,8 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     private val passengerRequestUseCases: PassengerRequestUseCases,
     private val userUseCase: UserUseCase,
     private val profileUseCases: ProfileUseCases,
-    private val analyticsUseCases: AnalyticsUseCase
+    private val analyticsUseCases: AnalyticsUseCase,
+    private val passengerRequestWsUseCases: PassengerRequestWsUseCases
 ): ViewModel() {
 
     private val _profiles = MutableStateFlow<Map<String, Profile?>>(emptyMap())
@@ -41,8 +46,13 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     private val _passengerRequests = MutableStateFlow<List<PassengerRequest>>(emptyList())
     val passengerRequests: StateFlow<List<PassengerRequest>> = _passengerRequests
 
+    private val subscriptionJobs = mutableMapOf<String, Job>()
+
+    var passengerRequestAccepted = mutableStateOf<PassengerRequest?>(null)
+        private set
+
     init {
-        getUserLocally()
+        connectToPassengerRequestWebSocket()
     }
 
     private fun getUserLocally() {
@@ -145,6 +155,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("TAG", "Passenger requests obtained successfully")
                     _passengerRequests.value = result.data
+                    _passengerRequests.value.forEach { passengerRequest ->
+                        subscribeTo(passengerRequest.id)
+                    }
                 }
                 is Resource.Failure -> {
                     Log.e("TAG", "Error obtaining passenger requests: ${result.message}")
@@ -152,5 +165,53 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                 Resource.Loading -> {}
             }
         }
+    }
+
+    fun connectToPassengerRequestWebSocket() {
+        viewModelScope.launch {
+            try {
+                passengerRequestWsUseCases.connectRequestsUseCase()
+                Log.d("TAG", "Connected to Passenger Request WebSocket")
+            } catch (e: Exception) {
+                Log.e("TAG", "Error connecting to Passenger Request WebSocket: ${e.message}")
+            }
+            getUserLocally()
+        }
+    }
+
+    fun subscribeTo(requestId: String) {
+        if (subscriptionJobs.containsKey(requestId)) return
+        val job = viewModelScope.launch {
+            passengerRequestWsUseCases.subscribeRequestStatusUpdatesUseCase(requestId)
+                .collect { passengerRequest ->
+                    val status: String? = passengerRequest.status.name
+                    when(EPassengerRequestStatus.fromString(status)) {
+                        EPassengerRequestStatus.ACCEPTED -> {
+                            Log.d("TAG", "Passenger request accepted: ${passengerRequest.id}")
+                            passengerRequestAccepted.value = passengerRequest
+                            onCleared()
+                            _passengerRequests.value = emptyList()
+                        }
+                        EPassengerRequestStatus.REJECTED -> {
+                            Log.d("TAG", "Passenger request rejected: ${passengerRequest.id}")
+                            _passengerRequests.update { requests ->
+                                requests.filter { it.id != passengerRequest.id }
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+        }
+        subscriptionJobs[requestId] = job
+    }
+
+    fun unsubscribeFrom(requestId: String) {
+        subscriptionJobs.remove(requestId)?.cancel()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        subscriptionJobs.values.forEach { it.cancel() }
+        viewModelScope.launch { passengerRequestWsUseCases.disconnectRequestsUseCase() }
     }
 }

@@ -5,8 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.routingmatching.RoutingMatchingScreen
@@ -23,9 +25,6 @@ fun NavGraphBuilder.RoutingMatchingNavGraph(navHostController: NavHostController
             MenuNavigationView(navHostController = navHostController) {
                 MapCarpoolSearcherView(navHostController = navHostController)
             }
-        }
-        composable(route = RoutingMatchingScreen.AddPickUpPoint.route) {
-            // TODO("Implement the Carpool Details Screen")
         }
     }
 }

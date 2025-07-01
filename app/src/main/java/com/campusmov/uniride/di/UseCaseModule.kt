@@ -15,10 +15,13 @@ import com.campusmov.uniride.domain.auth.usecases.UpdateUserLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationCodeUseCase
 import com.campusmov.uniride.domain.auth.usecases.VerificationEmailUseCase
-import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
+import com.campusmov.uniride.domain.filemanagement.usecases.DeleteFileUseCase
+import com.campusmov.uniride.domain.filemanagement.usecases.DownloadFileUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
-import com.campusmov.uniride.domain.filemanagement.usecases.*
+import com.campusmov.uniride.domain.filemanagement.usecases.GetFileUrlUseCase
+import com.campusmov.uniride.domain.filemanagement.usecases.UploadFileUseCase
+import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.location.usecases.GetLocationsUpdatesUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlaceDetailsUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
@@ -35,11 +38,17 @@ import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseC
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
+import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.ConnectRequestsUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.DisconnectRequestsUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.GetAllPassengerRequestsByPassengerIdUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.GetCarpoolByIdUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestWsUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.SavePassengerRequestUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.SearchCarpoolsAvailableUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.SubscribeRequestStatusUpdatesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -94,7 +103,8 @@ object UseCaseModule {
     
     @Provides
     fun provideCarpoolUseCases(carpoolRepository: CarpoolRepository) = CarpoolUseCases(
-        searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository)
+        searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository),
+        getCarpoolById = GetCarpoolByIdUseCase(carpoolRepository)
     )
 
     @Provides
@@ -109,5 +119,12 @@ object UseCaseModule {
     fun providePassengerRequestUseCases(passengerRequestRepository: PassengerRequestRepository) = PassengerRequestUseCases(
         savePassengerRequest = SavePassengerRequestUseCase(passengerRequestRepository),
         getAllPassengerRequestsByPassengerId = GetAllPassengerRequestsByPassengerIdUseCase(passengerRequestRepository),
+    )
+
+    @Provides
+    fun providePassengerRequestWsUseCases(passengerRequestWebSocketRepository: PassengerRequestWebSocketRepository) = PassengerRequestWsUseCases(
+        connectRequestsUseCase = ConnectRequestsUseCase(passengerRequestWebSocketRepository),
+        subscribeRequestStatusUpdatesUseCase = SubscribeRequestStatusUpdatesUseCase(passengerRequestWebSocketRepository),
+        disconnectRequestsUseCase = DisconnectRequestsUseCase(passengerRequestWebSocketRepository)
     )
 }

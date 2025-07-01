@@ -13,7 +13,7 @@ interface PassengerRequestService {
         @Body passengerRequestRequestDto: PassengerRequestRequestDto
     )
 
-    @GET("/passenger-requests")
+    @GET("/matching-routing-service/passenger-requests")
     suspend fun getAllPassengerRequestsByPassengerId(
         @Query("passengerId") passengerId: String
     ): List<PassengerRequestResponseDto>
