@@ -95,6 +95,11 @@ dependencies {
 
     implementation (libs.material)
 
+    // WEBSOCKET
+    implementation("org.hildan.krossbow:krossbow-stomp-core:9.3.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:9.3.0")
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
