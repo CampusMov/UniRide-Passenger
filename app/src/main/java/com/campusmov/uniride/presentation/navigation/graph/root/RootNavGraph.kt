@@ -10,6 +10,7 @@ import com.campusmov.uniride.presentation.navigation.graph.analytic.AnalyticsNav
 import com.campusmov.uniride.presentation.navigation.graph.auth.AuthNavGraph
 import com.campusmov.uniride.presentation.navigation.graph.home.HomeNavGraph
 import com.campusmov.uniride.presentation.navigation.graph.profile.ProfileNavGraph
+import com.campusmov.uniride.presentation.navigation.graph.reputation.ReputationNavGraph
 import com.campusmov.uniride.presentation.navigation.graph.routingmatching.RoutingMatchingNavGraph
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -24,5 +25,6 @@ fun RootNavGraph(navHostController: NavHostController) {
         ProfileNavGraph(navHostController)
         RoutingMatchingNavGraph(navHostController)
         AnalyticsNavGraph(navHostController)
+        ReputationNavGraph(navHostController)
     }
 }
