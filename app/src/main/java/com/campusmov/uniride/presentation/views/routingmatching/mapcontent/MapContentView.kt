@@ -65,6 +65,9 @@ fun MapCarpoolSearcherView(
 ) {
     val context = LocalContext.current
     val userCarpoolSate = viewModel.userCarpoolState.collectAsState()
+    val showSearchPickUpPoint = viewModel.showSearchPickUpPoint
+    val showSearchClassSchedule = viewModel.showSearchClassSchedule
+    val showCarpoolsSearchResults = viewModel.showCarpoolsSearchResults
 
     val hasPermission = remember {
         mutableStateOf(
@@ -84,18 +87,6 @@ fun MapCarpoolSearcherView(
             }
         }
     )
-
-    var showSearchPickUpPoint = remember {
-        mutableStateOf(false)
-    }
-
-    var showSearchClassSchedule = remember {
-        mutableStateOf(false)
-    }
-
-    var showCarpoolsSearchResults = remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(Unit) {
         if (!hasPermission.value) {

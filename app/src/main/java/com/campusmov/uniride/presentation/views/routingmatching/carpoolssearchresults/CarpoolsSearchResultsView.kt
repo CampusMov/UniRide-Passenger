@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,8 +58,14 @@ fun CarpoolsSearchResultsView(
     }
 
     LaunchedEffect(viewModel.passengerRequestAccepted.value){
-        viewModelMapContent.carpoolAcceptedId.value = viewModel.passengerRequestAccepted.value?.carpoolId
-        viewModelMapContent.waitForCarpoolStart()
+        if (viewModel.passengerRequestAccepted.value != null) {
+            viewModel.passengerRequestAccepted.value?.let { passengerRequest ->
+                Log.d("TAG", "Carpool accepted: ${passengerRequest.carpoolId}")
+                viewModelMapContent.showCarpoolsSearchResults.value = false
+                viewModelMapContent.waitForCarpoolStart()
+                viewModelMapContent.carpoolAcceptedId.value = passengerRequest.carpoolId
+            }
+        }
     }
 
     Dialog(

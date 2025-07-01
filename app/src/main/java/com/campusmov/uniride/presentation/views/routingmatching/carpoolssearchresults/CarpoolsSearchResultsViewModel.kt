@@ -52,7 +52,6 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
         private set
 
     init {
-        getUserLocally()
         connectToPassengerRequestWebSocket()
     }
 
@@ -176,6 +175,7 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("TAG", "Error connecting to Passenger Request WebSocket: ${e.message}")
             }
+            getUserLocally()
         }
     }
 
@@ -188,9 +188,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                     when(EPassengerRequestStatus.fromString(status)) {
                         EPassengerRequestStatus.ACCEPTED -> {
                             Log.d("TAG", "Passenger request accepted: ${passengerRequest.id}")
+                            passengerRequestAccepted.value = passengerRequest
                             onCleared()
                             _passengerRequests.value = emptyList()
-                            passengerRequestAccepted.value = passengerRequest
                         }
                         EPassengerRequestStatus.REJECTED -> {
                             Log.d("TAG", "Passenger request rejected: ${passengerRequest.id}")
@@ -198,8 +198,7 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                                 requests.filter { it.id != passengerRequest.id }
                             }
                         }
-                        EPassengerRequestStatus.PENDING -> {}
-                        EPassengerRequestStatus.CANCELLED -> {}
+                        else -> {}
                     }
                 }
         }

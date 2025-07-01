@@ -21,15 +21,20 @@ class MapContentViewModel @Inject constructor(
 
     var isInteractiveWithMap = mutableStateOf(false)
 
+    var showSearchPickUpPoint = mutableStateOf(false)
+    var showSearchClassSchedule = mutableStateOf(false)
+    var showCarpoolsSearchResults = mutableStateOf(false)
+
+    private val _userCarpoolSate = MutableStateFlow<EUserCarpoolState>(EUserCarpoolState.SEARCHING)
+    val userCarpoolState: StateFlow<EUserCarpoolState> get() = _userCarpoolSate
+
+    val carpoolAcceptedId = mutableStateOf<String?>(null)
+
     fun startLocationUpdates() = viewModelScope.launch {
         locationUsesCases.getLocationUpdates { position ->
             _location.value = position
         }
     }
-    private val _userCarpoolSate = MutableStateFlow<EUserCarpoolState>(EUserCarpoolState.SEARCHING)
-    val userCarpoolState: StateFlow<EUserCarpoolState> get() = _userCarpoolSate
-
-    val carpoolAcceptedId = mutableStateOf<String?>(null)
 
     fun searchCarpool() {
         _userCarpoolSate.value = EUserCarpoolState.SEARCHING
