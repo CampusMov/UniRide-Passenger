@@ -34,6 +34,7 @@ import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
+import com.campusmov.uniride.domain.reputation.usecases.InfractionUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
@@ -43,6 +44,7 @@ import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.ConnectRequestsUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.DisconnectRequestsUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.GetAllPassengerRequestsByPassengerIdUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.GetCarpoolByIdUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestWsUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.SavePassengerRequestUseCase
@@ -102,7 +104,8 @@ object UseCaseModule {
     
     @Provides
     fun provideCarpoolUseCases(carpoolRepository: CarpoolRepository) = CarpoolUseCases(
-        searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository)
+        searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository),
+        getCarpoolById = GetCarpoolByIdUseCase(carpoolRepository)
     )
 
     @Provides

@@ -38,4 +38,27 @@ class CarpoolRepositoryImpl(
             Resource.Failure("An unexpected error occurred: ${e.localizedMessage}")
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun searchCarpoolById(carpoolId: String): Resource<Carpool> = withContext(Dispatchers.IO) {
+        try {
+            val response = carpoolService.getCarpoolById(carpoolId)
+            if(response.isSuccessful) {
+                val carpoolDto = response.body()
+                if (carpoolDto != null) {
+                    Resource.Success(carpoolDto.toDomain())
+                } else {
+                    Resource.Failure("Carpool not found")
+                }
+            } else {
+                Resource.Failure("Error fetching carpool: ${response.errorBody()?.string()}")
+            }
+        } catch (e: IOException) {
+            Log.e("TAG", "Network error while fetching carpool by ID", e)
+            Resource.Failure("Network error: ${e.localizedMessage}")
+        } catch (e: Exception) {
+            Log.e("TAG", "Unexpected error while fetching carpool by ID", e)
+            Resource.Failure("An unexpected error occurred: ${e.localizedMessage}")
+        }
+    }
 }
