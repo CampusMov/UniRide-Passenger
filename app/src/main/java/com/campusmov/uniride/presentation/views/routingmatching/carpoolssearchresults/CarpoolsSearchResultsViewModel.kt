@@ -1,6 +1,7 @@
 package com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
@@ -46,6 +47,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     val passengerRequests: StateFlow<List<PassengerRequest>> = _passengerRequests
 
     private val subscriptionJobs = mutableMapOf<String, Job>()
+
+    var passengerRequestAccepted = mutableStateOf<PassengerRequest?>(null)
+        private set
 
     init {
         getUserLocally()
@@ -184,9 +188,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                     when(EPassengerRequestStatus.fromString(status)) {
                         EPassengerRequestStatus.ACCEPTED -> {
                             Log.d("TAG", "Passenger request accepted: ${passengerRequest.id}")
-                            _passengerRequests.update { requests ->
-                                requests.map { if (it.id == passengerRequest.id) passengerRequest else it }
-                            }
+                            onCleared()
+                            _passengerRequests.value = emptyList()
+                            passengerRequestAccepted.value = passengerRequest
                         }
                         EPassengerRequestStatus.REJECTED -> {
                             Log.d("TAG", "Passenger request rejected: ${passengerRequest.id}")
