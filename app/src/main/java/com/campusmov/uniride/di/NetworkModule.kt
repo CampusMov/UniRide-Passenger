@@ -1,13 +1,16 @@
 package com.campusmov.uniride.di
 
 import com.campusmov.uniride.core.Config
+import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
-import com.campusmov.uniride.data.datasource.remote.service.InTripCommunicationService
-import com.campusmov.uniride.data.datasource.remote.service.InTripSocketService
+import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
-import com.google.gson.Gson
+import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentivesService
+import com.google.firebase.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -76,33 +79,30 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideAnalyticsService(@DefaultRetrofit retrofit: Retrofit): AnalyticsService {
+        return retrofit.create(AnalyticsService::class.java)
+    }
+
+    @Provides
+    @Singleton    
     fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
         return retrofit.create(CarpoolService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
-        return retrofit.create(InTripCommunicationService::class.java)
+    fun provideReputationIncentivesService(@DefaultRetrofit retrofit: Retrofit): ReputationIncentivesService {
+        return retrofit.create(ReputationIncentivesService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return Firebase.storage
     }
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = Gson()
-
-    @Provides
-    @Singleton
-    @Named("socketUrl")
-    fun provideSocketUrl(): String =
-        Config.SOCKET_BASE_URL.trimEnd('/')
-
-    @Provides
-    @Singleton
-    fun provideInTripSocketService(
-        @Named("socketUrl") baseUrl: String,
-        gson: Gson
-    ): InTripSocketService {
-        return InTripSocketService(baseUrl, gson)
+    fun providePassengerRequestService(@DefaultRetrofit retrofit: Retrofit): PassengerRequestService {
+        return retrofit.create(PassengerRequestService::class.java)
     }
-
 }

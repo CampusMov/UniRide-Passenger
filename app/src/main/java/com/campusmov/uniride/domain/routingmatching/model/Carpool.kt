@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.domain.shared.model.Location
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 data class Carpool (
@@ -18,8 +18,8 @@ data class Carpool (
     val radius: Int = 0,
     val origin: Location = Location(),
     val destination: Location = Location(),
-    val startedClassTime: LocalDateTime = LocalDateTime.now(),
-    val endedClassTime: LocalDateTime = LocalDateTime.now(),
+    val startedClassTime: LocalTime = LocalTime.now(),
+    val endedClassTime: LocalTime = LocalTime.now(),
     val classDay: EDay = EDay.MONDAY,
     val isVisible: Boolean = true,
 )

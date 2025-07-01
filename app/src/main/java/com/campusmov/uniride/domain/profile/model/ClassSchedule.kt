@@ -3,7 +3,7 @@ package com.campusmov.uniride.domain.profile.model
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.shared.model.EDay
-import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 data class ClassSchedule(
@@ -13,8 +13,8 @@ data class ClassSchedule(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val address: String,
-    val startedAt: LocalDateTime,
-    val endedAt: LocalDateTime,
+    val startedAt: LocalTime,
+    val endedAt: LocalTime,
     val selectedDay: EDay
 ) {
     @RequiresApi(Build.VERSION_CODES.O)

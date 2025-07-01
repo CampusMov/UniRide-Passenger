@@ -14,10 +14,10 @@ fun NavGraphBuilder.HomeNavGraph(navHostController: NavHostController){
         startDestination = HomeScreen.Home.route
     ) {
         composable(route = HomeScreen.Home.route) {
-            MenuNavigationView()
+            //MenuNavigationView()
         }
         composable(route = Graph.MATCHING) {
-            MenuNavigationView()
+            //MenuNavigationView()
         }
     }
 }

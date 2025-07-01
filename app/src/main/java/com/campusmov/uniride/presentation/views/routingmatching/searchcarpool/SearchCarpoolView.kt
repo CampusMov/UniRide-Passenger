@@ -22,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,11 +47,21 @@ fun SearchCarpoolView(
     viewModelSearchClassSchedule: SearchClassScheduleViewModel = hiltViewModel(),
     onPickUpPointSelected: () -> Unit,
     onClassScheduleSelected: () -> Unit,
+    onOpenCarpoolsSearchResultsView: () -> Unit,
     navHostController: NavHostController
 ) {
     val selectedPickUpPoint = viewModelSearchPlace.selectedPlace.collectAsState()
     val selectedClassSchedule = viewModelSearchClassSchedule.selectedClassSchedule.collectAsState()
     val amountSeatsRequested = viewModel.amountSeatsRequested.collectAsState()
+    val isLoadingSearchAvailableCarpool = viewModel.isLoadingSearchAvailableCarpool.collectAsState()
+
+    val isSearchEnabled = remember {
+        derivedStateOf {
+            selectedPickUpPoint.value != null &&
+            selectedClassSchedule.value != null &&
+            amountSeatsRequested.value > 0
+        }
+    }
 
     if (selectedPickUpPoint.value == null) {
         DefaultRoundedInputField(
@@ -119,7 +131,10 @@ fun SearchCarpoolView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable { onClassScheduleSelected() },
+                .clickable {
+                    onClassScheduleSelected()
+                    viewModelSearchClassSchedule.getClassSchedules()
+               },
             value = "",
             onValueChange = {},
             placeholder = "Seleccionar horario de clases",
@@ -189,11 +204,15 @@ fun SearchCarpoolView(
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, bottom = 20.dp),
         text = "Buscar carpools",
+        loadingText = "Buscando carpools",
+        isLoading = isLoadingSearchAvailableCarpool.value,
+        enabled = isSearchEnabled.value,
         onClick = {
             viewModel.searchAvailableCarpools(
                 place = selectedPickUpPoint.value,
                 classSchedule = selectedClassSchedule.value,
-                requestedSeats = amountSeatsRequested.value
+                requestedSeats = amountSeatsRequested.value,
+                openCarpoolSearchResultsView = {onOpenCarpoolsSearchResultsView()}
             )
         },
     )

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,6 +57,12 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.room.runtime.android)
 
+    //FIREBASE BOM
+    implementation(platform(libs.firebase.bom))
+
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.storage)
+
     // RETROFIT
     implementation(libs.google.gson)
     implementation(libs.retrofit)
@@ -75,6 +82,10 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
+    // COIL
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    
     //STOMP
     implementation(libs.jackson.kotlin)
     implementation(libs.okhttp)
@@ -91,6 +102,11 @@ dependencies {
     implementation(libs.places)
 
     implementation (libs.material)
+
+    // WEBSOCKET
+    implementation("org.hildan.krossbow:krossbow-stomp-core:9.3.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:9.3.0")
+
 
 
     testImplementation(libs.junit)
