@@ -3,6 +3,7 @@ package com.campusmov.uniride.di
 import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
 import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
 import com.campusmov.uniride.domain.analytics.usecases.StudentRatingUseCase
+import com.campusmov.uniride.data.datasource.remote.service.InTripSocketService
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
@@ -21,6 +22,17 @@ import com.campusmov.uniride.domain.filemanagement.usecases.DownloadFileUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
 import com.campusmov.uniride.domain.filemanagement.usecases.GetFileUrlUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.UploadFileUseCase
+import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationRepository
+import com.campusmov.uniride.domain.intripcommunication.usecases.CloseChatUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.ConnectToChatUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.CreateChatUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.DisconnectChatUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.GetMessagesUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.GetPassengerChatUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.InTripCommunicationUseCases
+import com.campusmov.uniride.domain.intripcommunication.usecases.MarkMessageAsReadUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.ObserveLiveMessagesUseCase
+import com.campusmov.uniride.domain.intripcommunication.usecases.SendMessageUseCase
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.location.usecases.GetLocationsUpdatesUseCase
 import com.campusmov.uniride.domain.location.usecases.GetPlaceDetailsUseCase
@@ -126,5 +138,22 @@ object UseCaseModule {
         connectRequestsUseCase = ConnectRequestsUseCase(passengerRequestWebSocketRepository),
         subscribeRequestStatusUpdatesUseCase = SubscribeRequestStatusUpdatesUseCase(passengerRequestWebSocketRepository),
         disconnectRequestsUseCase = DisconnectRequestsUseCase(passengerRequestWebSocketRepository)
+    )
+
+    @Provides
+    fun provideInTripCommunicationUseCases(
+        inTripCommunicationRepository: InTripCommunicationRepository,
+        socketService: InTripSocketService
+    ): InTripCommunicationUseCases = InTripCommunicationUseCases(
+        createChat = CreateChatUseCase(inTripCommunicationRepository),
+        closeChat = CloseChatUseCase(inTripCommunicationRepository),
+        getPassengerChat = GetPassengerChatUseCase(inTripCommunicationRepository),
+        getMessages = GetMessagesUseCase(inTripCommunicationRepository),
+        sendMessage = SendMessageUseCase(inTripCommunicationRepository),
+        markMessageAsRead = MarkMessageAsReadUseCase(inTripCommunicationRepository),
+        connectToChat        = ConnectToChatUseCase(socketService),
+        disconnectChat       = DisconnectChatUseCase(socketService),
+        observeLiveMessages  = ObserveLiveMessagesUseCase(socketService),
+
     )
 }

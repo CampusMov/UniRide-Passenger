@@ -12,6 +12,7 @@ import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentives
 import com.campusmov.uniride.data.repository.analytics.AnalyticsRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.UserRepositoryImpl
+import com.campusmov.uniride.data.repository.intripcommunication.InTripCommunicationRepositoryImpl
 import com.campusmov.uniride.data.repository.location.LocationRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileClassScheduleRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileRepositoryImpl
@@ -24,6 +25,7 @@ import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRep
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
+import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationRepository
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
@@ -76,5 +78,5 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
+    fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)ry(inTripCommunicationService: InTripCommunicationService): InTripCommunicationRepository = InTripCommunicationRepositoryImpl(inTripCommunicationService)
 }
