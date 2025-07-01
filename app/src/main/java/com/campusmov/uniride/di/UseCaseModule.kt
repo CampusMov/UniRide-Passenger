@@ -31,6 +31,7 @@ import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
+import com.campusmov.uniride.domain.reputation.usecases.InfractionUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
@@ -89,7 +90,8 @@ object UseCaseModule {
 
     @Provides
     fun provideReputationIncentivesUseCase(reputationIncentivesRepository: ReputationIncentivesRepository) = ReputationIncentivesUseCase(
-        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository)
+        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository),
+        getInfractionsOfUser = InfractionUseCase(reputationIncentivesRepository)
     )
     
     @Provides
