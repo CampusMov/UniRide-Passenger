@@ -7,4 +7,5 @@ interface PassengerRequestWebSocketRepository {
     suspend fun connectRequestsSession()
     suspend fun subscribeToRequestStatus(passengerRequestId: String): Flow<PassengerRequest>
     suspend fun disconnectRequestsSession()
+    suspend fun awaitConnectionReady()
 }

@@ -39,6 +39,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.hildan.krossbow.stomp.StompClient
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -74,5 +75,6 @@ object RepositoryModule {
     fun providePassengerRequestRepository(passengerRequestService: PassengerRequestService): PassengerRequestRepository = PassengerRequestRepositoryImpl(passengerRequestService)
 
     @Provides
+    @Singleton
     fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
 }
