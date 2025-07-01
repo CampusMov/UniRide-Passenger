@@ -21,6 +21,7 @@ import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRe
 import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
+import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.location.repository.LocationRepository
@@ -29,12 +30,15 @@ import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
+import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.hildan.krossbow.stomp.StompClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -68,4 +72,7 @@ object RepositoryModule {
 
     @Provides
     fun providePassengerRequestRepository(passengerRequestService: PassengerRequestService): PassengerRequestRepository = PassengerRequestRepositoryImpl(passengerRequestService)
+
+    @Provides
+    fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
 }
