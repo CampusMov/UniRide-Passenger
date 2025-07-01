@@ -20,14 +20,27 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.StarRate
+import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Timelapse
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
@@ -68,11 +81,35 @@ fun MenuNavigationView(
     content: @Composable () -> Unit){
     val items = listOf(
         NavigationItem(
-            title = "Profile information",
+            title = "Mis Carpools",
             route = ProfileScreen.ProfileInfo.route,
-            selectedIcon = Icons.Filled.AccountCircle,
-            unselectedIcon = Icons.Outlined.AccountCircle
-        )
+            selectedIcon = Icons.Filled.Map,
+            unselectedIcon = Icons.Outlined.Map
+        ),
+        NavigationItem(
+            title = "Mi Tiempo",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.Timelapse,
+            unselectedIcon = Icons.Outlined.Timelapse
+        ),
+        NavigationItem(
+            title = "Incidencias",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.Warning,
+            unselectedIcon = Icons.Outlined.Warning
+        ),
+        NavigationItem(
+            title = "Ubicaciones Guardadas",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.LocationOn,
+            unselectedIcon = Icons.Outlined.LocationOn
+        ),
+        NavigationItem(
+            title = "Notificaciones",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.Notifications,
+            unselectedIcon = Icons.Outlined.Notifications
+        ),
     )
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -90,7 +127,7 @@ fun MenuNavigationView(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = true,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier
@@ -100,6 +137,23 @@ fun MenuNavigationView(
                     .padding(16.dp),
                 drawerContainerColor = Color.Black
             ) {
+
+                IconButton(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .background(Color.Transparent),
+                    onClick = {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                        }
+                    },
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Icon of go back", tint = Color.White)
+                }
+
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -150,18 +204,18 @@ fun MenuNavigationView(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-//                        TextButton(
-//                            onClick = { /* Acción */ },
-//                            colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
-//                        ) {
-//                            Text(text = "Editar mi perfil", color = Color.White)
-//                            Spacer(modifier = Modifier.width(4.dp))
-//                            Icon(
-//                                imageVector = Icons.Default.ArrowForward,
-//                                contentDescription = "Editar perfil",
-//                                tint = Color.White
-//                            )
-//                        }
+                        TextButton(
+                            onClick = { navHostController.navigate(route = ProfileScreen.ProfileInfo.route) },
+                            colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                        ) {
+                            Text(text = "Editar mi perfil", color = Color.White)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Editar perfil",
+                                tint = Color.White
+                            )
+                        }
                     }
 
                     Image(
@@ -176,25 +230,44 @@ fun MenuNavigationView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-//                items.forEachIndexed { index, item ->
-//                    NavigationDrawerItem(
-//                        label = { Text(text = item.title, color = Color.Black) },
-//                        selected = index == selectedItemIndex.intValue,
-//                        onClick = {
-//                            navHostController.navigate(route = item.route)
-//                            selectedItemIndex.intValue = index
-//                            scope.launch { drawerState.close() }
-//                        },
-//                        icon = {
-//                            Icon(
-//                                imageVector = if (index == selectedItemIndex.intValue) item.selectedIcon else item.unselectedIcon,
-//                                contentDescription = item.title,
-//                                tint = Color.DarkGray
-//                            )
-//                        },
-//                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-//                    )
-//                }
+                items.forEachIndexed { index, item ->
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = item.title,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        },
+                        selected = index == selectedItemIndex.intValue,
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedContainerColor = Color.Transparent,
+                            selectedContainerColor = Color.Transparent,
+                        ),
+                        onClick = {
+                            navHostController.navigate(route = item.route)
+                            selectedItemIndex.intValue = index
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (index == selectedItemIndex.intValue) item.selectedIcon else item.unselectedIcon,
+                                contentDescription = item.title,
+                                tint = Color.White
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(NavigationDrawerItemDefaults.ItemPadding)
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    )
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.White
+                    )
+                }
+
 
             }
         }
