@@ -54,7 +54,7 @@ import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.compo
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
 import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceView
-import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolstart.WaitForCarpoolStart
+import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolstart.WaitForCarpoolStartView
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +128,7 @@ fun MapCarpoolSearcherView(
                             )
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.WAITING_FOR_CARPOOL_START) {
-                            WaitForCarpoolStart(navHostController = navHostController)
+                            WaitForCarpoolStartView(navHostController = navHostController)
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.IN_CARPOOL) {
                             // TODO: Implement the In Carpool state UI
