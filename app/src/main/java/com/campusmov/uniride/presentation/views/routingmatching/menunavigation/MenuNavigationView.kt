@@ -69,6 +69,7 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 import com.campusmov.uniride.presentation.navigation.screen.analytic.AnalyticsScreen
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
+import com.campusmov.uniride.presentation.navigation.screen.reputation.ReputationScreen
 import com.campusmov.uniride.presentation.util.NavigationItem
 import kotlinx.coroutines.launch
 
@@ -94,7 +95,7 @@ fun MenuNavigationView(
         ),
         NavigationItem(
             title = "Incidencias",
-            route = ProfileScreen.ProfileInfo.route,
+            route = ReputationScreen.infractions.route,
             selectedIcon = Icons.Filled.Warning,
             unselectedIcon = Icons.Outlined.Warning
         ),
