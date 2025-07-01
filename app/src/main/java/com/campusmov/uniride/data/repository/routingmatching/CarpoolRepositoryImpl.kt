@@ -46,6 +46,7 @@ class CarpoolRepositoryImpl(
             if(response.isSuccessful) {
                 val carpoolDto = response.body()
                 if (carpoolDto != null) {
+                    Log.d("TAG", "Carpool fetched successfully")
                     Resource.Success(carpoolDto.toDomain())
                 } else {
                     Resource.Failure("Carpool not found")
