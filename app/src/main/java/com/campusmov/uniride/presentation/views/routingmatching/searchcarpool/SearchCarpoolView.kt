@@ -131,7 +131,10 @@ fun SearchCarpoolView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable { onClassScheduleSelected() },
+                .clickable {
+                    onClassScheduleSelected()
+                    viewModelSearchClassSchedule.getClassSchedules()
+               },
             value = "",
             onValueChange = {},
             placeholder = "Seleccionar horario de clases",

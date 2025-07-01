@@ -59,7 +59,7 @@ class SearchClassScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun getClassSchedules() {
+    fun getClassSchedules() {
         viewModelScope.launch {
             _isLoading.value = true
             val result = profileClassScheduleUseCases.getClassSchedulesByProfileId(_user.value?.id ?: "")
