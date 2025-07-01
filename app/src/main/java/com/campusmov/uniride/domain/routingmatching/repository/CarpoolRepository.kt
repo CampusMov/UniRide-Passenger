@@ -7,4 +7,5 @@ import com.campusmov.uniride.domain.shared.util.Resource
 
 interface CarpoolRepository {
     suspend fun searchAvailableCarpools(location: Location, classSchedule: ClassSchedule, requestedSeats: Int): Resource<List<Carpool>>
+    suspend fun searchCarpoolById(carpoolId: String): Resource<Carpool>
 }
