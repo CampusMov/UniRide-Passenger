@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,11 +48,13 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
+import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
 import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceView
+import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolstart.WaitForCarpoolStart
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +64,7 @@ fun MapCarpoolSearcherView(
     navHostController: NavHostController
 ) {
     val context = LocalContext.current
+    val userCarpoolSate = viewModel.userCarpoolState.collectAsState()
 
     val hasPermission = remember {
         mutableStateOf(
@@ -118,18 +122,32 @@ fun MapCarpoolSearcherView(
                             .height(calculateSheetHeight(viewmodel = viewModel))
                             .background(Color.Black)
                     ) {
-                        SearchCarpoolView(
-                            navHostController = navHostController,
-                            onPickUpPointSelected = {
-                                showSearchPickUpPoint.value = true
-                            },
-                            onClassScheduleSelected = {
-                                showSearchClassSchedule.value = true
-                            },
-                            onOpenCarpoolsSearchResultsView = {
-                                showCarpoolsSearchResults.value = true
-                            },
-                        )
+                        if (userCarpoolSate.value == EUserCarpoolState.SEARCHING) {
+                            SearchCarpoolView(
+                                navHostController = navHostController,
+                                onPickUpPointSelected = {
+                                    showSearchPickUpPoint.value = true
+                                },
+                                onClassScheduleSelected = {
+                                    showSearchClassSchedule.value = true
+                                },
+                                onOpenCarpoolsSearchResultsView = {
+                                    showCarpoolsSearchResults.value = true
+                                },
+                            )
+                        }
+                        if (userCarpoolSate.value == EUserCarpoolState.WAITING_FOR_CARPOOL_START) {
+                            WaitForCarpoolStart(navHostController = navHostController)
+                        }
+                        if (userCarpoolSate.value == EUserCarpoolState.IN_CARPOOL) {
+                            // TODO: Implement the In Carpool state UI
+                        }
+                        if (userCarpoolSate.value == EUserCarpoolState.COMPLETED) {
+                            // TODO: Implement the Completed state UI
+                        }
+                        if (userCarpoolSate.value == EUserCarpoolState.CANCELLED) {
+                            // TODO: Implement the Cancelled state UI
+                        }
                     }
                 }
             },
