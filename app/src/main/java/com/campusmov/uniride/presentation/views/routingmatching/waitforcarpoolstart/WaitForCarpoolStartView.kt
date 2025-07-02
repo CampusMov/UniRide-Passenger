@@ -31,6 +31,20 @@ fun WaitForCarpoolStartView(
         }
     }
 
+    LaunchedEffect(currentCarpool.value) {
+        if (currentCarpool.value != null) {
+            Log.d("TAG", "Current carpool: ${currentCarpool.value}")
+            viewModelMapContent.loadRoute(
+                startLatitude = currentCarpool.value?.origin?.latitude ?: 0.0,
+                startLongitude = currentCarpool.value?.origin?.longitude ?: 0.0,
+                endLatitude = currentCarpool.value?.destination?.latitude ?: 0.0,
+                endLongitude = currentCarpool.value?.destination?.longitude ?: 0.0
+            )
+        } else {
+            Log.d("TAG", "No current carpool found")
+        }
+    }
+
     Log.d("TAG", "Carpool ID : ${viewModelMapContent.carpoolAcceptedId.value}")
     Scaffold { paddingValues ->
         Column {

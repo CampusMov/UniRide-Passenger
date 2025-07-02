@@ -1,10 +1,14 @@
 package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
+import com.campusmov.uniride.domain.route.model.Route
+import com.campusmov.uniride.domain.route.usecases.RouteUseCases
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
+import com.campusmov.uniride.domain.shared.util.Resource
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +18,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapContentViewModel @Inject constructor(
-    private val locationUsesCases: LocationUsesCases
+    private val locationUsesCases: LocationUsesCases,
+    private val routeUseCase: RouteUseCases
 ): ViewModel() {
     private val _location = MutableStateFlow<LatLng?>(null)
     val location: StateFlow<LatLng?> get() = _location
+
+    private val _route = MutableStateFlow<Route?>(null)
+    val route: StateFlow<Route?> get() = _route
 
     var isInteractiveWithMap = mutableStateOf(false)
 
@@ -34,6 +42,37 @@ class MapContentViewModel @Inject constructor(
         locationUsesCases.getLocationUpdates { position ->
             _location.value = position
         }
+    }
+
+    fun loadRoute(startLatitude: Double, startLongitude: Double, endLatitude: Double, endLongitude: Double) {
+        if (!isValidRoute(startLatitude, startLongitude, endLatitude, endLongitude)) {
+            _route.value = null
+            return
+        }
+        viewModelScope.launch {
+           val result = routeUseCase.getRoute(
+                startLatitude = startLatitude,
+                startLongitude = startLongitude,
+                endLatitude = endLatitude,
+                endLongitude = endLongitude
+           )
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("TAG", "Route fetched successfully: ${result.data}")
+                    _route.value = result.data
+                }
+                is Resource.Failure -> {
+                    Log.e("TAG", "Failed to fetch route: ${result.message}")
+                    _route.value = null
+                }
+                Resource.Loading -> {}
+            }
+        }
+    }
+
+    private fun isValidRoute(startLatitude: Double, startLongitude: Double, endLatitude: Double, endLongitude: Double): Boolean {
+        return startLatitude != 0.0 && startLongitude != 0.0 &&
+                endLatitude != 0.0 && endLongitude != 0.0
     }
 
     fun searchCarpool() {
