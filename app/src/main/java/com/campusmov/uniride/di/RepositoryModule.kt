@@ -9,6 +9,7 @@ import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestServ
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentivesService
+import com.campusmov.uniride.data.datasource.remote.service.RouteService
 import com.campusmov.uniride.data.repository.analytics.AnalyticsRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.UserRepositoryImpl
@@ -19,6 +20,7 @@ import com.campusmov.uniride.data.repository.reputation.ReputationIncentivesRepo
 import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
 import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
+import com.campusmov.uniride.data.repository.route.RouteRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
@@ -28,6 +30,7 @@ import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
+import com.campusmov.uniride.domain.route.repository.RouteRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
@@ -77,4 +80,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
+
+    @Provides
+    fun provideRouteRepository(routeService: RouteService): RouteRepository = RouteRepositoryImpl(routeService)
 }
