@@ -40,8 +40,6 @@ import java.util.Locale
 fun ChatDialog(
     passengerId: String,
     carpoolId: String,
-    recipientName: String,
-    recipientVehicle: String,
     show: Boolean,
     onDismiss: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
@@ -62,6 +60,8 @@ fun ChatDialog(
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val context = LocalContext.current
+
+    // TODO: CONSUME PROFILE USES CASES TO GET DRIVER AND VEHICLE INFO
 
     LaunchedEffect(Unit) {
         viewModel.error.collectLatest { errorMessage ->
@@ -140,9 +140,11 @@ fun ChatDialog(
                             }
                             Spacer(Modifier.width(8.dp))
                             Column {
-                                Text(recipientName, color = Color.White, style = MaterialTheme.typography.titleLarge)
+                                // TODO: Replace with actual driver and vehicle info from chat
+                                Text("Default driver name", color = Color.White, style = MaterialTheme.typography.titleLarge)
                                 Spacer(Modifier.height(4.dp))
-                                Text(recipientVehicle, color = Color(0xFFBBBBBB), style = MaterialTheme.typography.bodyMedium)
+                                // TODO: Replace with actual vehicle info from chat
+                                Text("Default driver vehicle name", color = Color(0xFFBBBBBB), style = MaterialTheme.typography.bodyMedium)
                             }
                         }
 
