@@ -3,6 +3,7 @@ package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -50,6 +51,7 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
+import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
 import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
@@ -61,6 +63,7 @@ import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolst
 @Composable
 fun MapCarpoolSearcherView(
     viewModel: MapContentViewModel = hiltViewModel(),
+    viewModelCarpoolsSearchResultsViewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
     val context = LocalContext.current
@@ -93,6 +96,18 @@ fun MapCarpoolSearcherView(
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
             viewModel.startLocationUpdates()
+            viewModelCarpoolsSearchResultsViewModel.connectToPassengerRequestWebSocket()
+        }
+    }
+
+    LaunchedEffect(viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value){
+        if (viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value != null) {
+            viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value?.let { passengerRequest ->
+                Log.d("TAG", "Carpool accepted: ${passengerRequest.carpoolId}")
+                viewModel.showCarpoolsSearchResults.value = false
+                viewModel.waitForCarpoolStart()
+                viewModel.carpoolAcceptedId.value = passengerRequest.carpoolId
+            }
         }
     }
 
