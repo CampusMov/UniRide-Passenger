@@ -51,10 +51,6 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     var passengerRequestAccepted = mutableStateOf<PassengerRequest?>(null)
         private set
 
-    init {
-        connectToPassengerRequestWebSocket()
-    }
-
     private fun getUserLocally() {
         viewModelScope.launch {
             when (val result = userUseCase.getUserLocallyUseCase()) {
@@ -155,8 +151,17 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("TAG", "Passenger requests obtained successfully")
                     _passengerRequests.value = result.data
-                    _passengerRequests.value.forEach { passengerRequest ->
-                        subscribeTo(passengerRequest.id)
+                    val hasAcceptedRequest = _passengerRequests.value.any { it.status == EPassengerRequestStatus.ACCEPTED }
+                    if (hasAcceptedRequest) {
+                        Log.d("TAG", "Passenger request already accepted, clearing requests")
+                        passengerRequestAccepted.value = _passengerRequests.value.first { it.status == EPassengerRequestStatus.ACCEPTED }
+                        _passengerRequests.value = emptyList()
+                        onCleared()
+                    } else {
+                        Log.d("TAG", "No accepted passenger requests, subscribing to updates")
+                        _passengerRequests.value.forEach { passengerRequest ->
+                            subscribeTo(passengerRequest.id)
+                        }
                     }
                 }
                 is Resource.Failure -> {
@@ -194,6 +199,7 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                         }
                         EPassengerRequestStatus.REJECTED -> {
                             Log.d("TAG", "Passenger request rejected: ${passengerRequest.id}")
+                            unsubscribeFrom(requestId)
                             _passengerRequests.update { requests ->
                                 requests.filter { it.id != passengerRequest.id }
                             }

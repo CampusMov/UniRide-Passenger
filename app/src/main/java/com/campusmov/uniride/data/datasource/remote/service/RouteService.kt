@@ -6,13 +6,8 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface RouteService {
-    @POST("routes/shortest/dijkstra")
-    suspend fun getRouteDijkstra(
-        @Body request: RouteRequestDto
-    ): RouteResponseDto
-
-    @POST("routes/shortest/a-star")
-    suspend fun getRouteAStar(
+    @POST("matching-routing-service/routes/shortest/a-star")
+    suspend fun getRoute(
         @Body request: RouteRequestDto
     ): RouteResponseDto
 }
