@@ -5,6 +5,7 @@ import com.campusmov.uniride.data.datasource.location.LocationDataSource
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.InTripCommunicationService
 import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
@@ -13,6 +14,7 @@ import com.campusmov.uniride.data.datasource.remote.service.RouteService
 import com.campusmov.uniride.data.repository.analytics.AnalyticsRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.AuthRepositoryImpl
 import com.campusmov.uniride.data.repository.auth.UserRepositoryImpl
+import com.campusmov.uniride.data.repository.intripcommunication.InTripCommunicationRepositoryImpl
 import com.campusmov.uniride.data.repository.location.LocationRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileClassScheduleRepositoryImpl
 import com.campusmov.uniride.data.repository.profile.ProfileRepositoryImpl
@@ -20,16 +22,19 @@ import com.campusmov.uniride.data.repository.reputation.ReputationIncentivesRepo
 import com.campusmov.uniride.domain.analytics.repository.AnalyticsRepository
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
 import com.campusmov.uniride.data.repository.filemanagement.FileManagementRepositoryImpl
+import com.campusmov.uniride.data.repository.intripcommunication.InTripCommunicationWebSocketRepositoryImpl
 import com.campusmov.uniride.data.repository.route.RouteRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
+import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationRepository
 import com.campusmov.uniride.domain.location.repository.LocationRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepository
+import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationWebSocketRepository
 import com.campusmov.uniride.domain.route.repository.RouteRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
@@ -82,5 +87,14 @@ object RepositoryModule {
     fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
 
     @Provides
+    @Singleton
+    fun provideInTripCommunicationRepository(inTripCommunicationService: InTripCommunicationService): InTripCommunicationRepository = InTripCommunicationRepositoryImpl(inTripCommunicationService)
+
+    @Provides
+    @Singleton
+    fun provideInTripCommunicationWebSocketRepository(stompClient: StompClient, gson: Gson): InTripCommunicationWebSocketRepository = InTripCommunicationWebSocketRepositoryImpl(stompClient, gson)
+
+    @Provides
+    @Singleton
     fun provideRouteRepository(routeService: RouteService): RouteRepository = RouteRepositoryImpl(routeService)
 }

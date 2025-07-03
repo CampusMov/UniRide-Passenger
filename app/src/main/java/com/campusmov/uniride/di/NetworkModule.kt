@@ -4,6 +4,7 @@ import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.InTripCommunicationService
 import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
@@ -21,6 +22,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -84,7 +86,7 @@ object NetworkModule {
     }
 
     @Provides
-    @Singleton    
+    @Singleton
     fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
         return retrofit.create(CarpoolService::class.java)
     }
@@ -107,6 +109,12 @@ object NetworkModule {
         return retrofit.create(PassengerRequestService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
+        return retrofit.create(InTripCommunicationService::class.java)
+    }
+    
     @Provides
     @Singleton
     fun provideRouteService(@DefaultRetrofit retrofit: Retrofit): RouteService {

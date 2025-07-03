@@ -85,6 +85,14 @@ dependencies {
     // COIL
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    
+    //STOMP
+    implementation(libs.jackson.kotlin)
+    implementation(libs.okhttp)
+    implementation(libs.stomp.android)
+    implementation(libs.rxjava2)
+    implementation(libs.rxandroid2)
+    implementation(libs.rxkotlin2)
 
     // GOOGLE MAPS
     implementation(libs.maps.compose)
