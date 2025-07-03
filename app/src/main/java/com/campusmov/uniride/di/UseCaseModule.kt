@@ -153,7 +153,8 @@ object UseCaseModule {
         markMessageAsRead = MarkMessageAsReadUseCase(inTripCommunicationRepository),
         connectToChat = ConnectToChatSessionUseCase(inTripCommunicationWebSocketRepository),
         disconnectChat = DisconnectChatSessionUseCase(inTripCommunicationWebSocketRepository),
-        observeLiveMessages = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository),
+        observeLiveMessages = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository)
+    )
 
     @Provides
     fun provideRoutesUseCases(routeRepository: RouteRepository) = RouteUseCases(
