@@ -7,4 +7,5 @@ object Graph {
     const val HOME = "home_graph"
     const val MATCHING = "matching_graph"
     const val ANALYTICS = "analytics_graph"
+    const val REPUTATION = "reputation_graph"
 }
