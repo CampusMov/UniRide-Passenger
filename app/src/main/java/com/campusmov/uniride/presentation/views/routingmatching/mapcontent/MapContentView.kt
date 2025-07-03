@@ -16,14 +16,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -110,8 +114,9 @@ fun MapCarpoolSearcherView(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(calculateSheetHeight(viewmodel = viewModel))
+                            .heightIn(max = calculateParentColumnHeight(viewmodel = viewModel))
                             .background(Color.Black)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         if (userCarpoolSate.value == EUserCarpoolState.SEARCHING) {
                             SearchCarpoolView(
@@ -248,4 +253,17 @@ private fun calculateSheetHeight(
 private fun calculateSearchCarpoolHeight(): Dp {
     val heightEnlargedPercentage = 0.52f
     return LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
+}
+
+@Composable
+private fun calculateParentColumnHeight(
+    viewmodel: MapContentViewModel
+) : Dp {
+    val heightEnlargedPercentage = 0.3f
+    val minimizeHeight = 60.dp
+    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
+    return animateDpAsState(
+        if (viewmodel.isInteractiveWithMap.value ) minimizeHeight else normalHeight,
+        animationSpec = spring(stiffness = 300f)
+    ).value
 }
