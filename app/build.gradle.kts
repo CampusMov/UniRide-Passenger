@@ -85,14 +85,6 @@ dependencies {
     // COIL
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    
-    //STOMP
-    implementation(libs.jackson.kotlin)
-    implementation(libs.okhttp)
-    implementation(libs.stomp.android)
-    implementation(libs.rxjava2)
-    implementation(libs.rxandroid2)
-    implementation(libs.rxkotlin2)
 
     // GOOGLE MAPS
     implementation(libs.maps.compose)
@@ -104,8 +96,8 @@ dependencies {
     implementation (libs.material)
 
     // WEBSOCKET
-    implementation("org.hildan.krossbow:krossbow-stomp-core:9.3.0")
-    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:9.3.0")
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
 
 
 

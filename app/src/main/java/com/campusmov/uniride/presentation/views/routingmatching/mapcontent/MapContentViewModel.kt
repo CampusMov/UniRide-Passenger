@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.campusmov.uniride.domain.auth.model.User
+import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.route.model.Route
 import com.campusmov.uniride.domain.route.usecases.RouteUseCases
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MapContentViewModel @Inject constructor(
     private val locationUsesCases: LocationUsesCases,
-    private val routeUseCase: RouteUseCases
+    private val routeUseCase: RouteUseCases,
+    private val userUseCase: UserUseCase
 ): ViewModel() {
     private val _location = MutableStateFlow<LatLng?>(null)
     val location: StateFlow<LatLng?> get() = _location
@@ -27,16 +30,41 @@ class MapContentViewModel @Inject constructor(
     private val _route = MutableStateFlow<Route?>(null)
     val route: StateFlow<Route?> get() = _route
 
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> get() = _user
+
     var isInteractiveWithMap = mutableStateOf(false)
 
     var showSearchPickUpPoint = mutableStateOf(false)
     var showSearchClassSchedule = mutableStateOf(false)
     var showCarpoolsSearchResults = mutableStateOf(false)
 
+    var showChat = mutableStateOf(false)
+
     private val _userCarpoolSate = MutableStateFlow<EUserCarpoolState>(EUserCarpoolState.SEARCHING)
     val userCarpoolState: StateFlow<EUserCarpoolState> get() = _userCarpoolSate
 
     val carpoolAcceptedId = mutableStateOf<String?>(null)
+
+    init {
+        getUserLocally()
+    }
+
+    private fun getUserLocally() {
+        viewModelScope.launch {
+            val result = userUseCase.getUserLocallyUseCase()
+            when (result) {
+                is Resource.Success -> {
+                    _user.value = result.data
+                    Log.d("TAG", "getUser: ${result.data}")
+                }
+                is Resource.Failure -> {
+                    Log.e("TAG", "Failed to get user: ${result.message}")
+                }
+                Resource.Loading -> {}
+            }
+        }
+    }
 
     fun startLocationUpdates() = viewModelScope.launch {
         locationUsesCases.getLocationUpdates { position ->

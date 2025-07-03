@@ -25,6 +25,7 @@ import com.campusmov.uniride.data.repository.filemanagement.FileManagementReposi
 import com.campusmov.uniride.data.repository.intripcommunication.InTripCommunicationWebSocketRepositoryImpl
 import com.campusmov.uniride.data.repository.route.RouteRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryImpl
+import com.campusmov.uniride.data.repository.routingmatching.CarpoolWebSocketRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
@@ -37,6 +38,7 @@ import com.campusmov.uniride.domain.filemanagement.repository.FileManagementRepo
 import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationWebSocketRepository
 import com.campusmov.uniride.domain.route.repository.RouteRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
+import com.campusmov.uniride.domain.routingmatching.repository.CarpoolWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -75,6 +77,9 @@ object RepositoryModule {
 
     @Provides   
     fun provideCarpoolRepository(carpoolService: CarpoolService): CarpoolRepository = CarpoolRepositoryImpl(carpoolService)
+
+    @Provides
+    fun provideCarpoolWebSocketRepository(stompClient: StompClient, gson: Gson): CarpoolWebSocketRepository = CarpoolWebSocketRepositoryImpl(stompClient, gson)
 
     @Provides
     fun provideFileManagementRepository(storage: FirebaseStorage): FileManagementRepository = FileManagementRepositoryImpl(storage)

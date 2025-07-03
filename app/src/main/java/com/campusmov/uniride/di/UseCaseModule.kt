@@ -46,16 +46,21 @@ import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
+import com.campusmov.uniride.domain.reputation.usecases.InfractionUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
 import com.campusmov.uniride.domain.route.repository.RouteRepository
 import com.campusmov.uniride.domain.route.usecases.GetRouteUseCase
 import com.campusmov.uniride.domain.route.usecases.RouteUseCases
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
+import com.campusmov.uniride.domain.routingmatching.repository.CarpoolWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolWsUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.ConnectCarpoolUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.ConnectRequestsUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.DisconnectCarpoolUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.DisconnectRequestsUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.GetAllPassengerRequestsByPassengerIdUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.GetCarpoolByIdUseCase
@@ -63,6 +68,7 @@ import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUse
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestWsUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.SavePassengerRequestUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.SearchCarpoolsAvailableUseCase
+import com.campusmov.uniride.domain.routingmatching.usecases.SubscribeCarpoolStatusUpdatesUseCase
 import com.campusmov.uniride.domain.routingmatching.usecases.SubscribeRequestStatusUpdatesUseCase
 import dagger.Module
 import dagger.Provides
@@ -113,13 +119,21 @@ object UseCaseModule {
 
     @Provides
     fun provideReputationIncentivesUseCase(reputationIncentivesRepository: ReputationIncentivesRepository) = ReputationIncentivesUseCase(
-        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository)
+        getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository),
+        getInfractionsOfUser = InfractionUseCase(reputationIncentivesRepository)
     )
     
     @Provides
     fun provideCarpoolUseCases(carpoolRepository: CarpoolRepository) = CarpoolUseCases(
         searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository),
         getCarpoolById = GetCarpoolByIdUseCase(carpoolRepository)
+    )
+
+    @Provides
+    fun provideCarpoolWsUseCases(carpoolWebSocketRepository: CarpoolWebSocketRepository) = CarpoolWsUseCases(
+        connectCarpoolUseCase = ConnectCarpoolUseCase(carpoolWebSocketRepository),
+        subscribeCarpoolStatusUpdatesUseCase = SubscribeCarpoolStatusUpdatesUseCase(carpoolWebSocketRepository),
+        disconnectCarpoolUseCase = DisconnectCarpoolUseCase(carpoolWebSocketRepository)
     )
 
     @Provides
@@ -153,7 +167,8 @@ object UseCaseModule {
         markMessageAsRead = MarkMessageAsReadUseCase(inTripCommunicationRepository),
         connectToChat = ConnectToChatSessionUseCase(inTripCommunicationWebSocketRepository),
         disconnectChat = DisconnectChatSessionUseCase(inTripCommunicationWebSocketRepository),
-        observeLiveMessages = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository),
+        observeLiveMessages = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository)
+    )
 
     @Provides
     fun provideRoutesUseCases(routeRepository: RouteRepository) = RouteUseCases(
