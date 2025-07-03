@@ -48,6 +48,9 @@ import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
+import com.campusmov.uniride.domain.route.repository.RouteRepository
+import com.campusmov.uniride.domain.route.usecases.GetRouteUseCase
+import com.campusmov.uniride.domain.route.usecases.RouteUseCases
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
@@ -141,19 +144,19 @@ object UseCaseModule {
     )
 
     @Provides
-    fun provideInTripCommunicationUseCases(
-        inTripCommunicationRepository: InTripCommunicationRepository,
-        inTripCommunicationWebSocketRepository: InTripCommunicationWebSocketRepository
-    ): InTripCommunicationUseCases = InTripCommunicationUseCases(
+    fun provideInTripCommunicationUseCases(inTripCommunicationRepository: InTripCommunicationRepository, inTripCommunicationWebSocketRepository: InTripCommunicationWebSocketRepository): InTripCommunicationUseCases = InTripCommunicationUseCases(
         createChat = CreateChatUseCase(inTripCommunicationRepository),
         closeChat = CloseChatUseCase(inTripCommunicationRepository),
         getPassengerChat = GetPassengerChatUseCase(inTripCommunicationRepository),
         getMessages = GetMessagesUseCase(inTripCommunicationRepository),
         sendMessage = SendMessageUseCase(inTripCommunicationWebSocketRepository),
         markMessageAsRead = MarkMessageAsReadUseCase(inTripCommunicationRepository),
-        connectToChat        = ConnectToChatSessionUseCase(inTripCommunicationWebSocketRepository),
-        disconnectChat       = DisconnectChatSessionUseCase(inTripCommunicationWebSocketRepository),
-        observeLiveMessages  = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository),
+        connectToChat = ConnectToChatSessionUseCase(inTripCommunicationWebSocketRepository),
+        disconnectChat = DisconnectChatSessionUseCase(inTripCommunicationWebSocketRepository),
+        observeLiveMessages = SubscribeToChatUseCase(inTripCommunicationWebSocketRepository),
 
+    @Provides
+    fun provideRoutesUseCases(routeRepository: RouteRepository) = RouteUseCases(
+        getRoute = GetRouteUseCase(routeRepository)
     )
 }

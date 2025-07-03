@@ -3,6 +3,7 @@ package com.campusmov.uniride.presentation.views.routingmatching.mapcontent
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -16,14 +17,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -50,6 +55,7 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
+import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
 import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
@@ -61,6 +67,7 @@ import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolst
 @Composable
 fun MapCarpoolSearcherView(
     viewModel: MapContentViewModel = hiltViewModel(),
+    viewModelCarpoolsSearchResultsViewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
     val context = LocalContext.current
@@ -93,6 +100,18 @@ fun MapCarpoolSearcherView(
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
             viewModel.startLocationUpdates()
+            viewModelCarpoolsSearchResultsViewModel.connectToPassengerRequestWebSocket()
+        }
+    }
+
+    LaunchedEffect(viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value){
+        if (viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value != null) {
+            viewModelCarpoolsSearchResultsViewModel.passengerRequestAccepted.value?.let { passengerRequest ->
+                Log.d("TAG", "Carpool accepted: ${passengerRequest.carpoolId}")
+                viewModel.showCarpoolsSearchResults.value = false
+                viewModel.waitForCarpoolStart()
+                viewModel.carpoolAcceptedId.value = passengerRequest.carpoolId
+            }
         }
     }
 
@@ -110,8 +129,9 @@ fun MapCarpoolSearcherView(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(calculateSheetHeight(viewmodel = viewModel))
+                            .heightIn(max = calculateParentColumnHeight(viewmodel = viewModel))
                             .background(Color.Black)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         if (userCarpoolSate.value == EUserCarpoolState.SEARCHING) {
                             SearchCarpoolView(
@@ -248,4 +268,17 @@ private fun calculateSheetHeight(
 private fun calculateSearchCarpoolHeight(): Dp {
     val heightEnlargedPercentage = 0.52f
     return LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
+}
+
+@Composable
+private fun calculateParentColumnHeight(
+    viewmodel: MapContentViewModel
+) : Dp {
+    val heightEnlargedPercentage = 0.3f
+    val minimizeHeight = 60.dp
+    val normalHeight = LocalConfiguration.current.screenHeightDp.dp * heightEnlargedPercentage
+    return animateDpAsState(
+        if (viewmodel.isInteractiveWithMap.value ) minimizeHeight else normalHeight,
+        animationSpec = spring(stiffness = 300f)
+    ).value
 }

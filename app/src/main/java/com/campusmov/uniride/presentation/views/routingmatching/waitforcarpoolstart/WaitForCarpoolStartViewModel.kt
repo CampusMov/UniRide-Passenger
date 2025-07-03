@@ -3,7 +3,6 @@ package com.campusmov.uniride.presentation.views.routingmatching.waitforcarpools
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.campusmov.uniride.domain.routingmatching.model.Carpool
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
 import com.campusmov.uniride.domain.shared.util.Resource

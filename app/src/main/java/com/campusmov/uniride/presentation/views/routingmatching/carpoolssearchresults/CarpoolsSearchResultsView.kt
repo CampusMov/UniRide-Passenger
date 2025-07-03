@@ -1,6 +1,5 @@
 package com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.components.CarpoolInfoCard
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.components.PassengerRequestInfoCard
-import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.MapContentViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.searchplace.SearchPlaceViewModel
 
@@ -46,7 +43,6 @@ fun CarpoolsSearchResultsView(
     viewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
     viewModelSearchCarpoolViewModel: SearchCarpoolViewModel = hiltViewModel(),
     viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
-    viewModelMapContent: MapContentViewModel = hiltViewModel(),
     onGoBack: () -> Unit,
 ) {
     val availableCarpools = viewModelSearchCarpoolViewModel.availableCarpools.collectAsState()
@@ -55,17 +51,6 @@ fun CarpoolsSearchResultsView(
     val passengerRequests = viewModel.passengerRequests.collectAsState()
     val filteredAvailableCarpool = availableCarpools.value.filter { carpool ->
         passengerRequests.value.none { request -> request.carpoolId == carpool.id && request.passengerId == viewModel.user.value?.id }
-    }
-
-    LaunchedEffect(viewModel.passengerRequestAccepted.value){
-        if (viewModel.passengerRequestAccepted.value != null) {
-            viewModel.passengerRequestAccepted.value?.let { passengerRequest ->
-                Log.d("TAG", "Carpool accepted: ${passengerRequest.carpoolId}")
-                viewModelMapContent.showCarpoolsSearchResults.value = false
-                viewModelMapContent.waitForCarpoolStart()
-                viewModelMapContent.carpoolAcceptedId.value = passengerRequest.carpoolId
-            }
-        }
     }
 
     Dialog(

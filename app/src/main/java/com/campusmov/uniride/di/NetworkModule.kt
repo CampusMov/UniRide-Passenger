@@ -9,6 +9,7 @@ import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestServ
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
 import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentivesService
+import com.campusmov.uniride.data.datasource.remote.service.RouteService
 import com.google.firebase.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
@@ -112,5 +113,11 @@ object NetworkModule {
     @Singleton
     fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
         return retrofit.create(InTripCommunicationService::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideRouteService(@DefaultRetrofit retrofit: Retrofit): RouteService {
+        return retrofit.create(RouteService::class.java)
     }
 }
