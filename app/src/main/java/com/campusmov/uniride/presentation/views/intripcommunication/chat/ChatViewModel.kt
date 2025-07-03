@@ -1,5 +1,6 @@
 package com.campusmov.uniride.presentation.views.intripcommunication.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.intripcommunication.model.Chat
@@ -49,17 +50,30 @@ class ChatViewModel @Inject constructor(
         _history.value = emptyList()
         _live.value    = emptyList()
 
+        if (!isValidParamsToOpenChat(passengerId, carpoolId)) {
+            Log.e("ChatViewModel", "Invalid parameters to open chat - passengerId: $passengerId, carpoolId: $carpoolId")
+            return
+        }
+
         viewModelScope.launch {
             when (val res = inTripCommunicationUseCases.getPassengerChat(passengerId, carpoolId)) {
                 is Resource.Success -> {
+                    Log.d("TAG", "Chat opened: ${res.data}")
                     _chat.value      = res.data
                     currentChatId    = res.data.chatId
                     startSession()
                 }
-                is Resource.Failure -> _error.emit(res.message)
+                is Resource.Failure -> {
+                    Log.e("TAG", "Failed to open chat: ${res.message}")
+                    _error.emit(res.message)
+                }
                 else -> {}
             }
         }
+    }
+
+    private fun isValidParamsToOpenChat(passengerId: String, carpoolId: String): Boolean {
+        return passengerId.isNotEmpty() && carpoolId.isNotEmpty()
     }
 
     private fun startSession() {
