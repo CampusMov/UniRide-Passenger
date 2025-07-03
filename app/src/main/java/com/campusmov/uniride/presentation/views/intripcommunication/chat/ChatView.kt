@@ -40,7 +40,6 @@ import java.util.Locale
 fun ChatDialog(
     passengerId: String,
     carpoolId: String,
-    senderId: String,
     recipientName: String,
     recipientVehicle: String,
     show: Boolean,
@@ -167,7 +166,7 @@ fun ChatDialog(
                             reverseLayout = false
                         ) {
                             items(messages, key = { it.messageId }) { msg ->
-                                MessageBubble(msg, msg.senderId == senderId)
+                                MessageBubble(msg, msg.senderId == passengerId)
                             }
                         }
 
