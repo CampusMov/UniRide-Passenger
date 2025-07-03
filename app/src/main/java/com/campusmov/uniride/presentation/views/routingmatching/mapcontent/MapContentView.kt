@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
@@ -54,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
+import com.campusmov.uniride.presentation.views.intripcommunication.chat.ChatDialog
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
@@ -75,6 +74,9 @@ fun MapCarpoolSearcherView(
     val showSearchPickUpPoint = viewModel.showSearchPickUpPoint
     val showSearchClassSchedule = viewModel.showSearchClassSchedule
     val showCarpoolsSearchResults = viewModel.showCarpoolsSearchResults
+    val showChat = viewModel.showChat
+    val currentCarpoolActive = viewModel.carpoolAcceptedId
+    val user = viewModel.user.collectAsState()
 
     val hasPermission = remember {
         mutableStateOf(
@@ -184,26 +186,53 @@ fun MapCarpoolSearcherView(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                IconButton(
-                                    onClick = {
-                                        showCarpoolsSearchResults.value = true
-                                    },
-                                    modifier = Modifier
-                                        .size(55.dp)
-                                ) {
-                                    Box(
+                                if (userCarpoolSate.value == EUserCarpoolState.WAITING_FOR_CARPOOL_START
+                                    || userCarpoolSate.value == EUserCarpoolState.IN_CARPOOL) {
+                                    IconButton(
+                                        onClick = {
+                                            showChat.value = true
+                                        },
                                         modifier = Modifier
-                                            .clip(CircleShape)
-                                            .background(Color(0xFF262626))
+                                            .size(55.dp)
                                     ) {
-                                        Image(
+                                        Box(
                                             modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(10.dp)
-                                                .align(Alignment.Center),
-                                            painter = painterResource(id = R.drawable.front_car),
-                                            contentDescription = "Icon of results carpools",
-                                        )
+                                                .clip(CircleShape)
+                                                .background(Color(0xFF262626))
+                                        ) {
+                                            Image(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(10.dp)
+                                                    .align(Alignment.Center),
+                                                painter = painterResource(id = R.drawable.chat_icon),
+                                                contentDescription = "Icon of opening chat with driver",
+                                            )
+                                        }
+                                    }
+                                }
+                                if (userCarpoolSate.value == EUserCarpoolState.SEARCHING) {
+                                    IconButton(
+                                        onClick = {
+                                            showCarpoolsSearchResults.value = true
+                                        },
+                                        modifier = Modifier
+                                            .size(55.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(CircleShape)
+                                                .background(Color(0xFF262626))
+                                        ) {
+                                            Image(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(10.dp)
+                                                    .align(Alignment.Center),
+                                                painter = painterResource(id = R.drawable.front_car),
+                                                contentDescription = "Icon of results carpools",
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -235,6 +264,18 @@ fun MapCarpoolSearcherView(
                                 navHostController = navHostController,
                                 onGoBack = {
                                     showCarpoolsSearchResults.value = false
+                                }
+                            )
+                        }
+                        if (currentCarpoolActive.value != null && user.value?.id != null
+                            && (userCarpoolSate.value == EUserCarpoolState.WAITING_FOR_CARPOOL_START || userCarpoolSate.value == EUserCarpoolState.IN_CARPOOL)
+                        ) {
+                            ChatDialog(
+                                passengerId = user.value?.id ?: "",
+                                carpoolId = currentCarpoolActive.value ?: "",
+                                show = showChat.value,
+                                onDismiss = {
+                                    showChat.value = false
                                 }
                             )
                         }
