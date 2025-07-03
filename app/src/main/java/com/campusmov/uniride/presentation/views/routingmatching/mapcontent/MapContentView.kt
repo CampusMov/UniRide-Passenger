@@ -53,6 +53,7 @@ import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
 import com.campusmov.uniride.presentation.views.intripcommunication.chat.ChatDialog
+import com.campusmov.uniride.presentation.views.routingmatching.carpoolinprogress.CarpoolInProgressView
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
@@ -153,7 +154,7 @@ fun MapCarpoolSearcherView(
                             WaitForCarpoolStartView(navHostController = navHostController)
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.IN_CARPOOL) {
-                            // TODO: Implement the In Carpool state UI
+                            CarpoolInProgressView(navHostController = navHostController)
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.COMPLETED) {
                             // TODO: Implement the Completed state UI
