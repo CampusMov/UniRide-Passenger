@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.campusmov.uniride.R
 import com.campusmov.uniride.presentation.navigation.screen.analytic.AnalyticsScreen
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
@@ -218,14 +220,29 @@ fun MenuNavigationView(
                         }
                     }
 
-                    Image(
-                        painter = painterResource(id = R.drawable.user_white_profile_icon),
-                        contentDescription = "User Icon",
+                    Box(
                         modifier = Modifier
                             .size(64.dp)
-                            .background(Color(0xFF292929), shape = CircleShape)
-                            .padding(8.dp)
-                    )
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.BottomEnd
+                    ){
+                        if (profile.value?.profilePictureUrl?.isNotBlank() == true) {
+                            AsyncImage(
+                                model = profile.value?.profilePictureUrl,
+                                contentDescription = "Profile picture",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.user_profile_icon),
+                                contentDescription = "Default profile icon",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
