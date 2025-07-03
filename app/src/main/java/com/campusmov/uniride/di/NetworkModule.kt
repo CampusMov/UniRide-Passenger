@@ -4,6 +4,7 @@ import com.campusmov.uniride.core.Config
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
+import com.campusmov.uniride.data.datasource.remote.service.InTripCommunicationService
 import com.campusmov.uniride.data.datasource.remote.service.PassengerRequestService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileClassScheduleService
 import com.campusmov.uniride.data.datasource.remote.service.ProfileService
@@ -84,7 +85,7 @@ object NetworkModule {
     }
 
     @Provides
-    @Singleton    
+    @Singleton
     fun provideCarpoolService(@DefaultRetrofit retrofit: Retrofit): CarpoolService {
         return retrofit.create(CarpoolService::class.java)
     }
@@ -93,6 +94,7 @@ object NetworkModule {
     @Singleton
     fun provideReputationIncentivesService(@DefaultRetrofit retrofit: Retrofit): ReputationIncentivesService {
         return retrofit.create(ReputationIncentivesService::class.java)
+    }
 
     @Provides
     @Singleton
@@ -104,5 +106,11 @@ object NetworkModule {
     @Singleton
     fun providePassengerRequestService(@DefaultRetrofit retrofit: Retrofit): PassengerRequestService {
         return retrofit.create(PassengerRequestService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
+        return retrofit.create(InTripCommunicationService::class.java)
     }
 }
