@@ -1,7 +1,5 @@
 package com.campusmov.uniride.presentation.views.intripcommunication.chat
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.intripcommunication.model.Chat
@@ -12,9 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,28 +40,9 @@ class ChatViewModel @Inject constructor(
 
     private var currentChatId: String? = null
     private var currentUserId: String? = null
-    private var connectJob: Job? = null
-    private var historyJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-            inTripCommunicationUseCases.observeLiveMessages()
-                .catch { _error.emit("Live error: ${it.localizedMessage}") }
-                .collect { msg ->
-                    _live.update { cur ->
-                        val list = cur.toMutableList()
-                        val idx = list.indexOfFirst { it.messageId == msg.messageId }
-                        if (idx >= 0) list[idx] = msg else list.add(msg)
-                        list
-                    }
-                    if (msg.status != "READ" && msg.senderId != currentUserId) {
-                        currentChatId?.let {
-                            inTripCommunicationUseCases.markMessageAsRead(it, msg.messageId, currentUserId!!)
-                        }
-                    }
-                }
-        }
-    }
+    private var sessionJob: Job? = null
+    private var subscribeJob: Job? = null
 
     fun openChat(passengerId: String, carpoolId: String) {
         currentUserId = passengerId
@@ -78,7 +54,7 @@ class ChatViewModel @Inject constructor(
                 is Resource.Success -> {
                     _chat.value      = res.data
                     currentChatId    = res.data.chatId
-                    startSession(res.data.chatId)
+                    startSession()
                 }
                 is Resource.Failure -> _error.emit(res.message)
                 else -> {}
@@ -86,73 +62,104 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun startSession(chatId: String) {
-        connectJob?.cancel()
-        connectJob = viewModelScope.launch {
-            inTripCommunicationUseCases.connectToChat(chatId)
-            loadHistory(chatId)
+    private fun startSession() {
+        sessionJob?.cancel()
+        subscribeJob?.cancel()
+
+        sessionJob = viewModelScope.launch {
+            try {
+                inTripCommunicationUseCases.connectToChat()
+
+                loadHistory()
+
+                subscribeToLiveMessages()
+
+            } catch (e: Exception) {
+                _error.emit("Error connecting to chat: ${e.localizedMessage}")
+            }
         }
     }
 
-    private fun loadHistory(chatId: String) {
-        historyJob?.cancel()
-        historyJob = viewModelScope.launch {
-            when (val res = inTripCommunicationUseCases.getMessages(chatId)) {
-                is Resource.Success -> {
-                    _history.value = res.data
-                    res.data
-                        .filter { it.status != "READ" && it.senderId != currentUserId }
-                        .forEach {
-                            inTripCommunicationUseCases.markMessageAsRead(chatId, it.messageId, currentUserId!!)
+    private suspend fun loadHistory() {
+        val chatId = currentChatId ?: return
+
+        when (val res = inTripCommunicationUseCases.getMessages(chatId)) {
+            is Resource.Success -> {
+                _history.value = res.data
+                res.data
+                    .filter { it.status != "READ" && it.senderId != currentUserId }
+                    .forEach {
+                        inTripCommunicationUseCases.markMessageAsRead(chatId, it.messageId, currentUserId!!)
+                    }
+            }
+            is Resource.Failure -> _error.emit(res.message)
+            else -> {}
+        }
+    }
+
+    private fun subscribeToLiveMessages() {
+        val chatId = currentChatId ?: return
+
+        subscribeJob = viewModelScope.launch {
+            inTripCommunicationUseCases.observeLiveMessages(chatId)
+                .catch { _error.emit("In live error: ${it.localizedMessage}") }
+                .collect { msg ->
+                    _live.update { currentList ->
+                        val newList = currentList.toMutableList()
+                        if (msg.senderId == currentUserId) {
+                            newList.removeAll { it.status == "SENDING" }
+                            newList.add(msg)
+                        } else {
+                            newList.add(msg)
+                            currentUserId?.let { userId ->
+                                inTripCommunicationUseCases.markMessageAsRead(chatId, msg.messageId, userId)
+                            }
                         }
+                        newList
+                    }
                 }
-                is Resource.Failure -> _error.emit(res.message)
-                else -> {}
-            }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun sendMessage() {
         val chatId = currentChatId ?: return
         val userId = currentUserId ?: return
-        val text   = newMessageText.value.trim().takeIf { it.isNotEmpty() } ?: return
-
+        val text = newMessageText.value.trim().takeIf { it.isNotEmpty() } ?: return
         val provisionalId = "prov_${UUID.randomUUID()}"
-        val sentAt        = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
-        val provisional   = Message(provisionalId, userId, text, sentAt, status = "SENDING")
-
-        _live.update { it + provisional }
-        newMessageText.value = ""
-        _isSending.value = true
 
         viewModelScope.launch {
-            when (val res = inTripCommunicationUseCases.sendMessage(chatId, userId, text)) {
-                is Resource.Success -> res.data.let { confirmed ->
-                    _live.update { cur ->
-                        val list = cur.toMutableList()
-                        val idx = list.indexOfFirst { it.messageId == provisionalId }
-                        if (idx >= 0) list[idx] = confirmed
-                        else if (list.none { it.messageId == confirmed.messageId }) list.add(confirmed)
-                        list
+            when (inTripCommunicationUseCases.sendMessage(chatId, userId, text)) {
+                is Resource.Success -> {
+                    _live.update { currentList ->
+                        currentList.map {
+                            if (it.messageId == provisionalId) it.copy(status = "SENT") else it
+                        }
                     }
+                    newMessageText.value = ""
                 }
                 is Resource.Failure -> {
-                    _error.emit(res.message)
-                    _live.update { cur ->
-                        cur.map {
+                    _error.emit("Could not send message")
+                    _live.update { currentList ->
+                        currentList.map {
                             if (it.messageId == provisionalId) it.copy(status = "FAILED") else it
                         }
                     }
                 }
-                else -> {}
+                else -> {
+                    _error.emit("An unexpected error occurred while sending the message")
+                    _live.update { currentList ->
+                        currentList.map {
+                            if (it.messageId == provisionalId) it.copy(status = "FAILED") else it
+                        }
+                    }
+                }
             }
-            _isSending.value = false
         }
     }
 
     fun closeChatSession() {
-        connectJob?.cancel()
+        sessionJob?.cancel()
+        subscribeJob?.cancel()
         currentChatId = null
         _chat.value   = null
     }

@@ -7,8 +7,9 @@ data class InTripCommunicationUseCases(
     val getMessages: GetMessagesUseCase,
     val sendMessage: SendMessageUseCase,
     val markMessageAsRead: MarkMessageAsReadUseCase,
-    val connectToChat: ConnectToChatUseCase,
-    val disconnectChat: DisconnectChatUseCase,
-    val observeLiveMessages: ObserveLiveMessagesUseCase
 
-    )
+    val connectToChat: ConnectToChatSessionUseCase,
+    val disconnectChat: DisconnectChatSessionUseCase,
+    val observeLiveMessages: SubscribeToChatUseCase
+
+)
