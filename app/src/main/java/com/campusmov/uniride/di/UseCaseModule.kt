@@ -120,7 +120,8 @@ object UseCaseModule {
     @Provides
     fun provideReputationIncentivesUseCase(reputationIncentivesRepository: ReputationIncentivesRepository) = ReputationIncentivesUseCase(
         getValorationsOfUser = ValorationUseCase(reputationIncentivesRepository),
-        getInfractionsOfUser = InfractionUseCase(reputationIncentivesRepository)
+        getInfractionsOfUser = InfractionUseCase(reputationIncentivesRepository),
+        createValoration = ValorationUseCase(reputationIncentivesRepository)
     )
     
     @Provides
