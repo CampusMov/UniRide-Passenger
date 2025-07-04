@@ -1,5 +1,6 @@
 package com.campusmov.uniride.data.repository.reputation
 
+import com.campusmov.uniride.data.datasource.remote.dto.ValorationRequestDto
 import com.campusmov.uniride.data.datasource.remote.service.ReputationIncentivesService
 import com.campusmov.uniride.domain.reputation.model.Infraction
 import com.campusmov.uniride.domain.reputation.model.Valoration
@@ -44,4 +45,29 @@ class ReputationIncentivesRepositoryImpl(private val reputationIncentivesService
             Resource.Failure("Exception occurred while fetching infractions: ${e.message ?: "Unknown error"}")
         }
     }
+
+    override suspend fun createValoration(
+        driverId: String,
+        userId: String,
+        rating: Int,
+        message: String
+    ): Resource<Valoration> = withContext(Dispatchers.IO) {
+        try {
+            val valorationRequest = ValorationRequestDto(userId = driverId, senderId = userId, reputationScore = rating.toDouble(), message = message)
+            val response = reputationIncentivesService.createValoration(valorationRequest)
+            if (response.isSuccessful){
+                val valorationResponse = response.body()
+                if (valorationResponse != null) {
+                    Resource.Success(valorationResponse.toDomain())
+                } else {
+                    Resource.Failure("Valoration creation failed: No response body")
+                }
+            } else {
+                Resource.Failure("Error creating valoration: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Resource.Failure("Exception occurred while creating valoration: ${e.message ?: "Unknown error"}")
+        }
+    }
+
 }
