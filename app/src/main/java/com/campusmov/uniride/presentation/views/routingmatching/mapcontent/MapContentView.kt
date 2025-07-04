@@ -56,6 +56,8 @@ import com.campusmov.uniride.presentation.views.intripcommunication.chat.ChatDia
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolinprogress.CarpoolInProgressView
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsView
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
+import com.campusmov.uniride.presentation.views.routingmatching.completedCarpool.CompletedCarpoolView
+import com.campusmov.uniride.presentation.views.routingmatching.completedCarpool.CompletedCarpoolViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.components.GoogleMapContent
 import com.campusmov.uniride.presentation.views.routingmatching.searchcarpool.SearchCarpoolView
 import com.campusmov.uniride.presentation.views.routingmatching.searchclassschedule.SearchClassScheduleView
@@ -68,6 +70,7 @@ import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolst
 fun MapCarpoolSearcherView(
     viewModel: MapContentViewModel = hiltViewModel(),
     viewModelCarpoolsSearchResultsViewModel: CarpoolsSearchResultsViewModel = hiltViewModel(),
+    viewModelCarpoolCompleted: CompletedCarpoolViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
     val context = LocalContext.current
@@ -118,6 +121,15 @@ fun MapCarpoolSearcherView(
         }
     }
 
+    LaunchedEffect(viewModelCarpoolCompleted.carpoolFinished.value) {
+        if(viewModelCarpoolCompleted.carpoolFinished.value == true){
+            Log.d("TAG", "MapContentView ${viewModelCarpoolCompleted.carpoolFinished.value}")
+            viewModel.searchCarpool()
+        }
+
+    }
+
+
     Scaffold(
         contentWindowInsets = WindowInsets.navigationBars
     ) { paddingValues ->
@@ -157,7 +169,8 @@ fun MapCarpoolSearcherView(
                             CarpoolInProgressView(navHostController = navHostController)
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.COMPLETED) {
-                            // TODO: Implement the Completed state UI
+                            Log.d("TAG", "carpool completed ${userCarpoolSate.value}")
+                            CompletedCarpoolView(navHostController = navHostController)
                         }
                         if (userCarpoolSate.value == EUserCarpoolState.CANCELLED) {
                             // TODO: Implement the Cancelled state UI
