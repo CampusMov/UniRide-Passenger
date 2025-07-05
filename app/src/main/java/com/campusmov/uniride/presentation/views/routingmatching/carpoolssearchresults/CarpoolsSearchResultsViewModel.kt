@@ -12,6 +12,7 @@ import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.routingmatching.model.Carpool
 import com.campusmov.uniride.domain.routingmatching.model.EPassengerRequestStatus
 import com.campusmov.uniride.domain.routingmatching.model.PassengerRequest
+import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestUseCases
 import com.campusmov.uniride.domain.routingmatching.usecases.PassengerRequestWsUseCases
 import com.campusmov.uniride.domain.shared.model.Location
@@ -31,8 +32,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
     private val userUseCase: UserUseCase,
     private val profileUseCases: ProfileUseCases,
     private val analyticsUseCases: AnalyticsUseCase,
-    private val passengerRequestWsUseCases: PassengerRequestWsUseCases
-): ViewModel() {
+    private val passengerRequestWsUseCases: PassengerRequestWsUseCases,
+    private val carpoolUseCases: CarpoolUseCases
+    ): ViewModel() {
 
     private val _profiles = MutableStateFlow<Map<String, Profile?>>(emptyMap())
     val profiles: StateFlow<Map<String, Profile?>> = _profiles
@@ -45,6 +47,9 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
 
     private val _passengerRequests = MutableStateFlow<List<PassengerRequest>>(emptyList())
     val passengerRequests: StateFlow<List<PassengerRequest>> = _passengerRequests
+
+    private val _requestedCarpools = MutableStateFlow<Map<String, Carpool?>>(emptyMap())
+    val requestedCarpools: StateFlow<Map<String, Carpool?>> get() = _requestedCarpools
 
     private val subscriptionJobs = mutableMapOf<String, Job>()
 
@@ -105,6 +110,22 @@ class CarpoolsSearchResultsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("StudentRatingMetricsVM", "Error obteniendo rating: ${e.message}")
+            }
+        }
+    }
+
+    fun getCarpoolById(carpoolId: String) {
+        viewModelScope.launch {
+            val result = carpoolUseCases.getCarpoolById(carpoolId)
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("TAG", "successfully fetched carpool: ${result.data}")
+                    _requestedCarpools.update { it + (carpoolId to result.data) }
+                }
+                is Resource.Failure -> {
+                    Log.e("TAG", "failed to fetch carpool: ${result.message}")
+                }
+                Resource.Loading -> {}
             }
         }
     }
