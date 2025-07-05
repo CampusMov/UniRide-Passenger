@@ -1,5 +1,7 @@
 package com.campusmov.uniride.data.datasource.remote.dto
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.campusmov.uniride.domain.profile.model.EGender
 import com.campusmov.uniride.domain.profile.model.Profile
 import retrofit2.http.Field
@@ -37,8 +39,10 @@ data class ProfileResponseDto(
     val academicProgram: String?,
     @Field("semester")
     val semester: String?,
-    // TODO: @Field("classSchedules")
+    @Field("classSchedules")
+    val classSchedules: List<ClassScheduleResponseDto> = emptyList()
 ) {
+    @RequiresApi(Build.VERSION_CODES.O)
     fun toDomain(): Profile {
         return Profile(
             userId = id?: "",
@@ -55,7 +59,7 @@ data class ProfileResponseDto(
             faculty = faculty ?: "",
             academicProgram = academicProgram ?: "",
             semester = semester ?: "",
-            classSchedules = emptyList()
+            classSchedules = classSchedules.map { it.toDomain() }
         )
     }
 }
