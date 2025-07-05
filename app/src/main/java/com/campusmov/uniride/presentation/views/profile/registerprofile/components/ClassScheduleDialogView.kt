@@ -33,7 +33,7 @@ import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.components.TimePickerInputField
-import com.campusmov.uniride.presentation.views.profile.registerprofile.ProfileInfoViewModel
+import com.campusmov.uniride.presentation.views.profile.info.ProfileInfoViewModel
 import com.campusmov.uniride.presentation.views.profile.registerprofile.RegisterProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
