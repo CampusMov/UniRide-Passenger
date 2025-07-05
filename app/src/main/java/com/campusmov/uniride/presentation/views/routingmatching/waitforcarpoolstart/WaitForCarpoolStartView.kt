@@ -50,17 +50,15 @@ fun WaitForCarpoolStartView(
     navHostController: NavHostController,
     viewModel: WaitForCarpoolStartViewModel = hiltViewModel(),
     viewModelMapContent: MapContentViewModel = hiltViewModel(),
-    viewModelSearchPlace: SearchPlaceViewModel = hiltViewModel(),
     viewModelSearchClassSchedule: SearchClassScheduleViewModel = hiltViewModel(),
-    viewModelSearchResult: CarpoolsSearchResultsViewModel = hiltViewModel()
     ) {
     val isLoading = viewModel.isLoading.collectAsState()
     val currentCarpool = viewModel.currentCarpool.collectAsState()
-    val selectedPickUpPoint = viewModelSearchPlace.selectedPlace.collectAsState()
     val selectedClassSchedule = viewModelSearchClassSchedule.selectedClassSchedule.collectAsState()
 
-    val profile = viewModelSearchResult.profiles.collectAsState().value[currentCarpool.value?.driverId ?: ""]
-    val rating = viewModelSearchResult.ratings.collectAsState().value[currentCarpool.value?.driverId ?: ""] ?: 0.0
+    val driverProfile = viewModel.driverProfile.collectAsState().value
+    val driverRating = viewModel.driverRating.collectAsState().value
+    val passengerRequest = viewModel.passengerRequest.collectAsState().value
 
     LaunchedEffect(viewModelMapContent.carpoolAcceptedId.value) {
         if (viewModelMapContent.carpoolAcceptedId.value?.isNotEmpty() == true) {
@@ -74,6 +72,9 @@ fun WaitForCarpoolStartView(
     LaunchedEffect(currentCarpool.value) {
         if (currentCarpool.value != null) {
             Log.d("TAG", "Current carpool: ${currentCarpool.value}")
+            viewModel.getUserLocally()
+            viewModel.getProfileById(currentCarpool.value?.driverId!!)
+            viewModel.getStudentAverageRating(currentCarpool.value?.driverId!!)
             viewModelMapContent.loadRoute(
                 startLatitude = currentCarpool.value?.origin?.latitude ?: 0.0,
                 startLongitude = currentCarpool.value?.origin?.longitude ?: 0.0,
@@ -159,7 +160,7 @@ fun WaitForCarpoolStartView(
             contentDescription = "Icon of pickUpLocation",
         )
         Text(
-            text = selectedPickUpPoint.value?.displayName ?: "Ubicación no seleccionada",
+            text = passengerRequest?.pickUpLocation?.name ?: "Ubicación no seleccionada",
             softWrap = true,
             fontSize = 16.sp,
             maxLines = 3,
@@ -272,7 +273,7 @@ fun WaitForCarpoolStartView(
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                 Text(
-                    text = "${rating}   ${profile?.firstName}  ${profile?.lastName}",
+                    text = "${driverRating}   ${driverProfile?.firstName}  ${driverProfile?.lastName}",
                     color = Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
