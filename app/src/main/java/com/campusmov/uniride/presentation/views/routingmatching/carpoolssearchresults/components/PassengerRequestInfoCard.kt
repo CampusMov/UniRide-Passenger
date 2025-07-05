@@ -3,10 +3,12 @@ package com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchr
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,14 +22,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.campusmov.uniride.R
 import com.campusmov.uniride.domain.routingmatching.model.PassengerRequest
 import com.campusmov.uniride.presentation.views.routingmatching.carpoolssearchresults.CarpoolsSearchResultsViewModel
@@ -39,6 +45,26 @@ fun PassengerRequestInfoCard(
     passengerRequest: PassengerRequest,
     onPassengerRequestCancel: () -> Unit,
 ) {
+    val carpools = viewModel.requestedCarpools.collectAsState()
+    val carpool = carpools.value[passengerRequest.carpoolId]
+
+    LaunchedEffect(passengerRequest.carpoolId) {
+        viewModel.getCarpoolById(passengerRequest.carpoolId)
+    }
+
+    LaunchedEffect(carpool?.driverId) {
+        carpool?.driverId?.let { driverId ->
+            viewModel.getProfileById(driverId)
+            viewModel.getStudentAverageRating(driverId)
+        }
+    }
+
+
+    val profiles = viewModel.profiles.collectAsState()
+    val ratings = viewModel.ratings.collectAsState()
+    val profile = profiles.value[carpool?.driverId]
+    val rating = ratings.value[carpool?.driverId]
+
     Row(
         modifier = Modifier
             .padding(16.dp)
@@ -52,14 +78,29 @@ fun PassengerRequestInfoCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Image(
+            Box(
                 modifier = Modifier
-                    .background(Color(0xFF292929), shape = CircleShape)
-                    .padding(10.dp)
-                    .size(50.dp),
-                painter = painterResource(id = R.drawable.user_white_profile_icon),
-                contentDescription = "User Icon",
-            )
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.BottomEnd
+            ){
+                if (profile?.profilePictureUrl?.isNotBlank() == true) {
+                    AsyncImage(
+                        model = profile.profilePictureUrl,
+                        contentDescription = "Profile picture",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.user_profile_icon),
+                        contentDescription = "Default profile icon",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
             Spacer(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -76,16 +117,15 @@ fun PassengerRequestInfoCard(
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = passengerRequest.passengerId,
+                        text = "${rating}   ${profile?.firstName}  ${profile?.lastName}",
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-
                 Text(
-                    text = "${passengerRequest.carpoolId} - aun no sale",
+                    text = "${carpool?.origin?.name} - aun no sale",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
@@ -112,7 +152,7 @@ fun PassengerRequestInfoCard(
                 .height(40.dp),
             contentPadding = PaddingValues(horizontal = 8.dp),
             onClick = {
-                onPassengerRequestCancel
+                onPassengerRequestCancel()
             },
         ) {
             Image(
