@@ -7,31 +7,15 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,16 +33,28 @@ import com.campusmov.uniride.domain.shared.model.EDay
 import com.campusmov.uniride.presentation.components.DefaultRoundedInputField
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
 import com.campusmov.uniride.presentation.components.TimePickerInputField
+import com.campusmov.uniride.presentation.views.profile.info.ProfileInfoViewModel
 import com.campusmov.uniride.presentation.views.profile.registerprofile.RegisterProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ClassScheduleDialogView(
-    viewModel: RegisterProfileViewModel
+    viewModel: Any?
 ) {
-    val currentClassScheduleState = viewModel.currentClassScheduleState.value
-    val isCurrentClassScheduleValid = viewModel.isCurrentClassScheduleValid.value
-    val locationPredictions = viewModel.locationPredictions.collectAsState().value
+    val registerVM = viewModel as? RegisterProfileViewModel
+    val profileVM = viewModel as? ProfileInfoViewModel
+
+    val currentClassScheduleState = registerVM?.currentClassScheduleState?.value
+        ?: profileVM?.currentClassScheduleState?.value
+        ?: return
+
+    val isCurrentClassScheduleValid = registerVM?.isCurrentClassScheduleValid?.value
+        ?: profileVM?.isCurrentClassScheduleValid?.value
+        ?: false
+
+    val locationPredictions = registerVM?.locationPredictions?.collectAsState()?.value
+        ?: profileVM?.locationPredictions?.collectAsState()?.value
+        ?: emptyList()
 
     var locRaw = rememberSaveable { mutableStateOf(currentClassScheduleState.selectedLocation?.address.orEmpty()) }
 
@@ -68,7 +64,7 @@ fun ClassScheduleDialogView(
 
     Dialog(
         onDismissRequest = {
-            viewModel.onCloseScheduleDialog()
+            registerVM?.onCloseScheduleDialog() ?: profileVM?.onCloseScheduleDialog()
         },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -82,7 +78,7 @@ fun ClassScheduleDialogView(
             AnimatedVisibility(
                 visible = true,
                 enter = slideInVertically { fullHeight -> fullHeight },
-                exit  = slideOutVertically { fullHeight -> fullHeight }
+                exit = slideOutVertically { fullHeight -> fullHeight }
             ) {
                 Column(
                     Modifier
@@ -106,7 +102,6 @@ fun ClassScheduleDialogView(
                             modifier = Modifier
                                 .size(40.dp)
                                 .background(Color.Transparent)
-
                         )
                         Text(
                             text = if (currentClassScheduleState.isEditing) "Actualizar horario" else "Agregar horario",
@@ -125,7 +120,7 @@ fun ClassScheduleDialogView(
                                 .clip(CircleShape)
                                 .background(Color(0xFF3F4042)),
                             onClick = {
-                                viewModel.onCloseScheduleDialog()
+                                registerVM?.onCloseScheduleDialog() ?: profileVM?.onCloseScheduleDialog()
                             }
                         ) {
                             Icon(
@@ -141,23 +136,31 @@ fun ClassScheduleDialogView(
                     Text("Nombre del curso", fontSize = 16.sp, color = Color.White)
                     DefaultRoundedInputField(
                         value = currentClassScheduleState.courseName,
-                        onValueChange = { viewModel.onScheduleCourseNameInput(it) },
+                        onValueChange = {
+                            registerVM?.onScheduleCourseNameInput(it)
+                                ?: profileVM?.onScheduleCourseNameInput(it)
+                        },
                         placeholder = "Matemática básica"
                     )
 
                     Text("Hora de inicio", fontSize = 16.sp, color = Color.White)
-
                     TimePickerInputField(
                         time = currentClassScheduleState.startedAt,
-                        onTimeChange = { lt -> viewModel.onScheduleStartTimeInput(lt) }
+                        onTimeChange = { lt ->
+                            registerVM?.onScheduleStartTimeInput(lt)
+                                ?: profileVM?.onScheduleStartTimeInput(lt)
+                        }
                     )
 
                     Text("Hora de salida", fontSize = 16.sp, color = Color.White)
-
                     TimePickerInputField(
                         time = currentClassScheduleState.endedAt,
-                        onTimeChange = { lt -> viewModel.onScheduleEndTimeInput(lt) }
+                        onTimeChange = { lt ->
+                            registerVM?.onScheduleEndTimeInput(lt)
+                                ?: profileVM?.onScheduleEndTimeInput(lt)
+                        }
                     )
+
                     Text("Día de la semana", fontSize = 16.sp, color = Color.White)
                     Row(
                         Modifier.fillMaxWidth(),
@@ -175,7 +178,10 @@ fun ClassScheduleDialogView(
                                         if (sel) Color(0xFF3F4042) else Color.Transparent,
                                         CircleShape
                                     )
-                                    .clickable { viewModel.onScheduleDaySelected(day) },
+                                    .clickable {
+                                        registerVM?.onScheduleDaySelected(day)
+                                            ?: profileVM?.onScheduleDaySelected(day)
+                                    },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -193,9 +199,11 @@ fun ClassScheduleDialogView(
                         onValueChange = { location ->
                             locRaw.value = location
                             if (location.isBlank()) {
-                                viewModel.onScheduleLocationCleared()
+                                registerVM?.onScheduleLocationCleared()
+                                    ?: profileVM?.onScheduleLocationCleared()
                             } else {
-                                viewModel.onScheduleLocationQueryChange(location)
+                                registerVM?.onScheduleLocationQueryChange(location)
+                                    ?: profileVM?.onScheduleLocationQueryChange(location)
                             }
                         },
                         placeholder = "Surco, Primavera 2653",
@@ -214,7 +222,8 @@ fun ClassScheduleDialogView(
                                     Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            viewModel.onScheduleLocationSelected(prediction)
+                                            registerVM?.onScheduleLocationSelected(prediction)
+                                                ?: profileVM?.onScheduleLocationSelected(prediction)
                                             locRaw.value = prediction.fullText
                                         }
                                         .padding(vertical = 12.dp),
@@ -242,14 +251,18 @@ fun ClassScheduleDialogView(
                                 DefaultRoundedTextButton(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = "Actualizar",
-                                    onClick = { viewModel.editExistingClassSchedule() }
+                                    onClick = {
+                                        registerVM?.editExistingClassSchedule()
+                                            ?: profileVM?.editExistingClassSchedule()
+                                    }
                                 )
                                 Text(
                                     modifier = Modifier
                                         .padding(top = 15.dp, bottom = 10.dp)
                                         .fillMaxWidth()
                                         .clickable {
-                                            viewModel.onDeleteSchedule()
+                                            registerVM?.onDeleteSchedule()
+                                                ?: profileVM?.onDeleteSchedule()
                                         },
                                     text = "Eliminar horario",
                                     style = TextStyle(
@@ -267,7 +280,10 @@ fun ClassScheduleDialogView(
                                     .fillMaxWidth()
                                     .padding(bottom = 10.dp),
                                 text = "Agregar",
-                                onClick = { viewModel.addClasScheduleToProfile() }
+                                onClick = {
+                                    registerVM?.addClasScheduleToProfile()
+                                        ?: profileVM?.addClasScheduleToProfile()
+                                }
                             )
                         }
                     }

@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ProfileService {
@@ -15,6 +16,11 @@ interface ProfileService {
     ): Response<Unit>
 
     @GET("profile-service/profiles/{id}")
-    suspend fun  getProfileById(@Path ("id") profileId: String): Response<ProfileResponseDto>
+    suspend fun getProfileById(@Path("id") profileId: String): Response<ProfileResponseDto>
 
+    @PUT("profile-service/profiles/{id}")
+    suspend fun updateProfile(
+        @Path("id") profileId: String,
+        @Body profileRequest: ProfileRequestDto
+    ): Response<Unit>
 }

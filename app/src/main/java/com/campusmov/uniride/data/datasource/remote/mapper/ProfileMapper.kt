@@ -7,9 +7,9 @@ import com.campusmov.uniride.domain.profile.model.Profile
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun Profile.toRequestBody(): ProfileRequestDto =
+fun Profile.toRequestBody(saveCase: Boolean = true): ProfileRequestDto =
     ProfileRequestDto(
-        userId,
+        userId = if (saveCase) userId else null,
         institutionalEmailAddress,
         personalEmailAddress,
         countryCode,

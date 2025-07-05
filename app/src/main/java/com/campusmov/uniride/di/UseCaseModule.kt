@@ -40,11 +40,13 @@ import com.campusmov.uniride.domain.location.usecases.GetPlacePredictionsUseCase
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
+import com.campusmov.uniride.domain.profile.usecases.DeleteClassScheduleUseCase
 import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.GetProfileByIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.profile.usecases.SaveProfileUseCase
+import com.campusmov.uniride.domain.profile.usecases.UpdateProfileUsecase
 import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRepository
 import com.campusmov.uniride.domain.reputation.usecases.InfractionUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
@@ -104,12 +106,14 @@ object UseCaseModule {
     @Provides
     fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
         saveProfile = SaveProfileUseCase(profileRepository),
-        getProfileById = GetProfileByIdUseCase(profileRepository)
+        getProfileById = GetProfileByIdUseCase(profileRepository),
+        updateProfile = UpdateProfileUsecase(profileRepository)
     )
 
     @Provides
     fun provideProfileClassScheduleUseCases(profileClassScheduleRepository: ProfileClassScheduleRepository) = ProfileClassScheduleUseCases(
-        getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository)
+        getClassSchedulesByProfileId = GetClassSchedulesByProfileIdUseCase(profileClassScheduleRepository),
+        deleteClassSchedule = DeleteClassScheduleUseCase(profileClassScheduleRepository)
     )
 
     @Provides
@@ -123,7 +127,7 @@ object UseCaseModule {
         getInfractionsOfUser = InfractionUseCase(reputationIncentivesRepository),
         createValoration = ValorationUseCase(reputationIncentivesRepository)
     )
-    
+
     @Provides
     fun provideCarpoolUseCases(carpoolRepository: CarpoolRepository) = CarpoolUseCases(
         searchCarpoolsAvailable = SearchCarpoolsAvailableUseCase(carpoolRepository),
