@@ -33,11 +33,13 @@ class ProfileRepositoryImpl(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getProfileById(profileId: String): Resource<Profile> {
         try {
             val response = profileService.getProfileById(profileId)
             if (response.isSuccessful){
                 val profileResponse = response.body()
+                Log.d("TAG", "Profile fetched successfully: $profileResponse")
                 return if (profileResponse != null) {
                     Resource.Success(profileResponse.toDomain())
                 } else {
@@ -50,6 +52,24 @@ class ProfileRepositoryImpl(
         } catch (e: Exception) {
             Log.e("TAG", "Exception fetching profile: ${e.message}", e)
             return Resource.Failure(e.message ?: "Unknown error")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun updateProfile(profileId: String, profile: Profile): Resource<Unit> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val response = profileService.updateProfile(profileId, profile.toRequestBody(saveCase = false))
+            if (response.isSuccessful) {
+                Log.d("TAG", "Profile updated successfully")
+                Resource.Success(Unit)
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Unknown error"
+                Log.e("TAG", "Error updating profile: $errorMsg")
+                Resource.Failure("Error updating profile: $errorMsg")
+            }
+        } catch (e: Exception) {
+            Log.e("TAG", "Exception updating profile: ${e.message}", e)
+            Resource.Failure(e.message ?: "Unknown error")
         }
     }
 }
