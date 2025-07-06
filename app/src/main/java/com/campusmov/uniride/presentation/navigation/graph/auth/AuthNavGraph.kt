@@ -16,7 +16,7 @@ fun NavGraphBuilder.AuthNavGraph(navHostController: NavHostController){
         startDestination = AuthScreen.Welcome.route
     ) {
         composable(route = AuthScreen.Welcome.route) {
-            WelcomeView(navHostController)
+            WelcomeView(navHostController = navHostController)
         }
         composable(route = AuthScreen.EnterInstitutionalEmail.route) {
             EnterInstitutionalEmailView(navHostController = navHostController)
