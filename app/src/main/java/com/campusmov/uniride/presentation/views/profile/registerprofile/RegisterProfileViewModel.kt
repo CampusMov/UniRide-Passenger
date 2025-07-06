@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.auth.model.User
+import com.campusmov.uniride.domain.auth.model.UserStatus
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
 import com.campusmov.uniride.domain.location.model.PlacePrediction
@@ -357,6 +358,9 @@ class RegisterProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("RegisterProfileVM", "Profile saved")
                     registerProfileResponse.value = Resource.Success(Unit)
+                    _user.value?.copy(status = UserStatus.ACTIVE)?.let { activeUser ->
+                        userUseCase.updateUserLocallyUseCase(activeUser)
+                    } ?: Log.e("RegisterProfileVM", "No user loaded, cannot update locally")
                 }
 
                 is Resource.Failure -> {
