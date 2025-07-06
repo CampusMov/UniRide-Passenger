@@ -9,6 +9,7 @@ import com.campusmov.uniride.domain.auth.usecases.AuthUseCase
 import com.campusmov.uniride.domain.auth.usecases.DeleteAllUsersLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.GetUserByEmailLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.GetUserByIdLocallyUserCase
+import com.campusmov.uniride.domain.auth.usecases.GetUserByIdUseCase
 import com.campusmov.uniride.domain.auth.usecases.GetUserLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.SaveUserLocallyUseCase
 import com.campusmov.uniride.domain.auth.usecases.UpdateUserLocallyUseCase
@@ -84,6 +85,7 @@ object UseCaseModule {
     fun provideAuthUseCase(authRepository: AuthRepository) = AuthUseCase(
         verifyEmail = VerificationEmailUseCase(authRepository),
         verifyCode = VerificationCodeUseCase(authRepository),
+        getUserById = GetUserByIdUseCase(authRepository)
     )
 
     @Provides
