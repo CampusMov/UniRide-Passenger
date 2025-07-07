@@ -3,6 +3,7 @@ package com.campusmov.uniride.data.repository.auth
 import android.util.Log
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.domain.auth.model.AuthVerificationCodeResponse
+import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.shared.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,29 @@ class AuthRepositoryImpl(private val authService: AuthService): AuthRepository {
             } else {
                 Log.d("AuthRepositoryImpl", "Error: ${response.errorBody()?.string()}")
                 Resource.Failure("Error al verificar el código")
+            }
+        } catch (e: Exception) {
+            Log.d("AuthRepositoryImpl", "Error: ${e.message}")
+            e.printStackTrace()
+            Resource.Failure(e.message ?: "Error desconocido")
+        }
+    }
+
+    override suspend fun getUserById(userId: String): Resource<User> = withContext(Dispatchers.IO) {
+        try {
+            val response = authService.getUserById(userId)
+            if (response.isSuccessful) {
+                val userResponse = response.body()
+                if (userResponse != null) {
+                    Log.d("AuthRepositoryImpl", "Usuario obtenido correctamente: $userResponse")
+                    Resource.Success(userResponse.toDomain())
+                } else {
+                    Log.d("AuthRepositoryImpl", "No se encontró el usuario con ID: $userId")
+                    Resource.Failure("No se encontró el usuario con ID: $userId")
+                }
+            } else {
+                Log.d("AuthRepositoryImpl", "Error al obtener el usuario: ${response.errorBody()?.string()}")
+                Resource.Failure("Error al obtener el usuario")
             }
         } catch (e: Exception) {
             Log.d("AuthRepositoryImpl", "Error: ${e.message}")

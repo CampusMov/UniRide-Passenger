@@ -43,6 +43,7 @@ fun RegisterProfileListSectionsView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
+    val user = viewModel.user.collectAsState().value
     val state = viewModel.profileState.value
     val isLoading = viewModel.isLoading.collectAsState()
     val isRegisterValid = viewModel.isRegisterProfileValid.value
@@ -155,7 +156,7 @@ fun RegisterProfileListSectionsView(
                         .fillMaxWidth()
                         .padding(top = 20.dp)
                 )
-                if (isRegisterValid && !isLoading.value) {
+                if (isRegisterValid && !isLoading.value && user != null) {
                     DefaultRoundedTextButton(
                         modifier = Modifier
                             .fillMaxWidth()
