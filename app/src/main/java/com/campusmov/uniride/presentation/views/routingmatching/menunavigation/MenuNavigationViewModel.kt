@@ -103,6 +103,17 @@ class MenuNavigationViewModel @Inject constructor(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                profileUseCases.deleteLocalProfiles
+                userUseCase.deleteAllUsersLocallyUseCase
+                Log.d("MenuNavigationVM", "User logged out successfully")
+            } catch (e: Exception) {
+                Log.e("MenuNavigationVM", "Error logging out: ${e.message}")
+            }
+        }
+    }
 
 
 }
