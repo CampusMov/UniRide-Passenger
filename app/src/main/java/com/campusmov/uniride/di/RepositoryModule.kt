@@ -29,6 +29,7 @@ import com.campusmov.uniride.data.repository.routingmatching.CarpoolRepositoryIm
 import com.campusmov.uniride.data.repository.routingmatching.CarpoolWebSocketRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestRepositoryImpl
 import com.campusmov.uniride.data.repository.routingmatching.PassengerRequestWebSocketRepositoryImpl
+import com.campusmov.uniride.data.repository.route.RouteCarpoolWebSocketRepositoryRepositoryImpl
 import com.campusmov.uniride.domain.auth.repository.AuthRepository
 import com.campusmov.uniride.domain.auth.repository.UserRepository
 import com.campusmov.uniride.domain.intripcommunication.repository.InTripCommunicationRepository
@@ -42,6 +43,7 @@ import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestWebSocketRepository
+import com.campusmov.uniride.domain.route.repository.RouteCarpoolWebSocketRepository
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
@@ -91,6 +93,10 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePassengerRequestWebSocketRepository(stompClient: StompClient, gson: Gson): PassengerRequestWebSocketRepository = PassengerRequestWebSocketRepositoryImpl(stompClient, gson)
+
+    @Provides
+    @Singleton
+    fun provideRouteCarpoolWebSocketRepository(stompClient: StompClient, gson: Gson): RouteCarpoolWebSocketRepository = RouteCarpoolWebSocketRepositoryRepositoryImpl(stompClient, gson)
 
     @Provides
     @Singleton
