@@ -20,10 +20,14 @@ object DataBaseModule {
             applicationContext,
             AppDatabase::class.java,
             "uni_ride_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
     @Singleton
     fun provideUserDao(appDatabase: AppDatabase) = appDatabase.userDao()
+
+    @Provides
+    @Singleton
+    fun provideProfileDao(appDatabase: AppDatabase) = appDatabase.profileDao()
 }

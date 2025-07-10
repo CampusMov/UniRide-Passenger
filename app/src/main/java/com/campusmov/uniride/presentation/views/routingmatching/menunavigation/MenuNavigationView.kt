@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,23 +21,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Timelapse
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -52,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -70,6 +69,7 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.campusmov.uniride.R
 import com.campusmov.uniride.presentation.navigation.screen.analytic.AnalyticsScreen
+import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
 import com.campusmov.uniride.presentation.navigation.screen.reputation.ReputationScreen
 import com.campusmov.uniride.presentation.util.NavigationItem
@@ -88,31 +88,39 @@ fun MenuNavigationView(
             route = ProfileScreen.ProfileInfo.route,
             selectedIcon = Icons.Filled.Map,
             unselectedIcon = Icons.Outlined.Map
-        ),
+        ) {},
         NavigationItem(
             title = "Mi Tiempo",
             route = ProfileScreen.ProfileInfo.route,
             selectedIcon = Icons.Filled.Timelapse,
             unselectedIcon = Icons.Outlined.Timelapse
-        ),
+        ) {},
         NavigationItem(
             title = "Incidencias",
             route = ReputationScreen.infractions.route,
             selectedIcon = Icons.Filled.Warning,
             unselectedIcon = Icons.Outlined.Warning
-        ),
+        ) {},
         NavigationItem(
             title = "Ubicaciones Guardadas",
             route = ProfileScreen.ProfileInfo.route,
             selectedIcon = Icons.Filled.LocationOn,
             unselectedIcon = Icons.Outlined.LocationOn
-        ),
+        ) {},
         NavigationItem(
             title = "Notificaciones",
             route = ProfileScreen.ProfileInfo.route,
             selectedIcon = Icons.Filled.Notifications,
             unselectedIcon = Icons.Outlined.Notifications
-        ),
+        ) {},
+        NavigationItem(
+            title = "Cerrar sesión",
+            route = AuthScreen.Welcome.route,
+            selectedIcon = Icons.Filled.Logout,
+            unselectedIcon = Icons.Outlined.Logout,
+        ) {
+            viewModel.logout()
+        }
     )
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -290,6 +298,10 @@ fun MenuNavigationView(
             }
         }
     ) {
+        LaunchedEffect(Unit) {
+            viewModel.getProfileById()
+        }
+
         Box() {
             content()
             IconButton(

@@ -67,25 +67,25 @@ fun RegisterProfileListSectionsView(
             route = ProfileScreen.RegisterProfilePersonalInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Información de contacto",
             route = ProfileScreen.RegisterProfileContactInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Información académica",
             route = ProfileScreen.RegisterProfileAcademicInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Términos y condiciones",
             route = ProfileScreen.RegisterProfileAcceptTerms.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        )
+        ) {}
     )
 
     Scaffold(

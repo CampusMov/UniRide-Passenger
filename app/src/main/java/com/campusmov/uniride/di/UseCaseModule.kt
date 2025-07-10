@@ -42,6 +42,7 @@ import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.profile.repository.ProfileClassScheduleRepository
 import com.campusmov.uniride.domain.profile.repository.ProfileRepository
 import com.campusmov.uniride.domain.profile.usecases.DeleteClassScheduleUseCase
+import com.campusmov.uniride.domain.profile.usecases.DeleteLocalProfiles
 import com.campusmov.uniride.domain.profile.usecases.GetClassSchedulesByProfileIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.GetProfileByIdUseCase
 import com.campusmov.uniride.domain.profile.usecases.ProfileClassScheduleUseCases
@@ -109,7 +110,8 @@ object UseCaseModule {
     fun provideProfileUseCases(profileRepository: ProfileRepository) = ProfileUseCases(
         saveProfile = SaveProfileUseCase(profileRepository),
         getProfileById = GetProfileByIdUseCase(profileRepository),
-        updateProfile = UpdateProfileUsecase(profileRepository)
+        updateProfile = UpdateProfileUsecase(profileRepository),
+        deleteLocalProfiles = DeleteLocalProfiles(profileRepository)
     )
 
     @Provides

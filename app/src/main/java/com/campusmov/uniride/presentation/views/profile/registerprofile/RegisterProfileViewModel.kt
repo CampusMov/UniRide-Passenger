@@ -109,7 +109,7 @@ class RegisterProfileViewModel @Inject constructor(
         getUserLocally()
     }
 
-    private fun getUserLocally() {
+    fun getUserLocally() {
         viewModelScope.launch {
             when (val result = userUseCase.getUserLocallyUseCase()) {
                 is Resource.Success -> {
@@ -124,6 +124,26 @@ class RegisterProfileViewModel @Inject constructor(
                 Resource.Loading -> {}
             }
         }
+    }
+
+    fun verifyIfProfileExistsInBackend(userId: String) {
+        viewModelScope.launch {
+            try {
+                val result = profileUseCases.getProfileById(userId)
+                when (result) {
+                    is Resource.Success -> {
+                        registerProfileResponse.value = Resource.Success(Unit)
+                    }
+                    is Resource.Failure -> {
+                        Log.e("RegisterProfileVM", "Error fetching profile: ${result.message}")
+                    }
+                    Resource.Loading -> {}
+                }
+            } catch (e: Exception) {
+                Log.e("RegisterProfileVM", "Error fetching profile: ${e.message}")
+            }
+        }
+
     }
 
     fun isValidPersonaEmailAddress(): Boolean {

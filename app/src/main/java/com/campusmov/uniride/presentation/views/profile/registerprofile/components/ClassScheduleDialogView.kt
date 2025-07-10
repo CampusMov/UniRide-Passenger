@@ -193,22 +193,43 @@ fun ClassScheduleDialogView(
                         }
                     }
 
-                    Text("Universidad ubicación", fontSize = 16.sp, color = Color.White)
-                    DefaultRoundedInputField(
-                        value = locRaw.value,
-                        onValueChange = { location ->
-                            locRaw.value = location
-                            if (location.isBlank()) {
-                                registerVM?.onScheduleLocationCleared()
-                                    ?: profileVM?.onScheduleLocationCleared()
+                    if(profileVM == null) {
+                        Text("Universidad ubicación", fontSize = 16.sp, color = Color.White)
+                        DefaultRoundedInputField(
+                            value = locRaw.value,
+                            onValueChange = { location ->
+                                locRaw.value = location
+                                if (location.isBlank()) {
+                                    registerVM?.onScheduleLocationCleared()
+                                } else {
+                                    registerVM?.onScheduleLocationQueryChange(location)
+                                }
+                            },
+                            placeholder = "Surco, Primavera 2653",
+                            enableLeadingIcon = true,
+                            enable = true,
+                        )
+                    } else {
+                        Text("Universidad ubicación", fontSize = 16.sp, color = Color.White)
+                        DefaultRoundedInputField(
+                            value = locRaw.value,
+                            onValueChange = { location ->
+                                locRaw.value = location
+                                if (location.isBlank()) {
+                                    profileVM.onScheduleLocationCleared()
+                                } else {
+                                    profileVM.onScheduleLocationQueryChange(location)
+                                }
+                            },
+                            placeholder = if (profileVM.isOnline.collectAsState().value) {
+                                "Surco, Primavera 2653"
                             } else {
-                                registerVM?.onScheduleLocationQueryChange(location)
-                                    ?: profileVM?.onScheduleLocationQueryChange(location)
-                            }
-                        },
-                        placeholder = "Surco, Primavera 2653",
-                        enableLeadingIcon = true,
-                    )
+                                "Conéctate a internet para buscar ubicaciones"
+                            },
+                            enableLeadingIcon = true,
+                            enable = profileVM.isOnline.collectAsState().value,
+                        )
+                    }
 
                     AnimatedVisibility(visible = currentClassScheduleState.selectedLocation == null) {
                         LazyColumn(

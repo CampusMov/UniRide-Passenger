@@ -7,4 +7,5 @@ data class NavigationItem(
     val route: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
+    val function: () -> Unit,
 )

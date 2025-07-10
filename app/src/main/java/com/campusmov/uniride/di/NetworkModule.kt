@@ -1,6 +1,8 @@
 package com.campusmov.uniride.di
 
+import android.content.Context
 import com.campusmov.uniride.core.Config
+import com.campusmov.uniride.core.ConnectivityObserver
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
 import com.campusmov.uniride.data.datasource.remote.service.AuthService
 import com.campusmov.uniride.data.datasource.remote.service.CarpoolService
@@ -16,6 +18,7 @@ import com.google.firebase.storage.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -113,10 +116,16 @@ object NetworkModule {
     fun provideInTripCommunicationService(@DefaultRetrofit retrofit: Retrofit): InTripCommunicationService {
         return retrofit.create(InTripCommunicationService::class.java)
     }
-    
+
     @Provides
     @Singleton
     fun provideRouteService(@DefaultRetrofit retrofit: Retrofit): RouteService {
         return retrofit.create(RouteService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectivityObserver(@ApplicationContext context: Context): ConnectivityObserver {
+        return ConnectivityObserver(context)
     }
 }

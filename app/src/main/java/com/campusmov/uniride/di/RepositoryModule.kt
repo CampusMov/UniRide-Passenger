@@ -1,5 +1,6 @@
 package com.campusmov.uniride.di
 
+import com.campusmov.uniride.data.datasource.local.dao.ProfileDao
 import com.campusmov.uniride.data.datasource.local.dao.UserDao
 import com.campusmov.uniride.data.datasource.location.LocationDataSource
 import com.campusmov.uniride.data.datasource.remote.service.AnalyticsService
@@ -64,7 +65,7 @@ object RepositoryModule {
     fun provideLocationRepository(locationDataSource: LocationDataSource, placesClient: PlacesClient): LocationRepository = LocationRepositoryImpl(locationDataSource, placesClient)
 
     @Provides
-    fun provideProfileRepository(profileService: ProfileService): ProfileRepository = ProfileRepositoryImpl(profileService)
+    fun provideProfileRepository(profileService: ProfileService, profileDao: ProfileDao): ProfileRepository = ProfileRepositoryImpl(profileService, profileDao)
 
     @Provides
     fun provideProfileClassScheduleRepository(profileClassScheduleService: ProfileClassScheduleService): ProfileClassScheduleRepository = ProfileClassScheduleRepositoryImpl(profileClassScheduleService)
