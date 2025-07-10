@@ -7,7 +7,9 @@ import com.campusmov.uniride.domain.analytics.usecases.AnalyticsUseCase
 import com.campusmov.uniride.domain.profile.model.Profile
 import com.campusmov.uniride.domain.profile.usecases.ProfileUseCases
 import com.campusmov.uniride.domain.routingmatching.model.Carpool
+import com.campusmov.uniride.domain.routingmatching.model.ECarpoolStatus
 import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolUseCases
+import com.campusmov.uniride.domain.routingmatching.usecases.CarpoolWsUseCases
 import com.campusmov.uniride.domain.shared.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class CarpoolInProgressViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases,
     private val analyticsUseCases: AnalyticsUseCase,
-    private val carpoolUseCases: CarpoolUseCases
+    private val carpoolUseCases: CarpoolUseCases,
+    private val carpoolWsUseCases: CarpoolWsUseCases,
     ): ViewModel() {
 
     private val _currentCarpool = MutableStateFlow<Carpool?>(null)
@@ -38,6 +41,7 @@ class CarpoolInProgressViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("TAG", "successfully fetched carpool: ${result.data}")
                     _currentCarpool.value = result.data
+                    connectToCarpoolWebSocket()
                 }
                 is Resource.Failure -> {
                     Log.e("TAG", "failed to fetch carpool: ${result.message}")
@@ -46,8 +50,6 @@ class CarpoolInProgressViewModel @Inject constructor(
             }
         }
     }
-
-
 
     fun getProfileById(profileId: String) {
         viewModelScope.launch {
@@ -69,7 +71,6 @@ class CarpoolInProgressViewModel @Inject constructor(
         }
     }
 
-
     fun getStudentAverageRating(profileId: String) {
         viewModelScope.launch {
             try {
@@ -89,6 +90,40 @@ class CarpoolInProgressViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("StudentRatingMetricsVM", "Error obteniendo rating: ${e.message}")
             }
+        }
+    }
+
+    fun connectToCarpoolWebSocket(){
+        viewModelScope.launch {
+            var isConnected = false
+            try {
+                carpoolWsUseCases.connectCarpoolUseCase()
+                isConnected = true
+                Log.d("TAG", "WaitForCarpoolStartViewModel: Successfully connected to carpool WebSocket")
+            } catch (e: Exception) {
+                Log.e("TAG", "WaitForCarpoolStartViewModel: Error connecting to carpool WebSocket", e)
+            } finally {
+                if (isConnected) subscribeToCarpoolUpdates()
+            }
+        }
+    }
+
+    fun subscribeToCarpoolUpdates() {
+        viewModelScope.launch {
+            carpoolWsUseCases.subscribeCarpoolStatusUpdatesUseCase(currentCarpool.value!!.id)
+                .collect { carpool ->
+                    val status: String? = carpool.status.name
+                    when(ECarpoolStatus.fromString(status)) {
+                        ECarpoolStatus.COMPLETED -> {
+                            Log.d("TAG", "WaitForCarpoolStartViewModel: Carpool completed: $carpool")
+                            _currentCarpool.value = carpool
+                            onCleared()
+                        }
+                        else -> {
+                            Log.d("TAG", "WaitForCarpoolStartViewModel: Carpool status does not affect the current view: $carpool")
+                        }
+                    }
+                }
         }
     }
 

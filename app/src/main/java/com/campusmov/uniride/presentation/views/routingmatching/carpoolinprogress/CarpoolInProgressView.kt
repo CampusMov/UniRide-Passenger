@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
+import com.campusmov.uniride.domain.routingmatching.model.ECarpoolStatus
 import com.campusmov.uniride.presentation.views.routingmatching.mapcontent.MapContentViewModel
 import com.campusmov.uniride.presentation.views.routingmatching.waitforcarpoolstart.WaitForCarpoolStartViewModel
 import java.time.LocalDateTime
@@ -68,6 +69,15 @@ fun CarpoolInProgressView(
                 endLatitude = currentCarpool.value?.destination?.latitude ?: 0.0,
                 endLongitude = currentCarpool.value?.destination?.longitude ?: 0.0
             )
+            when(currentCarpool.value!!.status) {
+                ECarpoolStatus.COMPLETED -> {
+                    Log.d("TAG", "CarpoolInProgressView: Carpool is completed, status: ${currentCarpool.value!!.status}")
+                    viewModelMapContent.completeCarpool()
+                }
+                else -> {
+                    Log.d("TAG", "CarpoolInProgressView: Carpool is not completed, status: ${currentCarpool.value!!.status}")
+                }
+            }
         }
     }
 
