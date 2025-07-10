@@ -61,7 +61,7 @@ fun PersonalInfoSection(
         }
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .size(110.dp)

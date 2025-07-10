@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.campusmov.uniride.core.ConnectivityObserver
 import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
@@ -37,7 +38,8 @@ class ProfileInfoViewModel @Inject constructor(
     private val profileClassScheduleUseCase: ProfileClassScheduleUseCases,
     private val userUseCase: UserUseCase,
     private val locationUseCases: LocationUsesCases,
-    private val fileManagementUseCases: FileManagementUseCases
+    private val fileManagementUseCases: FileManagementUseCases,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
     var profileState = mutableStateOf(RegisterProfileState())
@@ -68,6 +70,18 @@ class ProfileInfoViewModel @Inject constructor(
 
     private val _locationPredictions = MutableStateFlow<List<PlacePrediction>>(emptyList())
     val locationPredictions: StateFlow<List<PlacePrediction>> = _locationPredictions
+
+    private val _isOnline = MutableStateFlow(true)
+    val isOnline: StateFlow<Boolean> get() = _isOnline
+
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            connectivityObserver.isOnline.collect { online ->
+                _isOnline.value = online
+            }
+            Log.d("ProfileInfoViewModel", "Connectivity observer initialized, isOnline: $_isOnline")
+        }
+    }
 
     val isFullNameRegisterValid = derivedStateOf {
         profileState.value.firstName.isNotBlank() && profileState.value.lastName.isNotBlank()
@@ -117,6 +131,7 @@ class ProfileInfoViewModel @Inject constructor(
 
     init {
         getUserLocally()
+        observeConnectivity()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
