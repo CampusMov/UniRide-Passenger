@@ -118,9 +118,10 @@ fun MenuNavigationView(
             route = AuthScreen.Welcome.route,
             selectedIcon = Icons.Filled.Logout,
             unselectedIcon = Icons.Outlined.Logout,
-        ) {
-            viewModel.logout()
-        }
+            function = {
+                viewModel.logout()
+            }
+        )
     )
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -275,6 +276,7 @@ fun MenuNavigationView(
                             navHostController.navigate(route = item.route)
                             selectedItemIndex.intValue = index
                             scope.launch { drawerState.close() }
+                            item.function.invoke()
                         },
                         icon = {
                             Icon(

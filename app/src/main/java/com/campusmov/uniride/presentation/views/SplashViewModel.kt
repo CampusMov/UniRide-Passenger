@@ -31,7 +31,7 @@ class SplashViewModel @Inject constructor(
                 is Resource.Success -> {
                     when (profileRepository.getProfileById(userResource.data.id)) {
                         is Resource.Success -> Graph.MATCHING
-                        is Resource.Failure -> Graph.PROFILE
+                        is Resource.Failure -> Graph.AUTH
                         else -> null
                     }
                 }
