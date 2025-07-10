@@ -8,10 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,14 +20,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.StarRate
-import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Timelapse
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
@@ -38,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,9 +66,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import com.campusmov.uniride.R
 import com.campusmov.uniride.presentation.navigation.screen.analytic.AnalyticsScreen
+import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 import com.campusmov.uniride.presentation.navigation.screen.profile.ProfileScreen
+import com.campusmov.uniride.presentation.navigation.screen.reputation.ReputationScreen
 import com.campusmov.uniride.presentation.util.NavigationItem
 import kotlinx.coroutines.launch
 
@@ -68,10 +84,43 @@ fun MenuNavigationView(
     content: @Composable () -> Unit){
     val items = listOf(
         NavigationItem(
-            title = "Profile information",
+            title = "Mis Carpools",
             route = ProfileScreen.ProfileInfo.route,
-            selectedIcon = Icons.Filled.AccountCircle,
-            unselectedIcon = Icons.Outlined.AccountCircle
+            selectedIcon = Icons.Filled.Map,
+            unselectedIcon = Icons.Outlined.Map
+        ) {},
+        NavigationItem(
+            title = "Mi Tiempo",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.Timelapse,
+            unselectedIcon = Icons.Outlined.Timelapse
+        ) {},
+        NavigationItem(
+            title = "Incidencias",
+            route = ReputationScreen.infractions.route,
+            selectedIcon = Icons.Filled.Warning,
+            unselectedIcon = Icons.Outlined.Warning
+        ) {},
+        NavigationItem(
+            title = "Ubicaciones Guardadas",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.LocationOn,
+            unselectedIcon = Icons.Outlined.LocationOn
+        ) {},
+        NavigationItem(
+            title = "Notificaciones",
+            route = ProfileScreen.ProfileInfo.route,
+            selectedIcon = Icons.Filled.Notifications,
+            unselectedIcon = Icons.Outlined.Notifications
+        ) {},
+        NavigationItem(
+            title = "Cerrar sesión",
+            route = AuthScreen.Welcome.route,
+            selectedIcon = Icons.Filled.Logout,
+            unselectedIcon = Icons.Outlined.Logout,
+            function = {
+                viewModel.logout()
+            }
         )
     )
 
@@ -90,7 +139,7 @@ fun MenuNavigationView(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = true,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier
@@ -100,6 +149,23 @@ fun MenuNavigationView(
                     .padding(16.dp),
                 drawerContainerColor = Color.Black
             ) {
+
+                IconButton(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .background(Color.Transparent),
+                    onClick = {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                        }
+                    },
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Icon of go back", tint = Color.White)
+                }
+
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -150,55 +216,94 @@ fun MenuNavigationView(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-//                        TextButton(
-//                            onClick = { /* Acción */ },
-//                            colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
-//                        ) {
-//                            Text(text = "Editar mi perfil", color = Color.White)
-//                            Spacer(modifier = Modifier.width(4.dp))
-//                            Icon(
-//                                imageVector = Icons.Default.ArrowForward,
-//                                contentDescription = "Editar perfil",
-//                                tint = Color.White
-//                            )
-//                        }
+                        TextButton(
+                            onClick = { navHostController.navigate(route = ProfileScreen.ProfileInfo.route) },
+                            colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                        ) {
+                            Text(text = "Editar mi perfil", color = Color.White)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Editar perfil",
+                                tint = Color.White
+                            )
+                        }
                     }
 
-                    Image(
-                        painter = painterResource(id = R.drawable.user_white_profile_icon),
-                        contentDescription = "User Icon",
+                    Box(
                         modifier = Modifier
                             .size(64.dp)
-                            .background(Color(0xFF292929), shape = CircleShape)
-                            .padding(8.dp)
-                    )
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.BottomEnd
+                    ){
+                        if (profile.value?.profilePictureUrl?.isNotBlank() == true) {
+                            AsyncImage(
+                                model = profile.value?.profilePictureUrl,
+                                contentDescription = "Profile picture",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.user_profile_icon),
+                                contentDescription = "Default profile icon",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-//                items.forEachIndexed { index, item ->
-//                    NavigationDrawerItem(
-//                        label = { Text(text = item.title, color = Color.Black) },
-//                        selected = index == selectedItemIndex.intValue,
-//                        onClick = {
-//                            navHostController.navigate(route = item.route)
-//                            selectedItemIndex.intValue = index
-//                            scope.launch { drawerState.close() }
-//                        },
-//                        icon = {
-//                            Icon(
-//                                imageVector = if (index == selectedItemIndex.intValue) item.selectedIcon else item.unselectedIcon,
-//                                contentDescription = item.title,
-//                                tint = Color.DarkGray
-//                            )
-//                        },
-//                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-//                    )
-//                }
+                items.forEachIndexed { index, item ->
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = item.title,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        },
+                        selected = index == selectedItemIndex.intValue,
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedContainerColor = Color.Transparent,
+                            selectedContainerColor = Color.Transparent,
+                        ),
+                        onClick = {
+                            navHostController.navigate(route = item.route)
+                            selectedItemIndex.intValue = index
+                            scope.launch { drawerState.close() }
+                            item.function.invoke()
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (index == selectedItemIndex.intValue) item.selectedIcon else item.unselectedIcon,
+                                contentDescription = item.title,
+                                tint = Color.White
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(NavigationDrawerItemDefaults.ItemPadding)
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    )
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.White
+                    )
+                }
+
 
             }
         }
     ) {
+        LaunchedEffect(Unit) {
+            viewModel.getProfileById()
+        }
+
         Box() {
             content()
             IconButton(

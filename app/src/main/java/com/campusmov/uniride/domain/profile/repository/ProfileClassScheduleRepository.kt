@@ -5,4 +5,8 @@ import com.campusmov.uniride.domain.shared.util.Resource
 
 interface ProfileClassScheduleRepository {
     suspend fun getClassScheduleByProfileId(profileId: String): Resource<List<ClassSchedule>>
+    suspend fun deleteClassSchedule(
+        profileId: String,
+        classScheduleId: String
+    ): Resource<Unit>
 }

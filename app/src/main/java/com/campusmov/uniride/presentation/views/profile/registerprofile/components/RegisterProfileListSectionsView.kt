@@ -43,6 +43,7 @@ fun RegisterProfileListSectionsView(
     navHostController: NavHostController,
     viewModel: RegisterProfileViewModel = hiltViewModel()
 ) {
+    val user = viewModel.user.collectAsState().value
     val state = viewModel.profileState.value
     val isLoading = viewModel.isLoading.collectAsState()
     val isRegisterValid = viewModel.isRegisterProfileValid.value
@@ -66,25 +67,25 @@ fun RegisterProfileListSectionsView(
             route = ProfileScreen.RegisterProfilePersonalInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Información de contacto",
             route = ProfileScreen.RegisterProfileContactInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Información académica",
             route = ProfileScreen.RegisterProfileAcademicInfo.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        ),
+        ) {},
         NavigationItem(
             title = "Términos y condiciones",
             route = ProfileScreen.RegisterProfileAcceptTerms.route,
             selectedIcon = Icons.Default.ChevronRight,
             unselectedIcon = Icons.Default.ChevronRight
-        )
+        ) {}
     )
 
     Scaffold(
@@ -155,7 +156,7 @@ fun RegisterProfileListSectionsView(
                         .fillMaxWidth()
                         .padding(top = 20.dp)
                 )
-                if (isRegisterValid && !isLoading.value) {
+                if (isRegisterValid && !isLoading.value && user != null) {
                     DefaultRoundedTextButton(
                         modifier = Modifier
                             .fillMaxWidth()

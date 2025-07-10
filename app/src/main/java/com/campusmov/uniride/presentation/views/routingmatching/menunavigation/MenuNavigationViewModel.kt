@@ -103,6 +103,17 @@ class MenuNavigationViewModel @Inject constructor(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                profileUseCases.deleteLocalProfiles()
+                userUseCase.deleteAllUsersLocallyUseCase()
+                Log.d("TAG", "MenuNavigationVM: User and profile deleted locally")
+            } catch (e: Exception) {
+                Log.e("TAG", "MenuNavigationVM: Error deleting user and profile locally: ${e.message}")
+            }
+        }
+    }
 
 
 }

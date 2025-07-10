@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.campusmov.uniride.domain.auth.model.User
+import com.campusmov.uniride.domain.auth.model.UserStatus
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.filemanagement.usecases.FileManagementUseCases
 import com.campusmov.uniride.domain.location.model.PlacePrediction
@@ -75,7 +76,7 @@ class RegisterProfileViewModel @Inject constructor(
     }
 
     val isContactInformationRegisterValid = derivedStateOf {
-                isValidPersonaEmailAddress() &&
+        isValidPersonaEmailAddress() &&
                 profileState.value.countryCode.isNotBlank() &&
                 isValidPhoneNumber()
     }
@@ -84,7 +85,7 @@ class RegisterProfileViewModel @Inject constructor(
         profileState.value.university.isNotBlank() &&
                 profileState.value.faculty.isNotBlank() &&
                 profileState.value.academicProgram.isNotBlank()
-                isValidSemester()
+        isValidSemester()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -108,7 +109,7 @@ class RegisterProfileViewModel @Inject constructor(
         getUserLocally()
     }
 
-    private fun getUserLocally() {
+    fun getUserLocally() {
         viewModelScope.launch {
             when (val result = userUseCase.getUserLocallyUseCase()) {
                 is Resource.Success -> {
@@ -123,6 +124,26 @@ class RegisterProfileViewModel @Inject constructor(
                 Resource.Loading -> {}
             }
         }
+    }
+
+    fun verifyIfProfileExistsInBackend(userId: String) {
+        viewModelScope.launch {
+            try {
+                val result = profileUseCases.getProfileById(userId)
+                when (result) {
+                    is Resource.Success -> {
+                        registerProfileResponse.value = Resource.Success(Unit)
+                    }
+                    is Resource.Failure -> {
+                        Log.e("RegisterProfileVM", "Error fetching profile: ${result.message}")
+                    }
+                    Resource.Loading -> {}
+                }
+            } catch (e: Exception) {
+                Log.e("RegisterProfileVM", "Error fetching profile: ${e.message}")
+            }
+        }
+
     }
 
     fun isValidPersonaEmailAddress(): Boolean {
@@ -194,7 +215,8 @@ class RegisterProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val fileName = user.value?.id ?: (profileState.value.firstName + "_" + profileState.value.lastName)
+                val fileName = user.value?.id
+                    ?: (profileState.value.firstName + "_" + profileState.value.lastName)
                 val url = fileManagementUseCases.uploadFileUseCase(uri, "images", fileName)
                 profileState.value = profileState.value.copy(profilePictureUrl = url)
             } catch (e: Exception) {
@@ -244,7 +266,10 @@ class RegisterProfileViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onScheduleStartTimeInput(value: LocalTime) {
-        if (currentClassScheduleState.value.endedAt != null && value.isAfter(currentClassScheduleState.value.endedAt)) {
+        if (currentClassScheduleState.value.endedAt != null && value.isAfter(
+                currentClassScheduleState.value.endedAt
+            )
+        ) {
             Log.w("TAG", "Start time cannot be after end time")
             return
         }
@@ -253,7 +278,10 @@ class RegisterProfileViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onScheduleEndTimeInput(value: LocalTime) {
-        if (currentClassScheduleState.value.startedAt != null && value.isBefore(currentClassScheduleState.value.startedAt)) {
+        if (currentClassScheduleState.value.startedAt != null && value.isBefore(
+                currentClassScheduleState.value.startedAt
+            )
+        ) {
             Log.w("TAG", "End time cannot be before start time")
             return
         }
@@ -274,7 +302,8 @@ class RegisterProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val place = locationUseCases.getPlaceDetails(placePrediction.id)
             val location = Location.fromPlace(place)
-            currentClassScheduleState.value = currentClassScheduleState.value.copy(selectedLocation = location)
+            currentClassScheduleState.value =
+                currentClassScheduleState.value.copy(selectedLocation = location)
         }
     }
 
@@ -285,7 +314,8 @@ class RegisterProfileViewModel @Inject constructor(
             return
         }
         val newClassSchedule = currentClassScheduleState.value.toDomain()
-        profileState.value = profileState.value.copy(classSchedules = profileState.value.classSchedules + newClassSchedule)
+        profileState.value =
+            profileState.value.copy(classSchedules = profileState.value.classSchedules + newClassSchedule)
         onScheduleLocationCleared()
         onCloseScheduleDialog()
     }
@@ -315,20 +345,29 @@ class RegisterProfileViewModel @Inject constructor(
     }
 
     fun onScheduleLocationCleared() {
-        currentClassScheduleState.value = currentClassScheduleState.value.copy(selectedLocation = null)
+        currentClassScheduleState.value =
+            currentClassScheduleState.value.copy(selectedLocation = null)
         _locationPredictions.value = emptyList()
     }
 
     fun onDeleteSchedule() {
-        if (currentClassScheduleState.value.editingIndex == null) {
-            Log.e("RegisterProfileVM", "Editing index is null")
+        val scheduleIdToDelete = currentClassScheduleState.value.editingIndex ?: run {
+            Log.e("RegisterProfileVM", "Schedule ID (editingIndex) is null, cannot delete.")
             return
         }
+
+        val profileId = profileState.value.userId
+        if (profileId.isBlank()) {
+            Log.e("RegisterProfileVM", "Profile ID is blank, cannot delete schedule.")
+            return
+        }
+
+        val originalSchedules = profileState.value.classSchedules
+
         profileState.value = profileState.value.copy(
-            classSchedules = profileState.value.classSchedules.filterNot {
-                it.id == currentClassScheduleState.value.editingIndex
-            }
+            classSchedules = originalSchedules.filterNot { it.id == scheduleIdToDelete }
         )
+
         onCloseScheduleDialog()
     }
 
@@ -339,6 +378,9 @@ class RegisterProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("RegisterProfileVM", "Profile saved")
                     registerProfileResponse.value = Resource.Success(Unit)
+                    _user.value?.copy(status = UserStatus.ACTIVE)?.let { activeUser ->
+                        userUseCase.updateUserLocallyUseCase(activeUser)
+                    } ?: Log.e("RegisterProfileVM", "No user loaded, cannot update locally")
                 }
 
                 is Resource.Failure -> {

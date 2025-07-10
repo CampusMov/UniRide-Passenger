@@ -64,7 +64,7 @@ fun EnterInstitutionalEmailView(
                     .padding(top = 20.dp)
                     .background(Color.Transparent),
                 onClick = {
-                    navHostController.popBackStack()
+                    navHostController.navigate(AuthScreen.Welcome.route)
                 },
             ) {
                 Icon(

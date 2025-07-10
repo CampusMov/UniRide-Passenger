@@ -95,6 +95,11 @@ dependencies {
 
     implementation (libs.material)
 
+    // WEBSOCKET
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.okhttp)
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

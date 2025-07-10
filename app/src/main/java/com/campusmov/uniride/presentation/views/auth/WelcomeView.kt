@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +27,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.campusmov.uniride.R
+import com.campusmov.uniride.domain.auth.model.UserStatus
 import com.campusmov.uniride.presentation.components.DefaultRoundedTextButton
+import com.campusmov.uniride.presentation.navigation.Graph
 import com.campusmov.uniride.presentation.navigation.screen.auth.AuthScreen
 
 @Composable
-fun WelcomeView(navHostController: NavHostController) {
+fun WelcomeView(
+    viewModel: WelcomeViewModel = hiltViewModel(),
+    navHostController: NavHostController
+) {
+    val user = viewModel.user.collectAsState().value
+
+    LaunchedEffect(user) {
+        if (user?.status == UserStatus.ACTIVE) {
+            navHostController.navigate(route = Graph.MATCHING) {
+                popUpTo(route = Graph.AUTH) { inclusive = true }
+            }
+        }
+    }
+
     Scaffold { paddingValue ->
         Column(
             modifier = Modifier
@@ -120,6 +138,10 @@ fun WelcomeView(navHostController: NavHostController) {
                     text = "Continuar",
                     onClick = {
                         navHostController.navigate(route = AuthScreen.EnterInstitutionalEmail.route)
+                        //navHostController.navigate(route = Graph.MATCHING)
+
+
+
                     }
                 )
                 Text(

@@ -139,7 +139,7 @@ fun RegisterProfileAcceptTermsView(
                 }
                 DefaultRoundedTextButton(
                     modifier = Modifier
-                        .fillMaxWidth(0.4f),
+                        .fillMaxWidth(0.6f),
                     text = "Siguiente",
                     enabled = isValid.value,
                     enabledRightIcon = true,

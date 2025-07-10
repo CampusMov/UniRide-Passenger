@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 data class ProfileRequestDto(
     @Field("userId")
-    val userId: String,
+    val userId: String? = null,
     @Field("institutionalEmailAddress")
     val institutionalEmailAddress: String,
     @Field("personalEmailAddress")
@@ -41,9 +41,9 @@ data class ProfileRequestDto(
 ) {
     companion object  {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun fromDomain(profile: Profile): ProfileRequestDto {
+        fun fromDomain(profile: Profile, includeUserId: Boolean = false): ProfileRequestDto {
             return ProfileRequestDto(
-                userId = profile.userId,
+                userId = if (includeUserId) profile.userId else null,
                 institutionalEmailAddress = profile.institutionalEmailAddress,
                 personalEmailAddress = profile.personalEmailAddress,
                 countryCode = profile.countryCode,
