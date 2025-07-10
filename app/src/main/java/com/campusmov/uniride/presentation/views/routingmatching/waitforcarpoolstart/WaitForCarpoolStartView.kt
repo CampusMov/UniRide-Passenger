@@ -64,6 +64,7 @@ fun WaitForCarpoolStartView(
         if (viewModelMapContent.carpoolAcceptedId.value?.isNotEmpty() == true) {
             Log.d("TAG", "Carpool ID: ${viewModelMapContent.carpoolAcceptedId.value}")
             viewModel.getCarpoolById(viewModelMapContent.carpoolAcceptedId.value!!)
+            viewModelMapContent.connectToRouteCarpoolWebSocket()
         } else {
             Log.d("TAG", "No carpool ID found")
         }

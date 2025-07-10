@@ -8,6 +8,8 @@ import com.campusmov.uniride.domain.auth.model.User
 import com.campusmov.uniride.domain.auth.usecases.UserUseCase
 import com.campusmov.uniride.domain.location.usecases.LocationUsesCases
 import com.campusmov.uniride.domain.route.model.Route
+import com.campusmov.uniride.domain.route.model.RouteCarpool
+import com.campusmov.uniride.domain.route.usecases.RouteCarpoolWsUseCases
 import com.campusmov.uniride.domain.route.usecases.RouteUseCases
 import com.campusmov.uniride.domain.shared.model.EUserCarpoolState
 import com.campusmov.uniride.domain.shared.util.Resource
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class MapContentViewModel @Inject constructor(
     private val locationUsesCases: LocationUsesCases,
     private val routeUseCase: RouteUseCases,
-    private val userUseCase: UserUseCase
+    private val userUseCase: UserUseCase,
+    private val routeCarpoolWsUseCases: RouteCarpoolWsUseCases
 ): ViewModel() {
     private val _location = MutableStateFlow<LatLng?>(null)
     val location: StateFlow<LatLng?> get() = _location
@@ -32,6 +35,9 @@ class MapContentViewModel @Inject constructor(
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
+
+    private val _routeCarpool = MutableStateFlow<RouteCarpool?>(null)
+    val routeCarpool: StateFlow<RouteCarpool?> get() = _routeCarpool
 
     var isInteractiveWithMap = mutableStateOf(false)
 
@@ -117,6 +123,39 @@ class MapContentViewModel @Inject constructor(
 
     fun completeCarpool() {
         _userCarpoolSate.value = EUserCarpoolState.COMPLETED
+    }
+
+    fun connectToRouteCarpoolWebSocket() {
+        viewModelScope.launch {
+            var isConnected = false
+            try {
+                routeCarpoolWsUseCases.connectRouteCarpoolUseCase()
+                isConnected = true
+                Log.d("TAG", "Connected to Route Carpool WebSocket")
+            } catch (e: Exception) {
+                Log.e("TAG", "Failed to connect to Route Carpool WebSocket: ${e.message}")
+            } finally {
+                if(isConnected) {
+                    Log.e("TAG", "WebSocket connection failed, retrying...")
+                    subscribeToRouteCarpoolUpdatesCurrentLocation()
+                }
+            }
+        }
+    }
+
+    fun subscribeToRouteCarpoolUpdatesCurrentLocation() {
+        if (carpoolAcceptedId.value.isNullOrEmpty()) {
+            Log.e("TAG", "Carpool ID is null or empty, cannot subscribe to updates")
+            return
+        }
+        viewModelScope.launch {
+            routeCarpoolWsUseCases.subscribeRouteCarpoolUpdatesUseCase(carpoolAcceptedId.value!!)
+                .collect { route ->
+                    _routeCarpool.value = route
+                    Log.d("TAG", "Received route carpool update: $route")
+                    if(_userCarpoolSate.value != EUserCarpoolState.IN_CARPOOL) routeCarpoolWsUseCases.disconnectRouteCarpoolUseCase()
+                }
+        }
     }
 
     fun cancelCarpool() {
