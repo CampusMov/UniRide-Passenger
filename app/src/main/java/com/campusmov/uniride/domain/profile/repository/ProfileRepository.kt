@@ -7,4 +7,5 @@ interface ProfileRepository {
     suspend fun saveProfile(profile: Profile): Resource<Unit>
     suspend fun getProfileById(profileId: String): Resource<Profile>
     suspend fun updateProfile(profileId: String, profile: Profile): Resource<Unit>
+    suspend fun deleteLocalProfiles(): Resource<Unit>
 }
