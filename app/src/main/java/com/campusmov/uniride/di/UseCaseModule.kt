@@ -53,9 +53,14 @@ import com.campusmov.uniride.domain.reputation.repository.ReputationIncentivesRe
 import com.campusmov.uniride.domain.reputation.usecases.InfractionUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ReputationIncentivesUseCase
 import com.campusmov.uniride.domain.reputation.usecases.ValorationUseCase
+import com.campusmov.uniride.domain.route.repository.RouteCarpoolWebSocketRepository
 import com.campusmov.uniride.domain.route.repository.RouteRepository
+import com.campusmov.uniride.domain.route.usecases.ConnectRouteCarpoolUseCase
+import com.campusmov.uniride.domain.route.usecases.DisconnectRouteCarpoolSessionUseCase
 import com.campusmov.uniride.domain.route.usecases.GetRouteUseCase
+import com.campusmov.uniride.domain.route.usecases.RouteCarpoolWsUseCases
 import com.campusmov.uniride.domain.route.usecases.RouteUseCases
+import com.campusmov.uniride.domain.route.usecases.SubscribeRouteCarpoolUpdateCurrentLocationUseCase
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolRepository
 import com.campusmov.uniride.domain.routingmatching.repository.CarpoolWebSocketRepository
 import com.campusmov.uniride.domain.routingmatching.repository.PassengerRequestRepository
@@ -182,5 +187,12 @@ object UseCaseModule {
     @Provides
     fun provideRoutesUseCases(routeRepository: RouteRepository) = RouteUseCases(
         getRoute = GetRouteUseCase(routeRepository)
+    )
+
+    @Provides
+    fun provideRoutesCarpoolUseCases(routeCarpoolWebSocketRepository: RouteCarpoolWebSocketRepository) = RouteCarpoolWsUseCases(
+        connectRouteCarpoolUseCase = ConnectRouteCarpoolUseCase(routeCarpoolWebSocketRepository),
+        subscribeRouteCarpoolUpdatesUseCase = SubscribeRouteCarpoolUpdateCurrentLocationUseCase(routeCarpoolWebSocketRepository),
+        disconnectRouteCarpoolUseCase = DisconnectRouteCarpoolSessionUseCase(routeCarpoolWebSocketRepository)
     )
 }
