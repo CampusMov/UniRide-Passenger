@@ -14,6 +14,7 @@ import com.campusmov.uniride.ui.theme.UniRideTheme
 import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 
+// CampusMov - UniRide
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navHostController: NavHostController
